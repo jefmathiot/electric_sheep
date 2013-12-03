@@ -2,6 +2,8 @@
 
 A simple task system for file manipulation (i.e. backup).
 
+[![Build Status](https://travis-ci.org/servebox/electric_sheeps.png)](https://travis-ci.org/servebox/electric_sheeps)
+
 ## Installation
 
 Add this line to your application's Gemfile:
