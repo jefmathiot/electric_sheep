@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.name          = "electric_sheeps"
   spec.version       = ElectricSheeps::VERSION
   spec.authors       = ["Benoît Anselme", "Patrice Izzo", "Jef Mathiot", "Fabrice Nourisson"]
-  spec.email         = ["info@servebox.com"]
+  spec.email         = ["foss@servebox.com"]
   spec.description   = %q{A simple task system for file manipulation (i.e. backup).}
   spec.summary       = %q{A simple task system for file manipulation (i.e. backup).}
   spec.homepage      = "https://github.com/servebox/electric_sheeps"
@@ -20,4 +20,10 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
+  spec.add_development_dependency "mocha"
+  spec.add_development_dependency "coveralls"
+  spec.add_development_dependency "minitest", "~> 5.0.7"
+  spec.add_development_dependency "mock_redis", "~> 0.10.0"
+
+  spec.add_dependency "redis-namespace", ">= 1.3.0"
 end
