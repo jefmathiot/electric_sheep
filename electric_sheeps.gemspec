@@ -6,11 +6,11 @@ require 'electric_sheeps/version'
 Gem::Specification.new do |spec|
   spec.name          = "electric_sheeps"
   spec.version       = ElectricSheeps::VERSION
-  spec.authors       = ["banselme"]
-  spec.email         = ["banselme@servebox.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
-  spec.homepage      = ""
+  spec.authors       = ["Benoît Anselme", "Patrice Izzo", "Jef Mathiot", "Fabrice Nourisson"]
+  spec.email         = ["info@servebox.com"]
+  spec.description   = %q{A simple task system for file manipulation (i.e. backup).}
+  spec.summary       = %q{A simple task system for file manipulation (i.e. backup).}
+  spec.homepage      = "https://github.com/servebox/electric_sheeps"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)

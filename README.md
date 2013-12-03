@@ -1,6 +1,6 @@
 # ElectricSheeps
 
-TODO: Write a gem description
+A simple task system for file manipulation (i.e. backup).
 
 ## Installation
 
