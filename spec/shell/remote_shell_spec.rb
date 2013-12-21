@@ -1,0 +1,94 @@
+require 'spec_helper'
+require 'net/ssh/test'
+
+describe ElectricSheeps::Shell::RemoteShell do
+    include Net::SSH::Test
+
+    before do
+        @shell_helper = ElectricSheeps::Shell::RemoteShell
+        @logger = mock()
+    end
+
+    describe "with a session" do
+
+        def build_ssh_story(cmd, replies={}, exit_status=0)
+            story do |session|
+                channel = session.opens_channel
+                channel.sends_exec cmd
+                replies.each do |type, reply|
+                    channel.send "gets_#{type}", reply
+                end
+                yield if block_given?
+                channel.gets_exit_status(exit_status)
+                channel.gets_close
+                channel.sends_close
+            end
+        end
+
+        before do
+            Net::SSH.expects(:start).returns( connection )
+            user = ENV['USER']
+            @logger.expects(:info).with("Starting a remote shell session for #{user}@localhost")
+            @shell = @shell_helper.new( @logger, 'localhost', user )
+            @shell.open!
+        end
+
+        it "should have open the session" do
+            @shell.opened?.must_equal true
+        end
+
+        it 'should output stdout to logger' do
+            build_ssh_story 'echo "Hello World"', {data: 'Hello World'}
+            @logger.expects(:info).with('Hello World')
+            @logger.expects(:error).never
+            assert_scripted do
+                @shell.exec 'echo "Hello World"'
+            end
+        end
+
+        it 'should output stderr to logger' do
+            build_ssh_story 'echo "Goodbye Cruel World" >&2', {extended_data: 'Goodbye Cruel World'}
+            @logger.expects(:error).with('Goodbye Cruel World')
+            @logger.expects(:info).never
+            assert_scripted do
+                @shell.exec 'echo "Goodbye Cruel World" >&2'
+            end
+        end
+
+        it 'should output both stdout and stderr to logger' do
+            build_ssh_story 'echo "Hello World" ; echo "Goodbye Cruel World" >&2',
+                {data: 'Hello World', extended_data: 'Goodbye Cruel World'}
+            @logger.expects(:info).with('Hello World')
+            @logger.expects(:error).with('Goodbye Cruel World')
+            assert_scripted do
+                @shell.exec 'echo "Hello World" ; echo "Goodbye Cruel World" >&2'
+            end
+        end
+
+        it 'should close' do
+            @shell.instance_variable_get(:@ssh_session).expects(:close)
+            @shell.close!.opened?.must_equal false
+        end
+
+        describe 'on returning status' do
+            it 'should succeed' do
+                build_ssh_story 'echo "Hello World"', {data: 'Hello World'}
+                @logger.expects(:info).with('Hello World')
+                @logger.expects(:error).never
+                assert_scripted do
+                    @shell.exec('echo "Hello World"').must_equal 0
+                end
+            end
+
+            it 'should fail gracefully' do
+                build_ssh_story 'ls --wtf', {extended_data: 'An error'}, 2
+                @logger.expects(:info).never
+                @logger.expects(:error).with('An error')
+                assert_scripted do
+                    @shell.exec('ls --wtf').must_equal 2
+                end
+            end
+        end
+
+    end
+end
