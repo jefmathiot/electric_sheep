@@ -6,6 +6,8 @@ A simple task system for file manipulation (i.e. backup).
 
 ## Installation
 
+Requires Ruby >= 1.9.3.
+
 Add this line to your application's Gemfile:
 
     gem 'electric_sheeps'
