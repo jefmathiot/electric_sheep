@@ -23,7 +23,10 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "mocha"
   spec.add_development_dependency "coveralls"
   spec.add_development_dependency "minitest", "~> 5.0.7"
-  spec.add_development_dependency "mock_redis", "~> 0.10.0"
+  #spec.add_development_dependency "mock_redis", "~> 0.10.0"
+  spec.add_development_dependency 'guard-minitest'
 
-  spec.add_dependency "redis-namespace", ">= 1.3.0"
+  #spec.add_dependency "redis-namespace", ">= 1.3.0"
+  spec.add_dependency "session", "~> 3.1.0"
+  spec.add_dependency "net-ssh", "~> 2.7.0"
 end
