@@ -3,9 +3,9 @@
 A simple task system for file manipulation (i.e. backup).
 
 [![Build Status](https://travis-ci.org/servebox/electric_sheeps.png)](https://travis-ci.org/servebox/electric_sheeps)
-[![Dependency Status](https://gemnasium.com/servebox/electric_sheeps.png)](https://gemnasium.com/jefmathiot/jobz)
+[![Dependency Status](https://gemnasium.com/servebox/electric_sheeps.png)](https://gemnasium.com/servebox/electric_sheeps)
 [![Coverage Status](https://coveralls.io/repos/servebox/electric_sheeps/badge.png)](https://coveralls.io/r/servebox/electric_sheeps)
-[![Code Climate](https://codeclimate.com/github/servebox/electric_sheeps.png)](https://codeclimate.com/github/jefmathiot/jobz)
+[![Code Climate](https://codeclimate.com/github/servebox/electric_sheeps.png)](https://codeclimate.com/github/servebox/electric_sheeps)
 
 ## Installation
 
