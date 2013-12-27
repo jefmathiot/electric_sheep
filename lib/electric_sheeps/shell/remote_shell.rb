@@ -22,7 +22,6 @@ module ElectricSheeps
                     channel.exec(cmd) do |ch, success|
                         unless success
                             @logger.error "Could not execute command #{cmd}"
-                            abort
                         end
                         channel.on_data do |ch, data|
                             @logger.info data

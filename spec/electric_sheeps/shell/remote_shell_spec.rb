@@ -37,6 +37,19 @@ describe ElectricSheeps::Shell::RemoteShell do
             @shell.opened?.must_equal true
         end
 
+        it 'should log to stderr on failing exec' do
+            story do |session|
+                channel = session.opens_channel
+                channel.sends_exec 'whatever', true, false
+                channel.gets_close
+                channel.sends_close
+            end
+            @logger.expects(:error, "Could not execute command whatever")
+            assert_scripted do
+                @shell.exec 'whatever'
+            end
+        end
+
         it 'should output stdout to logger' do
             build_ssh_story 'echo "Hello World"', {data: 'Hello World'}
             @logger.expects(:info).with('Hello World')
