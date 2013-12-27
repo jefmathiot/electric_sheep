@@ -5,7 +5,6 @@ describe ElectricSheeps::Shell::RemoteShell do
     include Net::SSH::Test
 
     before do
-        @shell_helper = ElectricSheeps::Shell::RemoteShell
         @logger = mock()
     end
 
@@ -29,7 +28,7 @@ describe ElectricSheeps::Shell::RemoteShell do
             Net::SSH.expects(:start).returns( connection )
             user = ENV['USER']
             @logger.expects(:info).with("Starting a remote shell session for #{user}@localhost")
-            @shell = @shell_helper.new( @logger, 'localhost', user )
+            @shell = subject.new( @logger, 'localhost', user )
             @shell.open!
         end
 

@@ -3,7 +3,6 @@ require 'spec_helper'
 describe ElectricSheeps::Shell::LocalShell do
 
     before do
-        @shell_helper = ElectricSheeps::Shell::LocalShell
         @logger = mock()
     end
 
@@ -12,7 +11,7 @@ describe ElectricSheeps::Shell::LocalShell do
 
         before do
             @logger.expects(:info).with("Starting a local shell session")
-            @shell = @shell_helper.new( @logger )
+            @shell = subject.new( @logger )
             @shell.open!
         end
 

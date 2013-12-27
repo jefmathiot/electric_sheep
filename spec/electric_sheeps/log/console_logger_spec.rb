@@ -7,13 +7,13 @@ describe ElectricSheeps::Log::ConsoleLogger do
 
         before do
             @out = mock()
-            @subject = ElectricSheeps::Log::ConsoleLogger.new(@out)
+            @logger = subject.new(@out)
         end
 
         %w(info warn debug error fatal).each do |method|
             it "should redirect #{method} to out logger" do
                 @out.expects(method).with('Hello World')
-                @subject.send method, 'Hello World'
+                @logger.send method, 'Hello World'
             end
         end
 
@@ -24,14 +24,14 @@ describe ElectricSheeps::Log::ConsoleLogger do
         before do
             @out = mock()
             @err = mock()
-            @subject = ElectricSheeps::Log::ConsoleLogger.new(@out, @err)
+            @logger = subject.new(@out, @err)
         end
 
         %w(info warn debug).each do |method|
             it "should redirect #{method} to out logger" do
                 @out.expects(method).with('Hello World')
                 @err.expects(method).never
-                @subject.send method, 'Hello World'
+                @logger.send method, 'Hello World'
             end
         end
 
@@ -39,7 +39,7 @@ describe ElectricSheeps::Log::ConsoleLogger do
             it "should redirect #{method} to err logger" do
                 @err.expects(method).with('Goodbye Cruel World')
                 @out.expects(method).never
-                @subject.send method, 'Goodbye Cruel World'
+                @logger.send method, 'Goodbye Cruel World'
             end
         end
 
