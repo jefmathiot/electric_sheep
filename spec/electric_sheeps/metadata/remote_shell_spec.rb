@@ -11,11 +11,11 @@ describe ElectricSheeps::Metadata::RemoteShell do
     end
 
     it 'should be bound to an host' do
-        metadata = subject.new(@host)
+        metadata = subject_instance
         metadata.host.must_equal @host
     end
 
     def subject_instance
-        subject.new(@host)
+        subject.new(host: @host)
     end
 end

@@ -3,9 +3,9 @@ module ElectricSheeps
         class RemoteShell < Shell
             attr_reader :host
 
-            def initialize(host)
+            def initialize(options={})
                 super()
-                @host = host
+                @host = options[:host]
             end
         end
     end

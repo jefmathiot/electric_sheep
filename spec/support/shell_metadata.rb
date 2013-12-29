@@ -10,7 +10,7 @@ module Support
 
             it 'should add execs' do
                 shell = subject_instance
-                shell.add(ElectricSheeps::Metadata::Exec.new('exec_id', Object))
+                shell.add(ElectricSheeps::Metadata::Exec.new(id: 'exec_id', agent: Object))
                 shell.size.must_equal 1
             end
         end

@@ -3,7 +3,7 @@ require 'spec_helper'
 describe ElectricSheeps::Metadata::Exec do
 
     before do
-        @exec = subject.new('exec_id', Object)
+        @exec = subject.new(id: 'exec_id', agent: Object)
     end
 
     it 'should be bound to an agent class' do
