@@ -2,12 +2,10 @@ require 'spec_helper'
 
 describe ElectricSheeps::Metadata::RemoteShell do
     include Support::ShellMetadata
+    include Support::Hosts
 
     before do
-        @host = ElectricSheeps::Metadata::Hosts.new.add(
-            id: 'some-host',
-            name: 'some-host.tld',
-        )
+        @host = new_host
     end
 
     it 'should be bound to an host' do
