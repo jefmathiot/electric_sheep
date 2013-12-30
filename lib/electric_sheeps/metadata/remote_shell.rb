@@ -1,12 +1,14 @@
 module ElectricSheeps
     module Metadata
         class RemoteShell < Shell
-            attr_reader :host
-
-            def initialize(options={})
+            
+            def initialize
                 super()
-                @host = options[:host]
             end
+            
+            include Options
+            optionize :host
+
         end
     end
 end

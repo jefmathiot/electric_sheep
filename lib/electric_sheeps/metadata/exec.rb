@@ -1,12 +1,10 @@
 module ElectricSheeps
     module Metadata
         class Exec
-            attr_reader :id, :agent
+            include Options
 
-            def initialize(options={})
-                @id = options[:id]
-                @agent = options[:agent]
-            end
+            optionize :id, :agent
+
         end
     end
 end

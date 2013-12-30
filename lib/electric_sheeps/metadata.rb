@@ -1,3 +1,4 @@
+require 'electric_sheeps/metadata/options'
 require 'electric_sheeps/metadata/hosts'
 require 'electric_sheeps/metadata/project'
 require 'electric_sheeps/metadata/exec'

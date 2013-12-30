@@ -1,11 +1,10 @@
 module ElectricSheeps
     module Metadata
         class Project
-            attr_reader :description
+            include Options
 
-            def initialize(options={})
-                @description = options[:description]
-            end
+            optionize :description
+
         end
     end
 end
