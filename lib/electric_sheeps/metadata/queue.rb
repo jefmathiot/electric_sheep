@@ -1,6 +1,6 @@
 module ElectricSheeps
     module Metadata
-        module Queueable
+        module Queue
 
             def add(item)
                 @items << item

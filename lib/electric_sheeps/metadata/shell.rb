@@ -1,7 +1,7 @@
 module ElectricSheeps
     module Metadata
         class Shell
-            include Queueable
+            include Queue
 
             def initialize
                 reset!
