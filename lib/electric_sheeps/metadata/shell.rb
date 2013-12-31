@@ -1,19 +1,11 @@
 module ElectricSheeps
     module Metadata
         class Shell
+            include Queueable
 
             def initialize
-                @execs = []
+                reset!
             end
-
-            def add(exec)
-                @execs << exec
-            end
-
-            def size
-                @execs.size
-            end
-
         end
     end
 end
