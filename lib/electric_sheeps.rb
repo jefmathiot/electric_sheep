@@ -1,5 +1,6 @@
 require 'active_support'
 require 'electric_sheeps/version'
+require 'electric_sheeps/queue'
 require 'electric_sheeps/metadata'
 require 'electric_sheeps/resources'
 require 'electric_sheeps/agents'
