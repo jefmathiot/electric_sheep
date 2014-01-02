@@ -11,7 +11,9 @@ describe ElectricSheeps::Metadata::Project do
     end
 
     it "should initialize the project's description" do
-        subject.new(description: 'A description').description.must_equal 'A description'
+        project = subject.new(id: 'some-project', description: 'Some project')
+        project.id.must_equal 'some-project'
+        project.description.must_equal 'Some project'
     end
 
 end

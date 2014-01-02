@@ -8,7 +8,7 @@ module ElectricSheeps
             end
 
             include Options
-            optionize :description
+            optionize :id, :description
         end
     end
 end
