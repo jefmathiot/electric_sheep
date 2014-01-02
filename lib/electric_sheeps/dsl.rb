@@ -51,6 +51,10 @@ module ElectricSheeps
                 @project.add Metadata::RemoteShell.new(host: @config.hosts.get(options[:on]))
             end
 
+            def locally
+                @project.add Metadata::Shell.new
+            end
+
             def method_missing(*args)
             end
         end
