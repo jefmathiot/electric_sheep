@@ -6,7 +6,7 @@ describe ElectricSheeps::Metadata::Shell do
 
     def queue_items
         ([0]*2).map do
-            ElectricSheeps::Metadata::Exec.new
+            ElectricSheeps::Metadata::Command.new
         end
     end
 
