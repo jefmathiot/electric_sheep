@@ -1,6 +1,6 @@
 module ElectricSheeps
     module Metadata
-        class Exec
+        class Command
             include Options
 
             optionize :id, :agent
