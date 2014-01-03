@@ -44,18 +44,45 @@ module ElectricSheeps
             def initialize(config, id, &block)
                 @config = config
                 @project = Metadata::Project.new( Optionizer.optionize([:description], id: id, &block)  )
-                instance_eval &block
+                instance_eval &block if block_given?
             end
 
             def remotely(options, &block)
-                @project.add Metadata::RemoteShell.new(host: @config.hosts.get(options[:on]))
+                @project.add RemoteShellDsl.new(host: @config.hosts.get(options[:on]), &block).shell
             end
 
-            def locally
-                @project.add Metadata::Shell.new
+            def locally (&block)
+                @project.add ShellDsl.new(&block).shell
             end
 
             def method_missing(*args)
+                # Avoids the options parsed by Optionizer to raise exceptions
+            end
+        end
+
+        class ShellDsl
+            attr_reader :shell
+
+            def initialize(options={}, &block)
+                @shell = new_shell(options)
+                instance_eval &block if block_given?
+            end
+
+            def command(agent, options={}, &block)
+                id = options[:as] || agent
+                @shell.add ElectricSheeps::Metadata::Command.new(id: id, agent: agent)
+            end
+            
+            protected
+            def new_shell(options)
+                Metadata::Shell.new
+            end
+        end
+
+        class RemoteShellDsl < ShellDsl
+            protected
+            def new_shell(options)
+                Metadata::RemoteShell.new(options)
             end
         end
     end

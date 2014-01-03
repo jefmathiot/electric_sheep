@@ -38,29 +38,71 @@ describe ElectricSheeps::Dsl do
             project.description.must_equal "Some random project"
         end
 
+        module ShellSpecs
+            extend ActiveSupport::Concern
+
+            included do
+                describe "adding a command" do
+
+                    def build_command(options={})
+                        build_shell do
+                            command "fake_agent", options
+                        end
+                        @command = @shell.next!
+                    end
+
+                    it "appends the command to the shell's queue" do
+                        build_command
+                        @command.must_be_instance_of ElectricSheeps::Metadata::Command
+                        @command.id.must_equal "fake_agent"
+                        @command.agent.must_equal "fake_agent"
+                    end
+                    
+                    it "gives an alias to the command" do
+                        build_command as: "alias"
+                        @command.id.must_equal "alias"
+                    end
+                end
+            end
+
+        end
+
         describe "adding a remote shell" do
 
-            it "appends the shell to the project's queue" do
+            def build_shell(&block)
                 project = build_project do
-                    remotely on: "some-host"
+                    remotely on: "some-host", &block
                 end
-                shell = project.next!
-                shell.must_be_instance_of ElectricSheeps::Metadata::RemoteShell
-                shell.host.name.must_equal "some-host.tld"
+                @shell = project.next!
             end
+
+            it "appends the shell to the project's queue" do
+                build_shell
+                @shell.must_be_instance_of ElectricSheeps::Metadata::RemoteShell
+                @shell.host.name.must_equal "some-host.tld"
+            end
+
+            include ShellSpecs
         end
 
         describe "adding a local shell" do
 
-            it "appends the shell to the project's queue" do
+            def build_shell(&block)
                 project = build_project do
-                    locally
+                    locally &block
                 end
-                shell = project.next!
-                shell.must_be_instance_of ElectricSheeps::Metadata::Shell
+                @shell = project.next!
             end
+
+            it "appends the shell to the project's queue" do
+                build_shell
+                @shell.must_be_instance_of ElectricSheeps::Metadata::Shell
+            end
+
+            include ShellSpecs
         end
 
     end
 
 end
+
