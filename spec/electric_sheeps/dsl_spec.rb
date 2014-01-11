@@ -106,7 +106,7 @@ describe ElectricSheeps::Dsl do
             
             def build_transport(&block)
                 project = build_project do
-                    transport :scp
+                    transport :scp, &block
                 end
                 @transport = project.next!
             end
@@ -114,6 +114,15 @@ describe ElectricSheeps::Dsl do
             it "should append the transport to the project's queue" do
                 build_transport
                 @transport.must_be_instance_of ElectricSheeps::Metadata::Transport
+            end
+
+            it "should define transport ends" do
+                build_transport do
+                    from
+                    to
+                end
+                @transport.from.must_be_instance_of ElectricSheeps::Metadata::TransportEnd
+                @transport.to.must_be_instance_of ElectricSheeps::Metadata::TransportEnd
             end
         end
 

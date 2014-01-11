@@ -94,9 +94,18 @@ module ElectricSheeps
             attr_reader :transport
 
             def initialize(options={}, &block)
-                @transport = Metadata::Transport.new(options)
                 instance_eval &block if block_given?
+                @transport = Metadata::Transport.new(options.merge(from: @from, to: @to))
             end
+
+            def from(&block)
+                @from = Metadata::TransportEnd.new
+            end
+
+            def to(&block)
+                @to = Metadata::TransportEnd.new
+            end
+
         end
     end
 end
