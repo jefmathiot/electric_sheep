@@ -51,8 +51,12 @@ module ElectricSheeps
                 @project.add RemoteShellDsl.new(host: @config.hosts.get(options[:on]), &block).shell
             end
 
-            def locally (&block)
+            def locally(&block)
                 @project.add ShellDsl.new(&block).shell
+            end
+
+            def transport(type, &block)
+                @project.add TransportDsl.new(&block).transport
             end
 
             def method_missing(*args)
@@ -83,6 +87,15 @@ module ElectricSheeps
             protected
             def new_shell(options)
                 Metadata::RemoteShell.new(options)
+            end
+        end
+
+        class TransportDsl
+            attr_reader :transport
+
+            def initialize(options={}, &block)
+                @transport = Metadata::Transport.new(options)
+                instance_eval &block if block_given?
             end
         end
     end

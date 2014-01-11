@@ -102,6 +102,21 @@ describe ElectricSheeps::Dsl do
             include ShellSpecs
         end
 
+        describe "adding a transport" do
+            
+            def build_transport(&block)
+                project = build_project do
+                    transport :scp
+                end
+                @transport = project.next!
+            end
+
+            it "should append the transport to the project's queue" do
+                build_transport
+                @transport.must_be_instance_of ElectricSheeps::Metadata::Transport
+            end
+        end
+
     end
 
 end
