@@ -8,7 +8,7 @@ module Support
                 subject_instance.size.must_equal 0
             end
 
-            it 'should add execs' do
+            it 'should add commands' do
                 shell = subject_instance
                 shell.add(ElectricSheeps::Metadata::Command.new(id: 'exec_id', agent: Object))
                 shell.size.must_equal 1
@@ -20,5 +20,3 @@ module Support
         end
     end
 end
-
-
