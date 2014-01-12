@@ -14,6 +14,7 @@ Neither the API, DSL or runner are ready so far. Roadmap of features for upcomin
 * :white_check_mark: Local and remote shells
 * :clock11: Metadata API
 * :clock11: Configuration DSL
+* :clock11: Projects runner
 * :clock11: SCP, RSYNC over SSH and Cloud Storage transports (using Fog ?)
 * :heavy_minus_sign: Commands for directories & files backups and compression
 * :heavy_minus_sign: Commands for popular RDBMS dumps (MySQL, Postgres)
