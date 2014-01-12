@@ -30,6 +30,7 @@ module ElectricSheeps
 
                 private
                 def add_command(id, klazz)
+                    klazz.send :include, Agents::Command
                     @commands[id]=klazz
                 end
 
