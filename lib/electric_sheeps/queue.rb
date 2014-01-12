@@ -24,5 +24,10 @@ module ElectricSheeps
             @current = 0
         end
 
+        def each_item
+            while item = next!
+                yield item if block_given?
+            end
+        end
     end
 end

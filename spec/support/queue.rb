@@ -25,6 +25,15 @@ module Support
                     end
                 end
 
+                it 'yields block for each item' do
+                    times = 0
+                    @queue.each_item do |item|
+                        @items[times].must_equal item
+                        times += 1
+                    end
+                    times.must_equal @items.size
+                end
+
             end
         end
     end
