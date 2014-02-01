@@ -8,6 +8,7 @@ require 'electric_sheeps/config'
 require 'electric_sheeps/dsl'
 require 'electric_sheeps/shell/local_shell'
 require 'electric_sheeps/shell/remote_shell'
+require 'electric_sheeps/sheepfile'
 require 'electric_sheeps/runner'
 
 module ElectricSheeps
