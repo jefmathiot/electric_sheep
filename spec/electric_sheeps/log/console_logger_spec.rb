@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'electric_sheeps/log/console_logger'
 
 describe ElectricSheeps::Log::ConsoleLogger do
 

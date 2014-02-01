@@ -58,7 +58,21 @@ TODO
 
 ### Start
 
-TODO
+Just launch ElectricSheeps inside your project with:
+
+```
+bundle exec electric_sheeps work
+```
+
+ElectricSheeps will look for a Sheepfile in the current directory.
+
+#### `-c` option
+
+ElectricSheeps can use any file as the configuration:
+
+```
+bundle exec electric_sheeps work -c ~/Somefile 
+```
 
 ## Using the DSL
 
