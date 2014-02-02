@@ -71,7 +71,8 @@ describe ElectricSheeps::Dsl do
 
             def build_shell(&block)
                 project = build_project do
-                    remotely on: "some-host", &block
+                    opts = {on: "some-host", as: "op"}
+                    remotely opts, &block
                 end
                 @shell = project.next!
             end
@@ -80,6 +81,7 @@ describe ElectricSheeps::Dsl do
                 build_shell
                 @shell.must_be_instance_of ElectricSheeps::Metadata::RemoteShell
                 @shell.host.name.must_equal "some-host.tld"
+                @shell.user.must_equal "op"
             end
 
             include ShellSpecs

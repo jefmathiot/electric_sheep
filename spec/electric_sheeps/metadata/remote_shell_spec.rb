@@ -6,14 +6,20 @@ describe ElectricSheeps::Metadata::RemoteShell do
 
     before do
         @host = new_host
+        @user = 'op'
     end
 
-    it 'should be bound to an host' do
+    it 'binds to an host' do
         metadata = subject_instance
         metadata.host.must_equal @host
     end
 
+    it 'defines a user' do
+        metadata = subject_instance
+        metadata.user.must_equal @user
+    end
+
     def subject_instance
-        subject.new(host: @host)
+        subject.new(host: @host, user: @user)
     end
 end

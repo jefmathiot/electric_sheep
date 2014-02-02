@@ -7,7 +7,7 @@ module ElectricSheeps
             end
             
             include Options
-            optionize :host
+            optionize :host, :user
 
         end
     end

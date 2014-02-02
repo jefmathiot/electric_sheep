@@ -125,7 +125,7 @@ target host.
 ```ruby
 project "myapp-database-backup" do
     description "Database Full Backup"
-    remotely on: "production-mysql-master" do
+    remotely on: "production-mysql-master", as: "operator" do
         command "mysql_dump" do
             database "my_app" do
                 user "backup-operator"

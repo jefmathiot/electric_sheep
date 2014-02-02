@@ -43,12 +43,15 @@ module ElectricSheeps
 
             def initialize(config, id, &block)
                 @config = config
-                @project = Metadata::Project.new( Optionizer.optionize([:description], id: id, &block)  )
+                @project = Metadata::Project.new(
+                    Optionizer.optionize([:description], id: id, &block)  )
                 instance_eval &block if block_given?
             end
 
             def remotely(options, &block)
-                @project.add RemoteShellDsl.new(host: @config.hosts.get(options[:on]), &block).shell
+                @project.add RemoteShellDsl.new(
+                    host: @config.hosts.get(options[:on]), user: options[:as], &block
+                ).shell
             end
 
             def locally(&block)
