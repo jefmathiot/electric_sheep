@@ -76,8 +76,7 @@ module ElectricSheeps
             end
 
             def command(agent, options={}, &block)
-                id = options[:as] || agent
-                @shell.add ElectricSheeps::Metadata::Command.new(id: id, agent: agent)
+                @shell.add CommandDsl.new(agent, options, &block).command
             end
             
             protected
@@ -90,6 +89,40 @@ module ElectricSheeps
             protected
             def new_shell(options)
                 Metadata::RemoteShell.new(options)
+            end
+        end
+
+        class CommandDsl
+            attr_reader :command
+
+            def initialize(agent, options={}, &block)
+                options = {
+                    id: options[:as] || agent,
+                    agent: agent
+                }
+                @command = ElectricSheeps::Metadata::Command.new(options)
+                instance_eval &block if block_given?
+            end
+
+            def database(name, &block)
+                @command.database = DatabaseDsl.new(name, &block).database
+            end
+        end
+
+        class DatabaseDsl
+            attr_reader :database
+
+            def initialize(name, &block)
+                @database = ElectricSheeps::Resources::Database.new(name: name)
+                instance_eval &block if block_given?
+            end
+
+            def user(name)
+                @database.user = name 
+            end
+
+            def password(value)
+                @database.password = value
             end
         end
 

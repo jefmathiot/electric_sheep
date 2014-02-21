@@ -130,5 +130,34 @@ describe ElectricSheeps::Dsl do
 
     end
 
+    describe ElectricSheeps::Dsl::CommandDsl do
+
+        describe 'parsing database resource' do
+            it 'creates the resource with a name and alias' do
+                dsl = subject.new 'foo', as: 'alias' do
+                    database 'mydb'
+                end
+                dsl.command.id.must_equal 'alias'
+                dsl.command.agent.must_equal 'foo'
+                dsl.command.database.must_be_instance_of ElectricSheeps::Resources::Database
+                dsl.command.database.name.must_equal 'mydb'
+            end
+
+            it 'creates the resource with a user and password' do
+                dsl = subject.new 'foo' do
+                    database 'mydb' do
+                        user 'mydb user'
+                        password 'mydb password'
+                    end
+                end
+                dsl.command.database.must_be_instance_of ElectricSheeps::Resources::Database
+                dsl.command.database.name.must_equal 'mydb'
+                dsl.command.database.user.must_equal 'mydb user'
+                dsl.command.database.password.must_equal 'mydb password'
+            end
+        end
+
+    end
+
 end
 

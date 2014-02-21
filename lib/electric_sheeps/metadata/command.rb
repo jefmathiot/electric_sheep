@@ -5,6 +5,8 @@ module ElectricSheeps
 
             optionize :id, :agent
 
+            attr_accessor :database
+
         end
     end
 end
