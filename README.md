@@ -84,12 +84,12 @@ identifier and define an hostname. You can declare as many hosts as needed.
 ```ruby
 host "production-mysql-master" do
     description "MySQL - Production Master" # optional
-    hostname "mysql1.domain.tld"
+    name "mysql1.domain.tld"
 end
 
 host "backup-store-1" do
     description "Storage Server 1"
-    hostname "store1.domain.tld"
+    name "store1.domain.tld"
 end
 ```
 
