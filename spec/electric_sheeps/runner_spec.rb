@@ -1,8 +1,10 @@
 require 'spec_helper'
 
 describe ElectricSheeps::Runner do
+
     before do
         @config = ElectricSheeps::Config.new
+        @config.hosts.add(id: 'some-host', name: 'some-host.tld')
         @project = @config.add ElectricSheeps::Metadata::Project.new(
             id: 'first-project',
             description: 'First project description'
@@ -32,7 +34,7 @@ describe ElectricSheeps::Runner do
             @config.remaining.must_equal 0 
         end
 
-        describe 'with shells and transports' do
+        describe 'with agents' do
 
             before do
                 class Dumb
@@ -54,13 +56,18 @@ describe ElectricSheeps::Runner do
                         shell.exec('echo > /dev/null')
                     end
                 end
-                shell = @project.add ElectricSheeps::Metadata::Shell.new
+            end
+
+            def append_commands(shell)
                 shell.add ElectricSheeps::Metadata::Command.new(id: 'first_command',
                     agent: 'dumb')
                 shell.add ElectricSheeps::Metadata::Command.new(id: 'second_command',
                     agent: 'dumber')
+                shell
             end
-            it 'should execute shells and transport' do
+
+            it 'wraps command executions in a local shell' do
+                append_commands @project.add(ElectricSheeps::Metadata::Shell.new)
                 shell = ElectricSheeps::Shell::LocalShell.any_instance
                 @logger.expects(:info).in_sequence(script).
                     with("Starting a local shell session")
@@ -68,6 +75,22 @@ describe ElectricSheeps::Runner do
                 shell.expects(:exec).in_sequence(script).with('echo "" > /dev/null')
                 @logger.expects(:info).in_sequence(script).with("I'm dumber")
                 shell.expects(:exec).in_sequence(script).with('echo > /dev/null')
+                @logger.expects(:info).in_sequence(script).
+                    with("Executing second-project")
+
+                @runner.run!
+            end
+
+            it 'wraps command executions in a remote shell' do
+                append_commands @project.add(
+                    ElectricSheeps::Metadata::RemoteShell.new(host: 'some-host', user: 'op') )
+                shell = ElectricSheeps::Shell::RemoteShell.any_instance
+                shell.expects(:open!).returns(shell).in_sequence(script)
+                @logger.expects(:info).in_sequence(script).with("I'm dumb")
+                shell.expects(:exec).in_sequence(script).with('echo "" > /dev/null')
+                @logger.expects(:info).in_sequence(script).with("I'm dumber")
+                shell.expects(:exec).in_sequence(script).with('echo > /dev/null')
+                shell.expects(:close!).in_sequence(script).returns(shell)
                 @logger.expects(:info).in_sequence(script).
                     with("Executing second-project")
 

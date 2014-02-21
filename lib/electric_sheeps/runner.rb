@@ -13,7 +13,7 @@ module ElectricSheeps
            end 
         end
 
-        private
+        protected
 
         def execute_project(project)
            @logger.info project.description ?
@@ -29,7 +29,15 @@ module ElectricSheeps
         end
 
         def execute_shell(shell_config)
-            shell = Shell::LocalShell.new(@logger)
+            execute_commands shell_config, Shell::LocalShell.new(@logger)
+        end
+
+        def execute_remote_shell(shell_config)
+            execute_commands shell_config,
+                Shell::RemoteShell.new(@logger, @config.hosts.get(shell_config.host).name, shell_config.user)
+        end
+
+        def execute_commands(shell_config, shell)
             shell.open!
             shell_config.each_item do |command_metadata|
                 command = Agents::Register.command(command_metadata.agent).new(
