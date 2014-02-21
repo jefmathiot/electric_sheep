@@ -153,7 +153,7 @@ project "myapp-database-backup" do
                 encrypted.password "XXXXXXX"
             end
         end
-        command "targ_gz", as: "mysql_archive" do
+        command "tar_gz", as: "mysql_archive" do
             file result_of("mysql_dump")
             delete_source
         end
