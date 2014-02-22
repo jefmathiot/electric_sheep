@@ -137,13 +137,6 @@ module ElectricSheeps
                 instance_eval &block if block_given?
             end
 
-            def method_missing(method, *args, &block)
-                if @subject.respond_to?("#{method}=")
-                    @subject.send "#{method}=", args.first
-                else
-                    super
-                end
-            end
         end
 
         class TransportDsl
