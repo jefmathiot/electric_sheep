@@ -101,7 +101,7 @@ module ElectricSheeps
                     id: options[:as] || agent,
                     type: agent
                 }
-                @command = ElectricSheeps::Metadata::Command.new(options)
+                @command = Metadata::Command.new(options)
                 instance_eval &block if block_given?
             end
 
