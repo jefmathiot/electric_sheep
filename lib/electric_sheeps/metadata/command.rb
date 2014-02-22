@@ -2,6 +2,7 @@ module ElectricSheeps
     module Metadata
         class Command
             include Options
+            include Metered
 
             optionize :id, :type
 

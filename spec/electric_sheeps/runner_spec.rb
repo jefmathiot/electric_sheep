@@ -58,6 +58,13 @@ describe ElectricSheeps::Runner do
                 end
             end
 
+            def expects_execution_times(*metered_objects)
+                metered_objects.each do |metered|
+                    metered.execution_time.wont_be_nil
+                    metered.execution_time.must_be :>, 0
+                end
+            end
+
             def append_commands(shell)
                 shell.add ElectricSheeps::Metadata::Command.new(id: 'first_command',
                     type: 'dumb')
@@ -67,7 +74,7 @@ describe ElectricSheeps::Runner do
             end
 
             it 'wraps command executions in a local shell' do
-                append_commands @project.add(ElectricSheeps::Metadata::Shell.new)
+                append_commands @project.add(metadata = ElectricSheeps::Metadata::Shell.new)
                 shell = ElectricSheeps::Shell::LocalShell.any_instance
                 @logger.expects(:info).in_sequence(script).
                     with("Starting a local shell session")
@@ -79,10 +86,11 @@ describe ElectricSheeps::Runner do
                     with("Executing second-project")
 
                 @runner.run!
+                expects_execution_times(@project, metadata)
             end
 
             it 'wraps command executions in a remote shell' do
-                append_commands @project.add(
+                append_commands @project.add( metadata =
                     ElectricSheeps::Metadata::RemoteShell.new(host: 'some-host', user: 'op') )
                 shell = ElectricSheeps::Shell::RemoteShell.any_instance
                 shell.expects(:open!).returns(shell).in_sequence(script)
@@ -95,6 +103,7 @@ describe ElectricSheeps::Runner do
                     with("Executing second-project")
 
                 @runner.run!
+                expects_execution_times(@project, metadata)
             end
 
         end 

@@ -16,11 +16,13 @@ module ElectricSheeps
         protected
 
         def execute_project(project)
-           @logger.info project.description ?
-               "Executing \"#{project.description}\" (#{project.id})" :
-               "Executing #{project.id}"
-            project.each_item do |step|
-                send("execute_#{executable_type(step)}", step)
+            project.benchmarked do
+                @logger.info project.description ?
+                   "Executing \"#{project.description}\" (#{project.id})" :
+                   "Executing #{project.id}"
+                project.each_item do |step|
+                    send("execute_#{executable_type(step)}", step)
+                end
             end
         end
 
@@ -28,23 +30,30 @@ module ElectricSheeps
             executable.class.name.underscore.split('/').last
         end
 
-        def execute_shell(shell_config)
-            execute_commands shell_config, Shell::LocalShell.new(@logger)
+        def execute_shell(metadata)
+            metadata.benchmarked do
+                execute_commands metadata, Shell::LocalShell.new(@logger)
+            end
         end
 
-        def execute_remote_shell(shell_config)
-            execute_commands shell_config,
-                Shell::RemoteShell.new(@logger, @config.hosts.get(shell_config.host).name, shell_config.user)
+        def execute_remote_shell(metadata)
+            metadata.benchmarked do
+                execute_commands metadata, Shell::RemoteShell.new(
+                    @logger, @config.hosts.get(metadata.host).name, metadata.user
+                )
+            end
         end
 
-        def execute_commands(shell_config, shell)
+        def execute_commands(shell_metadata, shell)
             shell.open!
-            shell_config.each_item do |metadata|
+            shell_metadata.each_item do |metadata|
                 command = metadata.agent.new(
                     logger: @logger,
                     shell: shell
                 )
-                command.run(metadata)
+                metadata.benchmarked do
+                    command.run(metadata)
+                end
             end
             shell.close!
         end
