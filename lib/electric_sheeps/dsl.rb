@@ -7,34 +7,11 @@ module ElectricSheeps
         end
 
         def host(id, &block)
-            @config.hosts.add( Optionizer.optionize([:name, :description], id: id, &block ) )
+            HostDsl.new(@config, id, &block).host
         end
 
         def project(id, &block)
             @config.add ProjectDsl.new( @config, id, &block ).project
-        end
-
-        class Optionizer
-            attr_reader :options
-
-            def initialize(attributes)
-                @attributes = attributes
-                @options = {}
-            end
-
-            def method_missing(method, *args, &block)
-                if @attributes.include?( method )
-                    @options[method]=args.first
-                end
-            end
-
-            class << self
-                def optionize(attributes, additional={}, &block)
-                    optionizer = Optionizer.new(attributes)
-                    optionizer.instance_eval( & block ) if block_given?
-                    optionizer.options.merge(additional)
-                end
-            end
         end
 
         class AbstractDsl
@@ -60,6 +37,27 @@ module ElectricSheeps
                     super
                 end
             end
+        end
+
+        class HostDsl
+            def initialize(config, id, &block)
+                @config = config
+                @id = id
+                instance_eval &block if block_given?
+            end
+
+            def name(value)
+                @name = value
+            end
+
+            def description(value)
+                @description = value
+            end
+
+            def host
+                @config.hosts.add( id: @id, name: @name, description: @description)
+            end
+
         end
 
         class ProjectDsl < AbstractDsl
