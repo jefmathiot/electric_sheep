@@ -6,9 +6,9 @@ describe ElectricSheeps::Runner do
         @config = ElectricSheeps::Config.new
         @config.hosts.add(id: 'some-host', name: 'some-host.tld')
         @project = @config.add ElectricSheeps::Metadata::Project.new(
-            id: 'first-project',
-            description: 'First project description'
+            id: 'first-project'
         )
+        @project.description = 'First project description'
         @config.add ElectricSheeps::Metadata::Project.new(
             id: 'second-project'
         )

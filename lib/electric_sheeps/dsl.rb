@@ -37,45 +37,62 @@ module ElectricSheeps
             end
         end
 
-        class ProjectDsl
+        class AbstractDsl
 
-            attr_reader :project
+            class << self
+                def returning(property)
+                    define_method property do
+                        @subject
+                    end
+                end
+            end
 
-            def initialize(config, id, &block)
-                @config = config
-                @project = Metadata::Project.new(
-                    Optionizer.optionize([:description], id: id, &block)  )
+            def initialize(*args, &block)
+                @config = args.first
+                build *args
                 instance_eval &block if block_given?
             end
 
-            def remotely(options, &block)
-                @project.add RemoteShellDsl.new( @config, options, &block).shell
-            end
-
-            def locally(&block)
-                @project.add ShellDsl.new(@config, &block).shell
-            end
-
-            def transport(type, &block)
-                @project.add TransportDsl.new(@config, &block).transport
-            end
-
-            def method_missing(*args)
-                # Avoids the options parsed by Optionizer to raise exceptions
+            def method_missing(method, *args, &block)
+                if @subject.respond_to? "#{method}="
+                    @subject.send "#{method}=", args.first
+                else
+                    super
+                end
             end
         end
 
-        class ShellDsl
-            attr_reader :shell
+        class ProjectDsl < AbstractDsl
 
-            def initialize(config, options={}, &block)
-                @config = config
-                @shell = new_shell(options)
-                instance_eval &block if block_given?
+            returning :project
+
+            def build(config, id, &block)
+                @subject = Metadata::Project.new(id: id)
+            end
+
+            def remotely(options, &block)
+                @subject.add RemoteShellDsl.new( @config, options, &block).shell
+            end
+
+            def locally(&block)
+                @subject.add ShellDsl.new(@config, &block).shell
+            end
+
+            def transport(type, &block)
+                @subject.add TransportDsl.new(@config, &block).transport
+            end
+        end
+
+        class ShellDsl < AbstractDsl
+
+            returning :shell
+
+            def build(config, options={}, &block)
+                @subject = new_shell(options)
             end
 
             def command(agent, options={}, &block)
-                @shell.add CommandDsl.new(@config, agent, options, &block).command
+                @subject.add CommandDsl.new(@config, agent, options, &block).command
             end
             
             protected
@@ -92,37 +109,37 @@ module ElectricSheeps
             end
         end
 
-        class CommandDsl
-            attr_reader :command
+        class CommandDsl < AbstractDsl
 
-            def initialize(config, agent, options={}, &block)
-                @config = config
-                options = {
+            returning :command
+
+            def build(config, agent, options={}, &block)
+                opts = {
                     id: options[:as] || agent,
                     type: agent
                 }
-                @command = Metadata::Command.new(options)
-                instance_eval &block if block_given?
+                @subject = Metadata::Command.new(opts)
             end
 
             def method_missing(method, *args, &block)
-                if resource = @command.agent.resources[method]
-                    @command.add_resource method, ResourceDsl.new(@config, resource, args.first, &block).resource
+                if resource = @subject.agent.resources[method]
+                    @subject.add_resource method, ResourceDsl.new(@config, resource, args.first, &block).resource
                 end
             end
         end
 
-        class ResourceDsl
-            attr_reader :resource
+        class ResourceDsl < AbstractDsl
 
-            def initialize(config, type, name, &block)
-                @resource = type.new(name: name)
+            returning :resource
+
+            def build(config, type, name, &block)
+                @subject = type.new(name: name)
                 instance_eval &block if block_given?
             end
 
             def method_missing(method, *args, &block)
-                if @resource.respond_to?("#{method}=")
-                    @resource.send "#{method}=", args.first
+                if @subject.respond_to?("#{method}=")
+                    @subject.send "#{method}=", args.first
                 else
                     super
                 end

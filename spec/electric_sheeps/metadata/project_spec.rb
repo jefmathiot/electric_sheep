@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe ElectricSheeps::Metadata::Project do
+    include Support::Accessors
     include Support::Queue
 
     def queue_items
@@ -10,10 +11,13 @@ describe ElectricSheeps::Metadata::Project do
         ]
     end
 
-    it "should initialize the project's description" do
-        project = subject.new(id: 'some-project', description: 'Some project')
+    it "initializes the project's id" do
+        project = subject.new(id: 'some-project')
         project.id.must_equal 'some-project'
-        project.description.must_equal 'Some project'
+    end
+
+    it 'defines a description accessor' do
+        expects_accessor(:description)
     end
 
 end

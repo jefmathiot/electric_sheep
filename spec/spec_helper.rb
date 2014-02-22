@@ -20,4 +20,5 @@ require 'mocha/setup'
 
 require 'support/hosts'
 require 'support/shell_metadata'
+require 'support/accessors'
 require 'support/queue'
