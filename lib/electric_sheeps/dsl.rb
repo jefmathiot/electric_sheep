@@ -49,17 +49,15 @@ module ElectricSheeps
             end
 
             def remotely(options, &block)
-                @project.add RemoteShellDsl.new(
-                    host: @config.hosts.get(options[:on]), user: options[:as], &block
-                ).shell
+                @project.add RemoteShellDsl.new( @config, options, &block).shell
             end
 
             def locally(&block)
-                @project.add ShellDsl.new(&block).shell
+                @project.add ShellDsl.new(@config, &block).shell
             end
 
             def transport(type, &block)
-                @project.add TransportDsl.new(&block).transport
+                @project.add TransportDsl.new(@config, &block).transport
             end
 
             def method_missing(*args)
@@ -70,13 +68,14 @@ module ElectricSheeps
         class ShellDsl
             attr_reader :shell
 
-            def initialize(options={}, &block)
+            def initialize(config, options={}, &block)
+                @config = config
                 @shell = new_shell(options)
                 instance_eval &block if block_given?
             end
 
             def command(agent, options={}, &block)
-                @shell.add CommandDsl.new(agent, options, &block).command
+                @shell.add CommandDsl.new(@config, agent, options, &block).command
             end
             
             protected
@@ -88,48 +87,52 @@ module ElectricSheeps
         class RemoteShellDsl < ShellDsl
             protected
             def new_shell(options)
-                Metadata::RemoteShell.new(options)
+                opts = { host: @config.hosts.get(options[:on]), user: options[:as] }
+                Metadata::RemoteShell.new(opts)
             end
         end
 
         class CommandDsl
             attr_reader :command
 
-            def initialize(agent, options={}, &block)
+            def initialize(config, agent, options={}, &block)
+                @config = config
                 options = {
                     id: options[:as] || agent,
-                    agent: agent
+                    type: agent
                 }
                 @command = ElectricSheeps::Metadata::Command.new(options)
                 instance_eval &block if block_given?
             end
 
-            def database(name, &block)
-                @command.database = DatabaseDsl.new(name, &block).database
+            def method_missing(method, *args, &block)
+                if resource = @command.agent.resources[method]
+                    @command.add_resource method, ResourceDsl.new(@config, resource, args.first, &block).resource
+                end
             end
         end
 
-        class DatabaseDsl
-            attr_reader :database
+        class ResourceDsl
+            attr_reader :resource
 
-            def initialize(name, &block)
-                @database = ElectricSheeps::Resources::Database.new(name: name)
+            def initialize(config, type, name, &block)
+                @resource = type.new(name: name)
                 instance_eval &block if block_given?
             end
 
-            def user(name)
-                @database.user = name 
-            end
-
-            def password(value)
-                @database.password = value
+            def method_missing(method, *args, &block)
+                if @resource.respond_to?("#{method}=")
+                    @resource.send "#{method}=", args.first
+                else
+                    super
+                end
             end
         end
 
         class TransportDsl
             attr_reader :transport
 
-            def initialize(options={}, &block)
+            def initialize(config, options={}, &block)
                 instance_eval &block if block_given?
                 @transport = Metadata::Transport.new(options.merge(from: @from, to: @to))
             end

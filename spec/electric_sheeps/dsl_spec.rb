@@ -55,12 +55,7 @@ describe ElectricSheeps::Dsl do
                         build_command
                         @command.must_be_instance_of ElectricSheeps::Metadata::Command
                         @command.id.must_equal "fake_agent"
-                        @command.agent.must_equal "fake_agent"
-                    end
-                    
-                    it "gives an alias to the command" do
-                        build_command as: "alias"
-                        @command.id.must_equal "alias"
+                        @command.type.must_equal "fake_agent"
                     end
                 end
             end
@@ -127,33 +122,58 @@ describe ElectricSheeps::Dsl do
                 @transport.to.must_be_instance_of ElectricSheeps::Metadata::TransportEnd
             end
         end
-
     end
 
     describe ElectricSheeps::Dsl::CommandDsl do
 
-        describe 'parsing database resource' do
-            it 'creates the resource with a name and alias' do
-                dsl = subject.new 'foo', as: 'alias' do
-                    database 'mydb'
+        class Bar
+            include ElectricSheeps::Resources::Resource
+            attr_accessor :property
+        end
+
+        class Foo
+            include ElectricSheeps::Agents::Agent
+            register as: 'foo', of_type: :command
+            resource :bar, of_type: Bar
+        end
+
+        it 'names the command' do
+            dsl = subject.new @config, 'foo'
+            dsl.command.id.must_equal 'foo'
+            dsl.command.type.must_equal 'foo'
+        end
+
+        it 'gives an alias the command' do
+            dsl = subject.new @config, 'foo', as: 'alias'
+            dsl.command.id.must_equal 'alias'
+            dsl.command.type.must_equal 'foo'
+        end
+
+        it 'allows resources to be created' do
+            dsl = subject.new @config, 'foo', as: 'alias' do
+                bar 'my_resource'
+            end
+            dsl.command.id.must_equal 'alias'
+            dsl.command.type.must_equal 'foo'
+            dsl.command.bar.must_be_instance_of Bar
+            dsl.command.bar.name.must_equal 'my_resource'
+        end
+
+        describe ElectricSheeps::Dsl::ResourceDsl do
+            it 'handles the resource properties' do
+                dsl = subject.new @config, Bar, 'my_resource' do
+                    property 'value'
                 end
-                dsl.command.id.must_equal 'alias'
-                dsl.command.agent.must_equal 'foo'
-                dsl.command.database.must_be_instance_of ElectricSheeps::Resources::Database
-                dsl.command.database.name.must_equal 'mydb'
+                dsl.resource.must_be_instance_of Bar
+                dsl.resource.property.must_equal 'value'
             end
 
-            it 'creates the resource with a user and password' do
-                dsl = subject.new 'foo' do
-                    database 'mydb' do
-                        user 'mydb user'
-                        password 'mydb password'
+            it 'raises an error when some property is unknown' do
+                ->{
+                    subject.new @config, Bar, 'my_resource' do
+                        another_property 'value'
                     end
-                end
-                dsl.command.database.must_be_instance_of ElectricSheeps::Resources::Database
-                dsl.command.database.name.must_equal 'mydb'
-                dsl.command.database.user.must_equal 'mydb user'
-                dsl.command.database.password.must_equal 'mydb password'
+                }.must_raise NoMethodError
             end
         end
 
