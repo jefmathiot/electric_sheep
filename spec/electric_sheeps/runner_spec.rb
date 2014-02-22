@@ -60,9 +60,9 @@ describe ElectricSheeps::Runner do
 
             def append_commands(shell)
                 shell.add ElectricSheeps::Metadata::Command.new(id: 'first_command',
-                    agent: 'dumb')
+                    type: 'dumb')
                 shell.add ElectricSheeps::Metadata::Command.new(id: 'second_command',
-                    agent: 'dumber')
+                    type: 'dumber')
                 shell
             end
 

@@ -39,12 +39,12 @@ module ElectricSheeps
 
         def execute_commands(shell_config, shell)
             shell.open!
-            shell_config.each_item do |command_metadata|
-                command = Agents::Register.command(command_metadata.agent).new(
+            shell_config.each_item do |metadata|
+                command = metadata.agent.new(
                     logger: @logger,
                     shell: shell
                 )
-                command.run(command_metadata)
+                command.run(metadata)
             end
             shell.close!
         end
