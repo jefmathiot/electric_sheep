@@ -3,9 +3,28 @@ module ElectricSheeps
         class Command
             include Options
 
-            optionize :id, :agent
+            optionize :id, :type
 
-            attr_accessor :database
+            def agent
+                Agents::Register.command(type)
+            end
+
+            def add_resource(id, value)
+                resources[id] = value
+            end
+
+            def method_missing(method, *args, &block)
+                if resources.has_key?(method)
+                    resources[method]
+                else
+                    super
+                end
+            end
+
+            protected
+            def resources
+                @resources ||= {}
+            end
 
         end
     end
