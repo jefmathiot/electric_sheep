@@ -1,12 +1,12 @@
 module ElectricSheeps
-    module Metadata
-        class Shell
-            include Queue
-            include Metered
+  module Metadata
+    class Shell
+      include Queue
+      include Metered
 
-            def initialize
-                reset!
-            end
-        end
+      def initialize
+        reset!
+      end
     end
+  end
 end

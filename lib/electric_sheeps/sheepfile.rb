@@ -1,6 +1,6 @@
 require 'electric_sheeps/sheepfile/evaluator'
 
 module ElectricSheeps
-    module Sheepfile
-    end
+  module Sheepfile
+  end
 end

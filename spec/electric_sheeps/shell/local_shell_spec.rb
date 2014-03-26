@@ -42,7 +42,7 @@ describe ElectricSheeps::Shell::LocalShell do
             @logger.expects(:info).with('/')
             @shell.exec 'cd /'
             @shell.exec 'pwd'
-        end
+          end
 
         it 'should close' do
             @shell.close!.opened?.must_equal false

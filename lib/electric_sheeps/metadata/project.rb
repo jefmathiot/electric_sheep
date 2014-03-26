@@ -1,17 +1,17 @@
 module ElectricSheeps
-    module Metadata
-        class Project
-            include Queue
-            include Metered
+  module Metadata
+    class Project
+      include Queue
+      include Metered
 
-            attr_accessor :description
+      attr_accessor :description
 
-            def initialize
-                reset!
-            end
+      def initialize
+        reset!
+      end
 
-            include Options
-            optionize :id
-        end
+      include Options
+      optionize :id
     end
+  end
 end

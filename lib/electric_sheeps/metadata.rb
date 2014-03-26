@@ -8,6 +8,6 @@ require 'electric_sheeps/metadata/remote_shell'
 require 'electric_sheeps/metadata/transport'
 
 module ElectricSheeps
-    module Metadata
-    end
+  module Metadata
+  end
 end

@@ -4,6 +4,6 @@ require 'electric_sheeps/agents/register'
 require 'electric_sheeps/agents/database'
 
 module ElectricSheeps
-    module Agents
-    end
+  module Agents
+  end
 end

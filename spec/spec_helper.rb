@@ -7,7 +7,7 @@ SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
 ]
 
 SimpleCov.start do
-    add_filter '/spec/'
+  add_filter '/spec/'
 end
 
 require 'electric_sheeps'
