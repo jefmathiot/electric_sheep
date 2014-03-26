@@ -1,7 +1,9 @@
 language: ruby
 rvm:
-  - "1.9.3"
-  - "2.0.0"
-  - jruby-19mode # JRuby in 1.9 mode
-#  - rbx-19mode
-# script: bundle exec rake
+- 1.9.3
+- 2.0.0
+- jruby-19mode
+notifications:
+  hipchat:
+    rooms:
+      secure: NvtShOCmF+gKzPfUG5Gsd+Ibf5EnVtl1IQD033iRG1rOzSMejp64CYiRMQ3xjEpSKMZJ9w08Lem0WQyafEe5FbiHvDWb0nbHh60wj5QILeRb6Ajf5htSGWulZtR2yr9NIhxqfEZveXXLiH4xuqLxQ5rvM0jpt7enUTKKQFcRjSk=
