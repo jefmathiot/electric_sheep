@@ -10,13 +10,13 @@ module ElectricSheeps
 
             [:info, :debug, :warn].each do |log|
                 define_method log do |*args|
-                    @out.send(log, *args)
+                    @out.puts *args
                 end
             end
 
             [:error, :fatal].each do |log|
                 define_method log do |*args|
-                    @err.send(log, *args)
+                    @err.puts *args
                 end
             end
         end
