@@ -1,8 +1,10 @@
 require 'active_support'
 require 'electric_sheeps/version'
 
+require 'electric_sheeps/helpers'
 require 'electric_sheeps/queue'
 require 'electric_sheeps/config'
+require 'electric_sheeps/directories'
 require 'electric_sheeps/dsl'
 require 'electric_sheeps/log'
 require 'electric_sheeps/metadata'

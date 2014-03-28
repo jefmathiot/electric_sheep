@@ -22,3 +22,5 @@ require 'support/hosts'
 require 'support/shell_metadata'
 require 'support/accessors'
 require 'support/queue'
+
+ENV['ELECTRIC_SHEEPS_HOME'] = Dir.mktmpdir
