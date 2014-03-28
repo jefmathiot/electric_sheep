@@ -23,7 +23,13 @@ module ElectricSheeps
           "Executing #{project.id}"
           project_dir = Directories.mk_project_dir!(project)
           project.each_item do |step|
-            send("execute_#{executable_type(step)}", step, project_dir)
+            begin
+              send("execute_#{executable_type(step)}", step, project_dir)
+            rescue => ex
+              # TODO : handle exceptions here
+              puts ex.backtrace
+              throw ex
+            end
           end
       end
     end
@@ -52,12 +58,14 @@ module ElectricSheeps
         command = metadata.agent.new(
           logger: @logger,
           shell: shell,
-          work_dir: work_dir
+          work_dir: work_dir,
+          resources: metadata.resources
         )
         metadata.benchmarked do
-          command.run(metadata)
+          command.perform
         end
       end
+    ensure
       shell.close!
     end
 
