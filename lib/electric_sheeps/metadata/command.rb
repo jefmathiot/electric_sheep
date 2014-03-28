@@ -22,11 +22,9 @@ module ElectricSheeps
         end
       end
 
-      protected
       def resources
         @resources ||= {}
       end
-
     end
   end
 end
