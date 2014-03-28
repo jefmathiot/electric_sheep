@@ -75,7 +75,7 @@ describe ElectricSheeps::Dsl do
     it "appends the shell to the project's queue" do
       build_shell
       @shell.must_be_instance_of ElectricSheeps::Metadata::RemoteShell
-      @shell.host.name.must_equal "some-host.tld"
+      @shell.host.must_equal "some-host"
       @shell.user.must_equal "op"
     end
 

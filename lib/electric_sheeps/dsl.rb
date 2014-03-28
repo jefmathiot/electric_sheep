@@ -102,7 +102,7 @@ module ElectricSheeps
     class RemoteShellDsl < ShellDsl
       protected
       def new_shell(options)
-        opts = { host: @config.hosts.get(options[:on]), user: options[:as] }
+        opts = { host: options[:on], user: options[:as] }
         Metadata::RemoteShell.new(opts)
       end
     end
