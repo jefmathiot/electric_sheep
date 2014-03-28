@@ -7,11 +7,10 @@ module ElectricSheeps
         register as: "mongodb_dump", of_type: :command
         resource :database, kind_of: Resources::Database
 
-        def run(metadata)
+        def perform
           logger.info "Creating a dump of the \"#{database.name}\" MongoDB database"
           shell.exec "mongodump --db #{database.name} -o"
         end
-
       end
     end
   end
