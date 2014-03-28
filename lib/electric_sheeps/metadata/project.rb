@@ -12,6 +12,7 @@ module ElectricSheeps
 
       include Options
       optionize :id
+
     end
   end
 end

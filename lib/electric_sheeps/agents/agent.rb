@@ -3,6 +3,13 @@ module ElectricSheeps
     module Agent 
       extend ActiveSupport::Concern
 
+      attr_reader :logger, :shell
+
+      def run(metadata)
+        @logger, @shell = metadata[:logger], metadata[:shell]
+        perform
+      end
+
       module ClassMethods
         def register(options={})
           ElectricSheeps::Agents::Register.register(self, options)
@@ -15,6 +22,7 @@ module ElectricSheeps
         def resources
           @resources ||= {}
         end
+
       end 
     end
   end
