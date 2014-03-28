@@ -47,8 +47,8 @@ describe ElectricSheeps::Runner do
         include ElectricSheeps::Agents::Command
         register as: 'dumb', of_type: :command
 
-        def run(metadata)
-          logger.info "I'm #{metadata.type}, my work directory is #{work_dir}"
+        def perform
+          logger.info "I'm #{self.class}, my work directory is #{work_dir}"
           shell.exec('echo "" > /dev/null')
         end
 
@@ -58,8 +58,8 @@ describe ElectricSheeps::Runner do
         include ElectricSheeps::Agents::Command
         register as: 'dumber', of_type: :command
 
-        def run(metadata)
-          logger.info "I'm #{metadata.type}, my work directory is #{work_dir}"
+        def perform
+          logger.info "I'm #{self.class}, my work directory is #{work_dir}"
           shell.exec('echo > /dev/null')
         end
 
@@ -81,9 +81,9 @@ describe ElectricSheeps::Runner do
       end
 
       def expects_executions(shell, logger, sequence)
-        logger.expects(:info).in_sequence(sequence).with("I'm dumb, my work directory is /first_project")
+        logger.expects(:info).in_sequence(sequence).with("I'm Dumb, my work directory is /first_project")
         shell.expects(:exec).in_sequence(sequence).with('echo "" > /dev/null')
-        logger.expects(:info).in_sequence(sequence).with("I'm dumber, my work directory is /first_project")
+        logger.expects(:info).in_sequence(sequence).with("I'm Dumber, my work directory is /first_project")
         shell.expects(:exec).in_sequence(sequence).with('echo > /dev/null')
       end
 
