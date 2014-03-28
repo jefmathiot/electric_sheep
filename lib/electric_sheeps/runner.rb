@@ -8,6 +8,7 @@ module ElectricSheeps
     end
 
     def run!
+      Directories.mk_work_dir!
       @config.each_item do |project|
         execute_project(project)
       end 
@@ -20,8 +21,9 @@ module ElectricSheeps
         @logger.info project.description ?
           "Executing \"#{project.description}\" (#{project.id})" :
           "Executing #{project.id}"
+          project_dir = Directories.mk_project_dir!(project)
           project.each_item do |step|
-            send("execute_#{executable_type(step)}", step)
+            send("execute_#{executable_type(step)}", step, project_dir)
           end
       end
     end
@@ -30,26 +32,27 @@ module ElectricSheeps
       executable.class.name.underscore.split('/').last
     end
 
-    def execute_shell(metadata)
+    def execute_shell(metadata, work_dir)
       metadata.benchmarked do
-        execute_commands metadata, Shell::LocalShell.new(@logger)
+        execute_commands metadata, Shell::LocalShell.new(@logger), work_dir
       end
     end
 
-    def execute_remote_shell(metadata)
+    def execute_remote_shell(metadata, work_dir)
       metadata.benchmarked do
         execute_commands metadata, Shell::RemoteShell.new(
           @logger, @config.hosts.get(metadata.host).name, metadata.user
-        )
+        ), work_dir
       end
     end
 
-    def execute_commands(shell_metadata, shell)
+    def execute_commands(shell_metadata, shell, work_dir)
       shell.open!
       shell_metadata.each_item do |metadata|
         command = metadata.agent.new(
           logger: @logger,
-          shell: shell
+          shell: shell,
+          work_dir: work_dir
         )
         metadata.benchmarked do
           command.run(metadata)

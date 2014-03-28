@@ -12,7 +12,9 @@ module ElectricSheeps
 
       def mk_project_dir!(project)
         mk_work_dir!
-        mk_dir! project_dir(project)
+        project_dir(project).tap do |dir|
+          mk_dir! dir
+        end
       end
 
       def work_dir

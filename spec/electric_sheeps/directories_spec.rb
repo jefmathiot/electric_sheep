@@ -45,8 +45,8 @@ describe ElectricSheeps::Directories do
     end
 
     it 'create the project directory' do
-      subject.mk_project_dir!(@project)
       subject.project_dir(@project).tap do |dir|
+        subject.mk_project_dir!(@project).must_equal dir
         File.directory?(dir).must_equal true
         assert_0700(dir)
       end

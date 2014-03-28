@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'ElectricSheeps::Agents::Agent' do
+describe ElectricSheeps::Agents::Agent do
 
   AgentKlazz = Class.new do
     include ElectricSheeps::Agents::Agent
