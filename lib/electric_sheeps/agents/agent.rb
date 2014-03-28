@@ -9,7 +9,7 @@ module ElectricSheeps
         end
 
         def resource(name, options={})
-          resources[name]= options[:of_type] || Resources::File
+          resources[name] = options[:kind_of] || Resources::File
         end
 
         def resources

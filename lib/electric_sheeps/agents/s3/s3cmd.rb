@@ -11,6 +11,8 @@ module ElectricSheeps
 
         def perform
           logger.info 'Uploading to S3 bucket'
+          puts file
+          puts s3_bucket.inspect
           shell.exec "s3cmd #{file} #{s3_bucket.url} --access_key=#{s3_bucket.access_key} --access_key=#{s3_bucket.secret_key}"
         end
       end

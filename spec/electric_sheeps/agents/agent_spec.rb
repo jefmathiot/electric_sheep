@@ -23,7 +23,7 @@ describe ElectricSheeps::Agents::Agent do
     end
 
     it 'overrides the resource type' do
-      subject.resource :some_resource, of_type: FreshAir
+      subject.resource :some_resource, kind_of: FreshAir
       subject.resources[:some_resource].must_equal FreshAir
     end
 

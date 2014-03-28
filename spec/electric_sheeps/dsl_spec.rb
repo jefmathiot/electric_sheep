@@ -134,7 +134,7 @@ describe ElectricSheeps::Dsl::CommandDsl do
   class Foo
     include ElectricSheeps::Agents::Agent
     register as: 'foo', of_type: :command
-    resource :bar, of_type: Bar
+    resource :bar, kind_of: Bar
   end
 
   it 'names the command' do
