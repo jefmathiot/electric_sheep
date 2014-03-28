@@ -23,4 +23,9 @@ describe ElectricSheeps::Metadata::Hosts do
     @hosts.get('some-host').must_equal host
   end
 
+  it 'raises an error when host id is unknown' do
+    ->{ @hosts.get('another-host')  }.must_raise RuntimeError,
+        "Unknown host with id another-host"
+  end
+
 end
