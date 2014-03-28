@@ -2,7 +2,7 @@ module ElectricSheeps
   module Agents
     module Database
       class MySQLDump
-        include ElectricSheeps::Agents::Agent
+        include ElectricSheeps::Agents::Command
 
         register as: "mysql_dump", of_type: :command
 
