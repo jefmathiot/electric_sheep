@@ -14,6 +14,7 @@ module ElectricSheeps
       end
 
       def get(id)
+        raise "Unknown host with id #{id}" unless hosts.has_key?(id)
         hosts[id]
       end
 
