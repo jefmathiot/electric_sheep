@@ -5,6 +5,8 @@ describe ElectricSheeps::Shell::RemoteShell do
   include Net::SSH::Test
 
   before do
+    @key = OpenSSL::PKey::RSA.new(1)
+    OpenSSL::PKey::RSA.expects(:new).with(512).returns(@key)
     @logger = mock()
   end
 
