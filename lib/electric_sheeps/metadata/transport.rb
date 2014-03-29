@@ -3,14 +3,14 @@ module ElectricSheeps
     class Transport
       include Options
 
-      optionize :from, :to
+      options :from, :to
 
     end
 
     class TransportEnd
       include Options
 
-      optionize :host, :resource
+      options :host, :resource
 
     end
   end

@@ -3,7 +3,7 @@ module ElectricSheeps
     class Database
       include Resource
 
-      attr_accessor :user, :password
+      options :name, :user, :password
     end
   end
 end

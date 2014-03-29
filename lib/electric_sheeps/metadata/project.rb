@@ -11,7 +11,7 @@ module ElectricSheeps
       end
 
       include Options
-      optionize :id
+      options :id
 
     end
   end

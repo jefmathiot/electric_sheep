@@ -1,5 +1,5 @@
 module ElectricSheeps
-  module Agents
+  module Commands
     module Register
       def self.register(klazz, options={})
         store.add klazz, options
@@ -30,7 +30,7 @@ module ElectricSheeps
 
         private
         def add_command(id, klazz)
-          klazz.send :include, Agents::Command
+          klazz.send :include, Commands::Command
           @commands[id]=klazz
         end
 

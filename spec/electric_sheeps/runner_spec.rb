@@ -41,10 +41,10 @@ describe ElectricSheeps::Runner do
       @config.remaining.must_equal 0 
     end
 
-    describe 'with agents' do
+    describe 'with commands' do
 
       class Dumb
-        include ElectricSheeps::Agents::Command
+        include ElectricSheeps::Commands::Command
         register as: 'dumb', of_type: :command
 
         def perform
@@ -55,7 +55,7 @@ describe ElectricSheeps::Runner do
       end
 
       class Dumber
-        include ElectricSheeps::Agents::Command
+        include ElectricSheeps::Commands::Command
         register as: 'dumber', of_type: :command
 
         def perform

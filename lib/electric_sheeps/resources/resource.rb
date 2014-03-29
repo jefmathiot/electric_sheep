@@ -5,7 +5,7 @@ module ElectricSheeps
       include Metadata::Options
 
       included do
-        optionize :name
+        options :name
       end
     end
   end

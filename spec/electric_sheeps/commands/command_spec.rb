@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe ElectricSheeps::Agents::Command do
+describe ElectricSheeps::Commands::Command do
 
   CommandKlazz = Class.new do
-    include ElectricSheeps::Agents::Command
+    include ElectricSheeps::Commands::Command
   end
 
   class FreshAir
@@ -12,7 +12,7 @@ describe ElectricSheeps::Agents::Command do
 
   describe CommandKlazz do
     it 'makes options available' do
-      agent = subject.new(logger: logger = mock, shell: shell = mock, work_dir: '/tmp')
+      agent = subject.new(logger = mock, shell = mock, '/tmp', nil)
       agent.logger.must_equal logger
       agent.shell.must_equal shell
       agent.work_dir.must_equal '/tmp'

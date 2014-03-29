@@ -1,8 +1,8 @@
 module ElectricSheeps
-  module Agents
+  module Commands
     module Database
       class MongoDBDump
-        include ElectricSheeps::Agents::Command
+        include ElectricSheeps::Commands::Command
 
         register as: "mongodb_dump", of_type: :command
         resource :database, kind_of: Resources::Database

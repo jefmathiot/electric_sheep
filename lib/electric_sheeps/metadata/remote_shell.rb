@@ -3,7 +3,7 @@ module ElectricSheeps
     class RemoteShell < Shell
 
       include Options
-      optionize :host, :user
+      options :host, :user
 
     end
   end

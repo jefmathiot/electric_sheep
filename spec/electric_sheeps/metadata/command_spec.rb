@@ -7,7 +7,7 @@ describe ElectricSheeps::Metadata::Command do
   end
 
   it 'resolves the agent class' do
-    ElectricSheeps::Agents::Register.expects(:command).with('foo').returns(Object)
+    ElectricSheeps::Commands::Register.expects(:command).with('foo').returns(Object)
     @command.agent.must_equal Object
   end
 

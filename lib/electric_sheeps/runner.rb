@@ -55,12 +55,7 @@ module ElectricSheeps
     def execute_commands(shell_metadata, shell, work_dir)
       shell.open!
       shell_metadata.each_item do |metadata|
-        command = metadata.agent.new(
-          logger: @logger,
-          shell: shell,
-          work_dir: work_dir,
-          resources: metadata.resources
-        )
+        command = metadata.agent.new @logger, shell, work_dir, metadata.resources
         metadata.benchmarked do
           command.perform
         end

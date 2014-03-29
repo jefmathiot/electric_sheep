@@ -4,10 +4,10 @@ module ElectricSheeps
       include Options
       include Metered
 
-      optionize :id, :type
+      options :id, :type
 
       def agent
-        Agents::Register.command(type)
+        Commands::Register.command(type)
       end
 
       def add_resource(id, value)

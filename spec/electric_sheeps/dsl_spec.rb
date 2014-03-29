@@ -132,7 +132,7 @@ describe ElectricSheeps::Dsl::CommandDsl do
   end
 
   class Foo
-    include ElectricSheeps::Agents::Agent
+    include ElectricSheeps::Commands::Command
     register as: 'foo', of_type: :command
     resource :bar, kind_of: Bar
   end

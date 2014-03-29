@@ -120,9 +120,8 @@ module ElectricSheeps
       end
 
       def method_missing(method, *args, &block)
-        if resource = @subject.agent.resources[method]
-          @subject.add_resource method, ResourceDsl.new(@config, resource, args.first, &block).resource
-        end
+        resource = @subject.agent.resources[method]
+        @subject.add_resource method, ResourceDsl.new(@config, resource, args.first, &block).resource
       end
     end
 
@@ -130,8 +129,8 @@ module ElectricSheeps
 
       returning :resource
 
-      def build(config, type, name, &block)
-        @subject = type.new(name: name)
+      def build(config, type, values, &block)
+        @subject = type.new(values)
         instance_eval &block if block_given?
       end
 

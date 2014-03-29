@@ -13,7 +13,7 @@ require 'electric_sheeps/runner'
 require 'electric_sheeps/sheepfile'
 require 'electric_sheeps/shell/local_shell'
 require 'electric_sheeps/shell/remote_shell'
-require 'electric_sheeps/agents'
+require 'electric_sheeps/commands'
 
 module ElectricSheeps
 end
