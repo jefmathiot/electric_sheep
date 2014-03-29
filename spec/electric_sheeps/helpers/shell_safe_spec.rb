@@ -1,0 +1,17 @@
+require 'spec_helper'
+
+describe ElectricSheeps::Helpers::ShellSafe do
+
+  ShellSafeKlazz = Class.new do
+    include ElectricSheeps::Helpers::ShellSafe
+  end
+
+  describe ShellSafeKlazz do
+
+  it 'escapes shell expressions' do
+    ShellSafeKlazz.new.shell_safe('"expression').must_equal "\\\"expression"
+  end
+
+  end
+
+end
