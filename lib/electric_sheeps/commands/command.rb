@@ -14,8 +14,17 @@ module ElectricSheeps
           resources[name] = options[:kind_of] || Resources::File
         end
 
+        def prerequisite(*args)
+          @prerequisites = args.dup
+        end
+
+        # Should be at least protected
         def resources
           @resources ||= {}
+        end
+
+        def prerequisites
+          @prerequisites ||= []
         end
       end
 
@@ -30,6 +39,12 @@ module ElectricSheeps
         } unless resources.nil?
       end
 
+      def check_prerequisites
+        self.class.prerequisites.each { |prerequisite|
+          raise Exception.new("Missing #{prerequisite} in #{self.class}") unless self.class.instance_methods(false).include?(prerequisite)
+          self.send prerequisite
+        }
+      end
     end
   end
 end

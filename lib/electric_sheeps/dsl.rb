@@ -108,7 +108,6 @@ module ElectricSheeps
     end
 
     class CommandDsl < AbstractDsl
-
       returning :command
 
       def build(config, agent, options={}, &block)

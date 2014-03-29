@@ -57,6 +57,7 @@ module ElectricSheeps
       shell_metadata.each_item do |metadata|
         command = metadata.agent.new @logger, shell, work_dir, metadata.resources
         metadata.benchmarked do
+          command.check_prerequisites
           command.perform
         end
       end

@@ -16,5 +16,6 @@ describe ElectricSheeps::Commands::S3::S3cmd do
     s3cmd.s3_bucket.access_key.must_equal 'some_access_key'
     s3cmd.s3_bucket.secret_key.must_equal 'some_secret_key'
     s3cmd.file.filename.must_equal 'somefile.txt'
+    s3cmd.check_prerequisites
   end
 end
