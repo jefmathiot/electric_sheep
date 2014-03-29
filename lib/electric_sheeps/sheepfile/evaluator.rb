@@ -19,7 +19,7 @@ module ElectricSheeps
       end
 
       def readable?
-        File.exists?(@path)
+        File.exists?(@path) && File.readable?(@path)
       end
     end
   end
