@@ -27,7 +27,7 @@ module ElectricSheeps
               send("execute_#{executable_type(step)}", step, project_dir)
             rescue => ex
               # TODO : handle exceptions here
-              puts ex.backtrace
+              #puts ex.backtrace
               throw ex
             end
           end
