@@ -22,9 +22,9 @@ describe ElectricSheeps::Helpers::Named do
     end
 
     it 'appends a timestamp' do
-      Timecop.travel(Time.utc(2014, 1, 2, 3, 2, 1))
-      @named.with_named_dir('/tmp', 'dir', timestamp: true).must_equal '/tmp/dir-20140102-030201'
-      Timecop.return
+      Timecop.travel(Time.utc(2014, 1, 2, 3, 2, 1)) do
+        @named.with_named_dir('/tmp', 'dir', timestamp: true).must_equal '/tmp/dir-20140102-030201'
+      end
     end
 
     it 'yields the provided block' do

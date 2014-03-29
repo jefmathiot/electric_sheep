@@ -8,9 +8,9 @@ describe ElectricSheeps::Helpers::Timestamps do
 
   describe TimestampsKlazz do
     it 'generates a timestamp' do
-      Timecop.travel(Time.utc(1879, 3, 14, 11, 30, 0))
-      subject.new.timestamp.must_equal '18790314-113000'
-      Timecop.return
+      Timecop.travel(Time.utc(1879, 3, 14, 11, 30, 0)) do
+        subject.new.timestamp.must_equal '18790314-113000'
+      end
     end
   end
 
