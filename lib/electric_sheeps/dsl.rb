@@ -119,8 +119,7 @@ module ElectricSheeps
       end
 
       def method_missing(method, *args, &block)
-        resource = @subject.agent.resources[method]
-        @subject.add_resource method, ResourceDsl.new(@config, resource, args.first, &block).resource
+        @subject.add_resource method, ResourceDsl.new(@config, @subject.agent.resources[method], args.first, &block).resource
       end
     end
 
@@ -129,7 +128,8 @@ module ElectricSheeps
       returning :resource
 
       def build(config, type, values, &block)
-        @subject = type.new(values)
+        # TODO : I miss something here should not have to test for Hash
+        @subject = (type.is_a?(Hash) ? type[:kind_of] : type).new(values)
         instance_eval &block if block_given?
       end
 
