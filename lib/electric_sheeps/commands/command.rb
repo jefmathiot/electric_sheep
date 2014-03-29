@@ -11,7 +11,7 @@ module ElectricSheeps
         end
 
         def resource(name, options={})
-          resources[name] = options[:kind_of] || Resources::File
+          resources[name] = { :kind_of => Resources::File }.merge!(options)
         end
 
         def prerequisite(*args)
