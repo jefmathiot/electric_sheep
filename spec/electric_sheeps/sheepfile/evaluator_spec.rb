@@ -10,10 +10,16 @@ describe ElectricSheeps::Sheepfile::Evaluator do
     File.expects(:exists?).with( @path ).returns false
     -> { subject.new('Sheepfile').evaluate }.must_raise RuntimeError
   end
+  
+  it 'raises if configuration file is not readable' do
+    File.expects(:exists?).with( @path ).returns true
+    File.expects(:readable?).with( @path ).returns false
+    -> { subject.new('Sheepfile').evaluate }.must_raise RuntimeError
+  end
 
   it 'evaluates file contents in DSL' do
-        # TODO Find a way to test this without actually hitting the DSL
         File.expects(:exists?).with( @path ).returns true
+        File.expects(:readable?).with( @path ).returns true
         File.expects(:open).with( @path, 'rb').returns mock(read: <<-EOS
           host "some-host" do
             description "Some host description"
