@@ -16,6 +16,7 @@ describe ElectricSheeps::Commands::Database::MongoDBDump do
 
   def assert_product
     product = @project.product_of('step-id')
+    product.wont_be_nil
     product.path.must_equal '/tmp/MyDatabase-20140605-040302'
     product.remote?.must_equal true
   end
