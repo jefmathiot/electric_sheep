@@ -132,3 +132,5 @@ build/
 
 Gemfile.lock
 .*.swp
+/acceptance/cookbooks
+/acceptance/tmp
