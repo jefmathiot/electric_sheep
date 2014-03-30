@@ -1,14 +1,14 @@
 module ElectricSheeps
   module Resources
-    class File
+    class Directory
       include FileSystem
-
+      
       def file?
-        true
+        false
       end
 
       def directory?
-        false
+        true
       end
 
     end
