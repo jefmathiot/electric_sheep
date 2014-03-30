@@ -4,8 +4,17 @@ require 'shellwords'
 module ElectricSheeps
   module Shell
     class LocalShell
+
       def initialize(logger)
         @logger = logger
+      end
+
+      def local?
+        true
+      end
+
+      def remote?
+        false
       end
 
       def open!

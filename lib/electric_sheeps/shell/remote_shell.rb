@@ -3,10 +3,19 @@ require 'net/ssh'
 module ElectricSheeps
   module Shell
     class RemoteShell
+
       def initialize(logger, host, user)
         @logger = logger
         @host = host
         @user = user
+      end
+
+      def remote?
+        true
+      end
+
+      def local?
+        false
       end
 
       def open!

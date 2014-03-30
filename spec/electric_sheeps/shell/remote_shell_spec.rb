@@ -22,7 +22,14 @@ describe ElectricSheeps::Shell::RemoteShell do
   end ; end ; end
 
   before do
-    @logger = mock()
+    @logger = mock
+  end
+
+  it 'indicates its type' do
+    subject.new(nil, nil, nil).tap do |shell|
+      shell.remote?.must_equal true
+      shell.local?.must_equal false
+    end
   end
 
   describe "with a session" do
