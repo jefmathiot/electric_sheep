@@ -13,6 +13,7 @@ module ElectricSheeps
           dump = with_named_dir work_dir, database.name, timestamp: true do |output|
             shell.exec cmd(database.name, database.user, database.password, output)
           end
+          done! Resources::Directory.new(path: dump, remote: shell.remote?)
         end
 
         private
