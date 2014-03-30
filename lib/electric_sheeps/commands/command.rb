@@ -3,7 +3,32 @@ module ElectricSheeps
     module Command
       extend ActiveSupport::Concern
 
-      attr_reader :logger, :shell, :work_dir
+      attr_reader :id, :logger, :shell, :work_dir
+      
+      def initialize(id, project, logger, shell, work_dir, resources)
+        @id = id
+        @logger = logger
+        @shell = shell
+        @work_dir = work_dir
+        @project = project
+
+        resources.each { |key, value|
+          self.class.send :attr_reader, key
+          self.instance_variable_set "@#{key}", value
+        } unless resources.nil?
+      end
+      
+      def check_prerequisites
+        self.class.prerequisites.each { |prerequisite|
+          raise "Missing #{prerequisite} in #{self.class}" unless self.respond_to?(prerequisite)
+          self.send prerequisite
+        }
+      end
+
+      protected
+      def done!(resource)
+        @project.store_product(id, resource)
+      end
 
       module ClassMethods
         def register(options={})
@@ -28,23 +53,6 @@ module ElectricSheeps
         end
       end
 
-      def initialize(logger, shell, work_dir, resources)
-        @logger = logger
-        @shell = shell
-        @work_dir = work_dir
-
-        resources.each { |key, value|
-          self.class.send :attr_reader, key
-          self.instance_variable_set "@#{key}", value
-        } unless resources.nil?
-      end
-
-      def check_prerequisites
-        self.class.prerequisites.each { |prerequisite|
-          raise Exception.new("Missing #{prerequisite} in #{self.class}") unless self.class.instance_methods(false).include?(prerequisite)
-          self.send prerequisite
-        }
-      end
     end
   end
 end
