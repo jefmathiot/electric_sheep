@@ -3,7 +3,9 @@ rvm:
 - 1.9.3
 - 2.0.0
 - 2.1.1
-after_install: ruby -ropenssl -e 'puts OpenSSL::OPENSSL_VERSION'
+after_install:
+- echo "OpenSSL version"
+- ruby -ropenssl -e 'puts OpenSSL::OPENSSL_VERSION'
 notifications:
   hipchat:
     rooms:
