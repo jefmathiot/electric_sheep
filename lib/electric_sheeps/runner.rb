@@ -24,10 +24,10 @@ module ElectricSheeps
           project_dir = Directories.mk_project_dir!(project)
           project.each_item do |step|
             begin
-              send("execute_#{executable_type(step)}", step, project_dir)
+              send("execute_#{executable_type(step)}", project, step, project_dir)
             rescue => ex
               # TODO : handle exceptions here
-              #puts ex.backtrace
+              # puts ex.backtrace
               throw ex
             end
           end
@@ -38,24 +38,24 @@ module ElectricSheeps
       executable.class.name.underscore.split('/').last
     end
 
-    def execute_shell(metadata, work_dir)
+    def execute_shell(project, metadata, work_dir)
       metadata.benchmarked do
-        execute_commands metadata, Shell::LocalShell.new(@logger), work_dir
+        execute_commands project, metadata, Shell::LocalShell.new(@logger), work_dir
       end
     end
 
-    def execute_remote_shell(metadata, work_dir)
+    def execute_remote_shell(project, metadata, work_dir)
       metadata.benchmarked do
-        execute_commands metadata, Shell::RemoteShell.new(
+        execute_commands project, metadata, Shell::RemoteShell.new(
           @logger, @config.hosts.get(metadata.host).name, metadata.user
         ), work_dir
       end
     end
 
-    def execute_commands(shell_metadata, shell, work_dir)
+    def execute_commands(project, shell_metadata, shell, work_dir)
       shell.open!
       shell_metadata.each_item do |metadata|
-        command = metadata.agent.new @logger, shell, work_dir, metadata.resources
+        command = metadata.agent.new metadata.id, project, @logger, shell, work_dir, metadata.resources
         metadata.benchmarked do
           command.check_prerequisites
           command.perform
