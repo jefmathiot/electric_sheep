@@ -7,35 +7,39 @@ describe ElectricSheeps::Helpers::Named do
     include ElectricSheeps::Helpers::Named
   end
 
-  describe 'creating directory names' do
+  %w(dir file).each do |type|
+
+  describe "creating #{type} names" do
 
     before do
       @named = NamedKlazz.new
     end
 
     it 'creates a simple name' do
-      @named.with_named_dir('/tmp', 'dir').must_equal '/tmp/dir'
+      @named.send("with_named_#{type}", '/tmp', type).must_equal "/tmp/#{type}"
     end
 
     it 'escapes the name' do
-      @named.with_named_dir('/tmp', "\"dir").must_equal "/tmp/\\\"dir"
+      @named.send("with_named_#{type}", '/tmp', "\"#{type}").must_equal "/tmp/\\\"#{type}"
     end
 
     it 'appends a timestamp' do
       Timecop.travel(Time.utc(2014, 1, 2, 3, 2, 1)) do
-        @named.with_named_dir('/tmp', 'dir', timestamp: true).must_equal '/tmp/dir-20140102-030201'
+        @named.send("with_named_#{type}", '/tmp', type, timestamp: true).must_equal "/tmp/#{type}-20140102-030201"
       end
     end
 
     it 'yields the provided block' do
       yielded = nil
-      result = @named.with_named_dir '/tmp', 'dir' do |dir|
-        yielded = dir
+      result = @named.send("with_named_#{type}", '/tmp', type) do |file|
+        yielded = file
         "some-arbitrary-expression"
       end
-      result.must_equal '/tmp/dir'
+      result.must_equal "/tmp/#{type}"
       yielded.must_equal result
     end
+
+  end
 
   end
 

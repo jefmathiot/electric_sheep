@@ -4,13 +4,21 @@ module ElectricSheeps
       include ShellSafe
       include Timestamps
 
-      def with_named_dir(base_dir, name, options={})
-        name = "#{name}-#{timestamp}" if options[:timestamp]
-        File.join(base_dir, shell_safe(name)).tap do |dir|
-          yield dir if block_given?
-        end
+      def with_named_dir(*args, &block)
+        with_named_path *args, &block
       end
 
+      def with_named_file(*args, &block)
+        with_named_path *args, &block
+      end
+
+      protected
+      def with_named_path(base_dir, name, options={}, &block)
+        name = "#{name}-#{timestamp}" if options[:timestamp]
+        File.join(base_dir, shell_safe(name)).tap do |resource|
+          yield resource if block_given?
+        end
+      end
     end
   end
 end
