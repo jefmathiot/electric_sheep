@@ -11,6 +11,11 @@ module ElectricSheeps
       def remote?
         remote == true
       end
+
+      def basename
+        ::File.basename(path)
+      end
+
     end
   end
 end
