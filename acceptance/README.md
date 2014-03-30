@@ -7,10 +7,17 @@
 
 ## Launch the container
 
-Before first run, add the base box to Vagrant :
+Before first run, add the base box to Vagrant:
 
 ```
 $ vagrant box init lxc-precise64 http://bit.ly/vagrant-lxc-precise64-2013-10-23
+```
+
+Install `librarian-chef` and install the cookbooks used to provision the container:
+
+```
+gem install librarian-chef
+librarian-chef install
 ```
 
 Then start the container :
