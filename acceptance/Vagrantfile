@@ -7,10 +7,14 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   
   config.vm.box = "lxc-precise64"
+  config.vm.box_url = "http://bit.ly/vagrant-lxc-precise64-2013-10-23"
+ 
   config.vm.provider :lxc do |lxc|
     lxc.customize 'network.ipv4', '10.0.3.10/32'
   end
- 
+
+  config.vm.provision :shell, :inline => "sudo locale-gen fr_FR.UTF-8 && sudo dpkg-reconfigure locales"
+
   config.vm.provision :chef_solo do |chef|
     chef.cookbooks_path = ['cookbooks']
     chef.add_recipe 'apt'
