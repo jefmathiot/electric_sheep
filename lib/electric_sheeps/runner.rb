@@ -61,7 +61,6 @@ module ElectricSheeps
           command.perform
         end
       end
-    ensure
       shell.close!
     end
 
