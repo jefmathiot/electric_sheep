@@ -1,0 +1,34 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+host "acceptance-container" do
+  description "ElectricSheeps - Container for acceptance testing" # optional
+  name "10.0.3.10"
+end
+
+project "mongodb-dump" do
+  description "MongoDB database backup"
+
+  remotely on: "acceptance-container", as: 'vagrant' do
+
+    command "mongodb_dump" do
+      database "controldb"
+    end
+    
+#    command "tar_gz", as: "mongodb_archive" do
+#      file product_of("mongodb_dump")
+#    end
+
+    command "mysql_dump" do
+      database "controldb" do
+        user "operator"
+        password "pseudorandom"
+      end
+    end
+    
+#    command "tar_gz", as: "mongodb_archive" do
+#      file product_of("mongodb_dump")
+#    end
+  end
+
+end
