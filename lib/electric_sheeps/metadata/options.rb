@@ -5,8 +5,11 @@ module ElectricSheeps
 
       included do
         alias_method :initialize_without_options, :initialize
+
         def initialize(args = {})
           check_parameters(args)
+
+          raise Exception.new("One value had been passed but #{option.size} is required") if (option.size > 1) && (args.is_a? (String))
 
           self.class.init_options.each do |option|
             self.class.send :attr_accessor, option
