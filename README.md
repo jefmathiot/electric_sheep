@@ -97,26 +97,30 @@ Please note that you don't have to declare the localhost.
 
 ### Projects
 
-Projects allow you to logically group commands and transports to manipulate resources locally or
-on remote hosts. Each project should have a unique
-identifier. You can declare as many projects as needed.
+Projects allow you to logically group commands and transports to manipulate a resource locally or
+on remote hosts. Each project should have a unique identifier and **declare a single resource** in
+is initial state (such as a directory, a database, a file, etc.). You can declare as many projects
+as needed but each of them aims to manipulate a single resource.
 
 ```ruby
 project "myapp-database-backup" do
-    description "Database Full Backup"
-    # Shells and transports here...
+  description "Database Full Backup"
+  resource type: :database, user: "backup-operator", password: encrypted("XXXXXXX")
 end
 
-project "myapp-media-backup" do
-    description "My Application Media Sync"
-    # Shells and transports here...
+project "www-media-backup" do
+  description "Acme uploads"
+  resource type: :directory, path: '/var/www/uploads'
 end
 ```
 
 ### Shells & Commands
 
-Shells allow you to execute sequences of commands locally or on remote hosts. Commands
-are unaware of whether they execute on a remote host or on the local host.
+Shells allow you to execute sequences of commands locally or on remote hosts. Commands are unaware
+of whether they execute on a remote host or on the local host. Their role is to consume the
+provided resource in its last known state (e.g. a database) and manipulate it. Each command will
+provide the resource in its new state (e.g. a database dump file) so that subsequent commands or
+transport can transform it again.
 
 The `remotely` method wraps commands inside an SSH session whereas the `locally` method
 executes them on the localhost. `remotely` requires the `on` option to reference the
@@ -124,18 +128,15 @@ target host.
 
 ```ruby
 project "myapp-database-backup" do
-    description "Database Full Backup"
-    remotely on: "production-mysql-master", as: "operator" do
-        command "mysql_dump" do
-            database "my_app" do
-                user "backup-operator"
-                encrypted.password "XXXXXXX"
-            end
-        end
-        command "tar_gz", as: "mysql_archive" do
-            file result_of("mysql_dump")
-        end
-    end
+  description "Database Full Backup"
+  resource type: :database, user: "backup-operator", password: encrypted("XXXXXXX")
+
+  remotely on: "production-mysql-master", as: "operator" do
+    mysql_dump
+    tar_gz delete_source: true
+  end
+
+  copy to: localhost, via: :scp
 end
 ```
 
@@ -145,39 +146,16 @@ Transports allow you to move or copy resources from an host to another. Like she
 
 ```ruby
 project "myapp-database-backup" do
-    description "Database Full Backup"
-    remotely on: "production-mysql-master", as: "operator" do
-        command "mysql_dump" do
-            database "my_app" do
-                user "backup-operator"
-                encrypted.password "XXXXXXX"
-            end
-        end
-        command "tar_gz", as: "mysql_archive" do
-            file result_of("mysql_dump")
-            delete_source
-        end
-    end
-    transport :scp do
-        from do
-            host host("production-mysql-master")
-            file result_of("mysql_archive")
-        end
-        to do
-            host localhost
-            file result_of("mysql_archive")
-        end
-        delete_source
-    end
-    transport :s3 do
-        from do
-            host localhost
-            file result_of("mysql_archive")
-        end
-        to do
-            # ...
-        end
-    end
+  description "Database Full Backup"
+  resource type: :database, user: "backup-operator", password: encrypted("XXXXXXX")
+
+  remotely on: "production-mysql-master", as: "operator" do
+    mysql_dump
+    tar_gz delete_source: true
+  end
+
+  copy to: localhost, via: :scp
+  move to: bucket('my-bucket'), via: :s3
 end
 ```
 
