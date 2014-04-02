@@ -9,7 +9,7 @@ module ElectricSheeps
         def initialize(args = {})
           check_parameters(args)
 
-          raise Exception.new("One value had been passed but #{option.size} is required") if (option.size > 1) && (args.is_a? (String))
+          raise "One value had been passed but #{self.class.init_options.size} is required" if (self.class.init_options.size > 1) && (args.is_a? (String))
 
           self.class.init_options.each do |option|
             self.class.send :attr_accessor, option
