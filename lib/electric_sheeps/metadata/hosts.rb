@@ -3,13 +3,12 @@ module ElectricSheeps
 
     class Hosts
       def initialize
-        @host = Struct.new(:id, :name, :description)
+        @host = Struct.new(:id, :hostname, :description)
       end
 
-      def add(options)
+      def add(id, options)
         # TODO Validate options[:name] is a valid hostname
-        id = options[:id] || options[:name]
-        host = @host.new(id, options[:name], options[:description])
+        host = @host.new(id, options[:hostname], options[:description])
         hosts[host.id] = host
       end
 

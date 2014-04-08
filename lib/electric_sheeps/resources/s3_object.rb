@@ -1,9 +1,11 @@
 module ElectricSheeps
   module Resources
-    class S3Bucket
+    class S3Object
       include Resource
 
-      options :url, :access_key, :secret_key
+      options :key, :bucket, :access_key, :secret_key
+
     end
   end
 end
+

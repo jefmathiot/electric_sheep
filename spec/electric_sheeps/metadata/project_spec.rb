@@ -14,19 +14,23 @@ describe ElectricSheeps::Metadata::Project do
   it "initializes the project's id" do
     project = subject.new(id: 'some-project')
     project.id.must_equal 'some-project'
-    project.products.keys.size.must_equal 0
+    project.products.size.must_equal 0
   end
 
   it 'defines a description accessor' do
     expects_accessor(:description)
   end
 
-  it 'stores and retrieves products' do
+  it 'uses the initial resource when there are no products' do
     project = subject.new
-    project.store_product('step', resource = mock)
-    ['step', :step].each do |step|
-      project.product_of(step).must_equal resource
-    end
+    project.start_with!(resource = mock)
+    project.last_product.must_equal resource
   end
 
+  it 'retrieves the last product' do
+    project = subject.new
+    project.store_product!(mock)
+    project.store_product!(resource = mock)
+    project.last_product.must_equal resource
+  end
 end

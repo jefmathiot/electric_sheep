@@ -8,19 +8,23 @@ module ElectricSheeps
 
       def initialize
         reset!
-        @products = {}.with_indifferent_access
+        @products = []
       end
 
-      def store_product(step_id, resource)
-        @products[step_id] = resource
+      def start_with!(resource)
+        @initial_resource = resource
       end
 
-      def product_of(step_id)
-        @products[step_id]
+      def store_product!(resource)
+        @products << resource
+      end
+
+      def last_product
+        @products.last || @initial_resource
       end
 
       include Options
-      options :id
+      options :id, :description
 
     end
   end

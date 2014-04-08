@@ -6,7 +6,8 @@ require 'electric_sheeps/version'
 Gem::Specification.new do |spec|
   spec.name          = "electric_sheeps"
   spec.version       = ElectricSheeps::VERSION
-  spec.authors       = ["Benoît Anselme", "Patrice Izzo", "Jef Mathiot", "Fabrice Nourisson"]
+  spec.authors       = ["Benoît Anselme", "Patrice Izzo", "Jef Mathiot", "Fabrice Nourisson",
+                        "Eric Hartmann"]
   spec.email         = ["foss@servebox.com"]
   spec.description   = %q{A simple task system for file manipulation (i.e. backup).}
   spec.summary       = %q{A simple task system for file manipulation (i.e. backup).}
@@ -32,4 +33,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "activesupport", ">= 3.0.0"
   spec.add_dependency "session", "~> 3.1.0"
   spec.add_dependency "net-ssh", "~> 2.7.0"
+
 end

@@ -4,6 +4,7 @@ require 'shellwords'
 module ElectricSheeps
   module Shell
     class LocalShell
+      include Directories
 
       def initialize(logger)
         @logger = logger
@@ -30,12 +31,13 @@ module ElectricSheeps
       end
 
       def exec(cmd)
-        return unless opened?
-        @session.execute(cmd) do |out, err|
-          @logger.info out.chomp unless out.nil?
-          @logger.error err.chomp unless err.nil?
-        end
-        @session.exit_status
+        raise "Shell not opened" unless opened?
+        {out: '', err: ''}.tap{ |result|
+          @session.execute(cmd) do |out, err|
+            @logger.info( result[:out] = out.chomp ) unless out.nil?
+            @logger.error( result[:err] = err.chomp ) unless err.nil?
+          end
+        }.merge({exit_status: @session.exit_status})
       end
 
       def opened?

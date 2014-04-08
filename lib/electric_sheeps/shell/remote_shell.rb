@@ -3,6 +3,7 @@ require 'net/ssh'
 module ElectricSheeps
   module Shell
     class RemoteShell
+      include Directories
 
       def initialize(logger, host, user)
         @logger = logger
@@ -26,25 +27,30 @@ module ElectricSheeps
       end
 
       def exec(cmd)
-        exit_status = 0
+        result = {out: '', err: '', exit_status: 0}
         @ssh_session.open_channel do |channel|
           channel.exec(cmd) do |ch, success|
             unless success
               @logger.error "Could not execute command #{cmd}"
             end
             channel.on_data do |ch, data|
+              result[:out] << data
               @logger.info data
             end
             channel.on_extended_data do |ch, type, data|
+              result[:err] << data
               @logger.error data
             end
             channel.on_request('exit-status') do |ch, data|
-              exit_status = data.read_long
+              result[:exit_status] = data.read_long
             end
           end
         end
         @ssh_session.loop
-        exit_status
+        [:out, :err].each do |key|
+          result[key] = result[key].chomp
+        end
+        result
       end
 
       def close!

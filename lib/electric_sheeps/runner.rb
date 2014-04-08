@@ -8,7 +8,6 @@ module ElectricSheeps
     end
 
     def run!
-      Directories.mk_work_dir!
       @config.each_item do |project|
         execute_project(project)
       end 
@@ -21,15 +20,8 @@ module ElectricSheeps
         @logger.info project.description ?
           "Executing \"#{project.description}\" (#{project.id})" :
           "Executing #{project.id}"
-          project_dir = Directories.mk_project_dir!(project)
           project.each_item do |step|
-            begin
-              send("execute_#{executable_type(step)}", project, step, project_dir)
-            rescue => ex
-              # TODO : handle exceptions here
-              # puts ex.backtrace
-              throw ex
-            end
+            send("execute_#{executable_type(step)}", project, step)
           end
       end
     end
@@ -38,24 +30,25 @@ module ElectricSheeps
       executable.class.name.underscore.split('/').last
     end
 
-    def execute_shell(project, metadata, work_dir)
+    def execute_shell(project, metadata)
       metadata.benchmarked do
-        execute_commands project, metadata, Shell::LocalShell.new(@logger), work_dir
+        execute_commands project, metadata, Shell::LocalShell.new(@logger)
       end
     end
 
-    def execute_remote_shell(project, metadata, work_dir)
+    def execute_remote_shell(project, metadata)
       metadata.benchmarked do
         execute_commands project, metadata, Shell::RemoteShell.new(
-          @logger, @config.hosts.get(metadata.host).name, metadata.user
-        ), work_dir
+          @logger, @config.hosts.get(metadata.host).hostname, metadata.user
+        )
       end
     end
 
-    def execute_commands(project, shell_metadata, shell, work_dir)
+    def execute_commands(project, shell_metadata, shell)
       shell.open!
+      shell.mk_project_dir!(project)
       shell_metadata.each_item do |metadata|
-        command = metadata.agent.new metadata.id, project, @logger, shell, work_dir, metadata.resources
+        command = metadata.command_runner.new project, @logger, shell, shell.project_dir(project), metadata
         metadata.benchmarked do
           command.check_prerequisites
           command.perform

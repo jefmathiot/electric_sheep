@@ -112,7 +112,9 @@ describe ElectricSheeps::Shell::RemoteShell do
         @logger.expects(:info).with('Hello World')
         @logger.expects(:error).never
         assert_scripted do
-          @shell.exec('echo "Hello World"').must_equal 0
+          result = @shell.exec('echo "Hello World"')
+          result[:exit_status].must_equal 0
+          result[:out].must_equal 'Hello World'
         end
       end
 
@@ -121,7 +123,9 @@ describe ElectricSheeps::Shell::RemoteShell do
         @logger.expects(:info).never
         @logger.expects(:error).with('An error')
         assert_scripted do
-          @shell.exec('ls --wtf').must_equal 2
+          result = @shell.exec('ls --wtf')
+            result[:exit_status].must_equal 2
+            result[:err].must_equal 'An error'
         end
       end
     end

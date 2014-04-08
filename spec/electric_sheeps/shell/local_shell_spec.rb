@@ -59,16 +59,21 @@ describe ElectricSheeps::Shell::LocalShell do
     end
 
     describe 'on returning status' do
+
       it 'should succeed' do
         @logger.expects(:info).with('Hello World')
         @logger.expects(:error).never
-        @shell.exec('echo "Hello World"').must_equal 0
+        result = @shell.exec('echo "Hello World"')
+        result[:exit_status].must_equal 0
+        result[:out].must_equal 'Hello World'
       end
 
       it 'should fail gracefully' do
         @logger.expects(:info).never
         @logger.expects(:error).at_least_once
-        @shell.exec('ls --wtf').must_equal 2
+        result = @shell.exec('echo "Goodbye Cruel World" >&2 && false')
+        result[:exit_status].must_equal 1
+        result[:err].must_equal 'Goodbye Cruel World'
       end
     end
 

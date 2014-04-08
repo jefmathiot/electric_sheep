@@ -4,10 +4,7 @@ module Support
     def new_host
       @hosts ||= ElectricSheeps::Metadata::Hosts.new
       host_id = next_host
-      @hosts.add(
-        id: host_id,
-        name: "#{host_id}.tld"
-        )
+      @hosts.add( host_id, hostname: "#{host_id}.tld")
     end
 
     private

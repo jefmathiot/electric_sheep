@@ -2,38 +2,19 @@ require 'shellwords'
 require 'fileutils'
 
 module ElectricSheeps
-  class Directories
+  module Directories
 
-    class << self
+    def mk_project_dir!(project)
+      exec("mkdir -p #{project_dir(project)} ; chmod 0700 #{project_dir(project)}")
+    end
 
-      def mk_work_dir!
-        mk_dir!(work_dir)
-      end
+    def project_dir(project)
+      File.join work_dir, Shellwords.escape(project.id.downcase)
+    end
 
-      def mk_project_dir!(project)
-        mk_work_dir!
-        project_dir(project).tap do |dir|
-          mk_dir! dir
-        end
-      end
-
-      def work_dir
-        @work_dir ||= ENV['ELECTRIC_SHEEPS_HOME'] || "#{user_home}/.electric_sheeps"
-      end
-
-      def project_dir(project)
-        File.join work_dir, Shellwords.escape(project.id.downcase)
-      end
-
-      private
-      def mk_dir!(directory)
-        FileUtils.mkdir_p(directory, mode: 0700) unless File.directory?(directory)
-      end
-
-      def user_home
-         ENV['HOME']
-      end
-
+    private
+    def work_dir
+      @work_dir ||= exec('echo ${ELECTRIC_SHEEPS_HOME-"$HOME/.electric_sheeps"}')[:out].chomp
     end
 
   end

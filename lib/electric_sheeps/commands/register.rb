@@ -21,17 +21,11 @@ module ElectricSheeps
         end
 
         def add(klazz, options)
-          send "add_#{options[:of_type]}", options[:as].to_sym, klazz
+          @commands[options[:as].to_sym]=klazz
         end
 
         def command(id)
           @commands[id.to_sym]
-        end
-
-        private
-        def add_command(id, klazz)
-          klazz.send :include, Commands::Command
-          @commands[id]=klazz
         end
 
       end

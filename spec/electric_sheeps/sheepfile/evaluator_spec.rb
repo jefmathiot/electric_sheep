@@ -21,13 +21,10 @@ describe ElectricSheeps::Sheepfile::Evaluator do
         File.expects(:exists?).with( @path ).returns true
         File.expects(:readable?).with( @path ).returns true
         File.expects(:open).with( @path, 'rb').returns mock(read: <<-EOS
-          host "some-host" do
-            description "Some host description"
-            name "some-host.tld"
-          end
+          host "some-host", hostname: "some-host.tld"
           EOS
-          )
+        )
         config = subject.new('Sheepfile').evaluate
-        config.hosts.get('some-host').name.must_equal 'some-host.tld'
-      end
-    end
+        config.hosts.get('some-host').hostname.must_equal 'some-host.tld'
+  end
+end

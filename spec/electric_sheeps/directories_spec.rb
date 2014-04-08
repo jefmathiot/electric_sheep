@@ -2,59 +2,36 @@ require 'spec_helper'
 
 describe ElectricSheeps::Directories do
 
-  before do
-    subject.instance_variable_set :@work_dir, nil
-    FileUtils.rm_rf "#{ENV['ELECTRIC_SHEEPS_HOME']}"
+  DirectoriesKlazz = Class.new do
+    include ElectricSheeps::Directories
+
+    def initialize(shell)
+      @shell = shell
+    end
+
+    def exec(cmd)
+      @shell.exec(cmd)
+    end
   end
 
-  describe 'without a home' do
-
+  describe DirectoriesKlazz do
     before do
-      @es_home = ENV['ELECTRIC_SHEEPS_HOME']
-      ENV['ELECTRIC_SHEEPS_HOME'] = nil
+      @subject = subject.new(@shell = mock)
+      @seq = sequence('shell')
     end
 
-    after do
-      ENV['ELECTRIC_SHEEPS_HOME'] = @es_home 
-    end
+    it 'creates the project directory' do
+      project = mock
+      project.stubs(:id).returns('My Project')
 
-    it "uses a sub-directory of the user's home as the work directory" do
-      subject.work_dir.must_equal "#{ENV['HOME']}/.electric_sheeps"
-    end
+      @shell.expects(:exec).in_sequence(@seq).
+        with('echo ${ELECTRIC_SHEEPS_HOME-"$HOME/.electric_sheeps"}').
+        returns({out: '/es/home'})
+      @shell.expects(:exec).in_sequence(@seq).
+        with('mkdir -p /es/home/my\\ project ; chmod 0700 /es/home/my\\ project')
 
+      @subject.mk_project_dir!(project)
+    end
   end
 
-  it "uses a sub-directory of the electric sheeps home as the work directory" do
-    subject.work_dir.must_equal "#{ENV['ELECTRIC_SHEEPS_HOME']}"
-  end
-
-  it 'creates the work directory' do
-    subject.mk_work_dir!
-    File.directory?(subject.work_dir).must_equal true
-    assert_0700(subject.work_dir)
-  end
-
-  describe 'with a project' do
-
-    before do
-      @project = ElectricSheeps::Metadata::Project.new(id: 'a Project')
-    end
-
-    it "uses a sub-directory of the work directory as the project's home" do
-      subject.project_dir(@project).must_equal "#{ENV['ELECTRIC_SHEEPS_HOME']}/a\\ project"
-    end
-
-    it 'create the project directory' do
-      subject.project_dir(@project).tap do |dir|
-        subject.mk_project_dir!(@project).must_equal dir
-        File.directory?(dir).must_equal true
-        assert_0700(dir)
-      end
-    end
-
-  end
-
-  def assert_0700(directory)
-    File.stat(directory).mode.to_s(8)[-4,4].must_equal '0700'
-  end
 end

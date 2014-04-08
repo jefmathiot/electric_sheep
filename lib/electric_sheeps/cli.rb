@@ -10,7 +10,6 @@ module ElectricSheeps
       begin
         Runner.new(config: configuration, logger: Log::ConsoleLogger.new(STDOUT, STDERR)).run!
       rescue => ex
-        #puts ex.backtrace
         raise Thor::Error, ex
       end
     end

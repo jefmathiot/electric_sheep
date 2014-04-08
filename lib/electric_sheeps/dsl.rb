@@ -6,12 +6,12 @@ module ElectricSheeps
       @config = config
     end
 
-    def host(id, &block)
-      HostDsl.new(@config, id, &block).host
+    def host(id, options={})
+      @config.hosts.add id, options
     end
 
-    def project(id, &block)
-      @config.add ProjectDsl.new( @config, id, &block ).project
+    def project(id, options={}, &block)
+      @config.add ProjectDsl.new( @config, id, options, &block ).project
     end
 
     class AbstractDsl
@@ -30,13 +30,6 @@ module ElectricSheeps
         instance_eval &block if block_given?
       end
 
-      def method_missing(method, *args, &block)
-        if @subject.respond_to? "#{method}="
-          @subject.send "#{method}=", args.first
-        else
-          super
-        end
-      end
     end
 
     class HostDsl
@@ -55,7 +48,6 @@ module ElectricSheeps
       end
 
       def host
-        @config.hosts.add( id: @id, name: @name, description: @description)
       end
 
     end
@@ -64,8 +56,8 @@ module ElectricSheeps
 
       returning :project
 
-      def build(config, id, &block)
-        @subject = Metadata::Project.new(id: id)
+      def build(config, id, options, &block)
+        @subject = Metadata::Project.new(options.merge(id: id))
       end
 
       def remotely(options, &block)
@@ -79,6 +71,10 @@ module ElectricSheeps
       def transport(type, &block)
         @subject.add TransportDsl.new(@config, &block).transport
       end
+
+      def resource(type, options={})
+        @subject.start_with! ElectricSheeps::Resources.const_get(type.to_s.camelize).new(options)
+      end
     end
 
     class ShellDsl < AbstractDsl
@@ -89,8 +85,13 @@ module ElectricSheeps
         @subject = new_shell(options)
       end
 
-      def command(agent, options={}, &block)
-        @subject.add CommandDsl.new(@config, agent, options, &block).command
+      def method_missing(method, *args, &block)
+        if Commands::Register.command(method)
+          opts = {type: method}.merge(args.first || {})
+          @subject.add Metadata::Command.new(opts)
+        else
+          super
+        end
       end
 
       protected
@@ -105,34 +106,6 @@ module ElectricSheeps
         opts = { host: options[:on], user: options[:as] }
         Metadata::RemoteShell.new(opts)
       end
-    end
-
-    class CommandDsl < AbstractDsl
-      returning :command
-
-      def build(config, agent, options={}, &block)
-        opts = {
-          id: options[:as] || agent,
-          type: agent
-        }
-        @subject = Metadata::Command.new(opts)
-      end
-
-      def method_missing(method, *args, &block)
-        @subject.add_resource method, ResourceDsl.new(@config, @subject.agent.resources[method], args.first, &block).resource
-      end
-    end
-
-    class ResourceDsl < AbstractDsl
-
-      returning :resource
-
-      def build(config, type, values, &block)
-        # TODO : I miss something here should not have to test for Hash
-        @subject = (type.is_a?(Hash) ? type[:kind_of] : type).new(values)
-        instance_eval &block if block_given?
-      end
-
     end
 
     class TransportDsl

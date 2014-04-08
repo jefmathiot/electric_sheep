@@ -4,22 +4,15 @@ describe ElectricSheeps::Runner do
 
   before do
     @config = ElectricSheeps::Config.new
-    @config.hosts.add(id: 'some-host', name: 'some-host.tld')
+    @config.hosts.add('some-host', hostname: 'some-host.tld')
     @first_project = @config.add(
       ElectricSheeps::Metadata::Project.new(id: 'first-project')
     )
     @first_project.description = 'First project description'
-    @second_project = @config.add(
-      ElectricSheeps::Metadata::Project.new(id: 'second-project')
-    )
     @logger = mock
     @runner = subject.new(config: @config, logger: @logger)
   end
 
-  def run_it
-    ElectricSheeps::Directories.expects(:mk_work_dir!)
-    @runner.run!
-  end
 
   let(:script) do
     sequence('script')
@@ -30,14 +23,15 @@ describe ElectricSheeps::Runner do
     before do
       @logger.expects(:info).in_sequence(script).
         with("Executing \"First project description\" (first-project)")
-      ElectricSheeps::Directories.expects(:mk_project_dir!).with(@first_project).returns('/first_project')
-      ElectricSheeps::Directories.expects(:mk_project_dir!).with(@second_project).returns('/second_project')
     end
 
     it 'should not have remaining projects' do
+      @second_project = @config.add(
+        ElectricSheeps::Metadata::Project.new(id: 'second-project')
+      )
       @logger.expects(:info).in_sequence(script).
         with("Executing second-project")
-      run_it
+      @runner.run!
       @config.remaining.must_equal 0 
     end
 
@@ -73,30 +67,33 @@ describe ElectricSheeps::Runner do
       end
 
       def append_commands(shell)
-        shell.add ElectricSheeps::Metadata::Command.new(id: 'first_command',
-          type: 'dumb')
-        shell.add ElectricSheeps::Metadata::Command.new(id: 'second_command',
-          type: 'dumber')
+        shell.add ElectricSheeps::Metadata::Command.new(type: 'dumb')
+        shell.add ElectricSheeps::Metadata::Command.new(type: 'dumber')
         shell
       end
 
       def expects_executions(shell, logger, sequence)
-        logger.expects(:info).in_sequence(sequence).with("I'm Dumb, my work directory is /first_project")
+        shell.expects(:project_dir).in_sequence(sequence).
+          with(@first_project).returns('/first_project')
+        logger.expects(:info).in_sequence(sequence).
+          with("I'm Dumb, my work directory is /first_project")
         shell.expects(:exec).in_sequence(sequence).with('echo "" > /dev/null')
-        logger.expects(:info).in_sequence(sequence).with("I'm Dumber, my work directory is /first_project")
-        shell.expects(:exec).in_sequence(sequence).with('echo > /dev/null')
+
+        shell.expects(:project_dir).in_sequence(sequence).
+          with(@first_project).returns('/first_project')
+        logger.expects(:info).in_sequence(sequence).
+          with("I'm Dumber, my work directory is /first_project")
+        shell.expects(:exec).in_sequence(sequence).
+          with('echo > /dev/null')
       end
 
       it 'wraps command executions in a local shell' do
         append_commands @first_project.add(metadata = ElectricSheeps::Metadata::Shell.new)
         shell = ElectricSheeps::Shell::LocalShell.any_instance
-        @logger.expects(:info).in_sequence(script).
-          with("Starting a local shell session")
+        shell.expects(:open!).in_sequence(script)
+        shell.expects(:mk_project_dir!).in_sequence(script).with(@first_project)
         expects_executions(shell, @logger, script)
-        @logger.expects(:info).in_sequence(script).
-          with("Executing second-project")
-        
-        run_it
+        @runner.run!
         expects_execution_times(@first_project, metadata)
       end
 
@@ -110,12 +107,11 @@ describe ElectricSheeps::Runner do
         )
         shell = ElectricSheeps::Shell::RemoteShell.any_instance
         shell.expects(:open!).returns(shell).in_sequence(script)
+        shell.expects(:mk_project_dir!).in_sequence(script).with(@first_project)
         expects_executions(shell, @logger, script)
         shell.expects(:close!).in_sequence(script).returns(shell)
-        @logger.expects(:info).in_sequence(script).
-          with("Executing second-project")
-
-        run_it
+        
+        @runner.run!
         expects_execution_times(@first_project, metadata)
       end
 
