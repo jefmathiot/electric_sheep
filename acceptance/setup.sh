@@ -14,4 +14,9 @@ mongo <<EOF
   use controldb;
   db.dropDatabase();
   db.data.save({pi: 3.14});
+  db.addUser({
+    user: "operator",
+    pwd: "pseudorandom",
+    roles: ["read"]
+  });
 EOF
