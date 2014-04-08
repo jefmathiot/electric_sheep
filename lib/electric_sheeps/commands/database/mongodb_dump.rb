@@ -5,13 +5,12 @@ module ElectricSheeps
         include ElectricSheeps::Commands::Command
         include ElectricSheeps::Helpers::Named
 
-        register as: "mongodb_dump", of_type: :command
-        resource :database, kind_of: Resources::Database
+        register as: "mongodb_dump"
 
         def perform
-          logger.info "Creating a dump of the \"#{database.name}\" MongoDB database"
-          dump = with_named_dir work_dir, database.name, timestamp: true do |output|
-            shell.exec cmd(database.name, database.user, database.password, output)
+          logger.info "Creating a dump of the \"#{resource.name}\" MongoDB database"
+          dump = with_named_dir work_dir, resource.name, timestamp: true do |output|
+            shell.exec "#{cmd(resource.name, resource.user, resource.password, output)} &> /dev/null"
           end
           done! Resources::Directory.new(path: dump, remote: shell.remote?)
         end

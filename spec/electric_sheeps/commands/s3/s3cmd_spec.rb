@@ -6,19 +6,29 @@ describe ElectricSheeps::Commands::S3::S3cmd do
     ElectricSheeps::Commands::Register.command('s3cmd').must_equal subject
   end
 
-  it 'expects s3bucket and file resources' do
-    s3cmd = subject.new('s3-step', nil, nil, nil, nil,
-      file: ElectricSheeps::Resources::File.new(path: 'somefile.txt'),
-      s3_bucket: ElectricSheeps::Resources::S3Bucket.new(
-        url: 'some_url',
-        access_key: 'some_access_key',
-        secret_key: 'some_secret_key'
-      )
-    )
+  before do
+    @project, @logger, @shell, @metadata = ElectricSheeps::Metadata::Project.new, mock, mock, mock
+    @project.start_with! ElectricSheeps::Resources::File.new(path: '/tmp/the-file')
+    @metadata.stubs(:bucket).returns('the-bucket')
+    @metadata.stubs(:access_key).returns('ACCESSKEY')
+    @metadata.stubs(:secret_key).returns('SECRET')
+  end
 
-    s3cmd.s3_bucket.url.must_equal 'some_url'
-    s3cmd.s3_bucket.access_key.must_equal 'some_access_key'
-    s3cmd.s3_bucket.secret_key.must_equal 'some_secret_key'
-    s3cmd.file.path.must_equal 'somefile.txt'
+  it 'puts the file to the remote bucket' do
+    s3cmd = subject.new(@project, @logger, @shell, '/tmp/', @metadata)
+
+    seq = sequence('cmd')
+    @logger.expects(:info).with(%{Uploading file "the-file" to S3 bucket "the-bucket"})
+    @shell.expects(:exec).with %{s3cmd put "/tmp/the-file" "s3://the-bucket" } <<
+      %{--access_key="ACCESSKEY" --secret_key="SECRET"}
+    s3cmd.perform
+
+    @project.last_product.tap do |product|
+      product.must_be_instance_of ElectricSheeps::Resources::S3Object
+      product.bucket.must_equal 'the-bucket'
+      product.key.must_equal 'the-file'
+      product.access_key.must_equal 'ACCESSKEY'
+      product.secret_key.must_equal 'SECRET'
+    end
   end
 end
