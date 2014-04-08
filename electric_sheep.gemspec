@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["foss@servebox.com"]
   spec.description   = %q{A simple task system for file manipulation (i.e. backup).}
   spec.summary       = %q{A simple task system for file manipulation (i.e. backup).}
-  spec.homepage      = "https://github.com/servebox/electric_sheeps"
+  spec.homepage      = "https://github.com/servebox/electric_sheep"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)

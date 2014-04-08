@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe ElectricSheeps::Dsl do
+describe ElectricSheep::Dsl do
   before do
-    @config = ElectricSheeps::Config.new
-    @dsl = ElectricSheeps::Dsl.new(@config)
+    @config = ElectricSheep::Config.new
+    @dsl = ElectricSheep::Dsl.new(@config)
     @dsl.host "some-host", hostname: "some-host.tld", description: "Some host"
   end
 
@@ -31,7 +31,7 @@ describe ElectricSheeps::Dsl do
       end
       project.wont_be_nil
       project.id.must_equal "some-project"
-      project.last_product.must_be_instance_of ElectricSheeps::Resources::Database
+      project.last_product.must_be_instance_of ElectricSheep::Resources::Database
       project.description.must_equal "Some random project"
     end
 
@@ -39,7 +39,7 @@ describe ElectricSheeps::Dsl do
       extend ActiveSupport::Concern
 
       class DoNothing
-        include ElectricSheeps::Commands::Command
+        include ElectricSheep::Commands::Command
 
         register as: 'do_nothing'
 
@@ -57,7 +57,7 @@ describe ElectricSheeps::Dsl do
 
           it "appends the command to the shell's queue" do
             build_command
-            @command.must_be_instance_of ElectricSheeps::Metadata::Command
+            @command.must_be_instance_of ElectricSheep::Metadata::Command
             @command.type.must_equal :do_nothing
           end
         end
@@ -77,7 +77,7 @@ describe ElectricSheeps::Dsl do
 
       it "appends the shell to the project's queue" do
         build_shell
-        @shell.must_be_instance_of ElectricSheeps::Metadata::RemoteShell
+        @shell.must_be_instance_of ElectricSheep::Metadata::RemoteShell
         @shell.host.must_equal "some-host"
         @shell.user.must_equal "op"
       end
@@ -96,7 +96,7 @@ describe ElectricSheeps::Dsl do
 
       it "appends the shell to the project's queue" do
         build_shell
-        @shell.must_be_instance_of ElectricSheeps::Metadata::Shell
+        @shell.must_be_instance_of ElectricSheep::Metadata::Shell
       end
 
       include ShellSpecs
@@ -113,7 +113,7 @@ describe ElectricSheeps::Dsl do
 
       it "should append the transport to the project's queue" do
         build_transport
-        @transport.must_be_instance_of ElectricSheeps::Metadata::Transport
+        @transport.must_be_instance_of ElectricSheep::Metadata::Transport
       end
 
       it "should define transport ends" do
@@ -121,8 +121,8 @@ describe ElectricSheeps::Dsl do
           from
           to
         end
-        @transport.from.must_be_instance_of ElectricSheeps::Metadata::TransportEnd
-        @transport.to.must_be_instance_of ElectricSheeps::Metadata::TransportEnd
+        @transport.from.must_be_instance_of ElectricSheep::Metadata::TransportEnd
+        @transport.to.must_be_instance_of ElectricSheep::Metadata::TransportEnd
       end
     end
   end

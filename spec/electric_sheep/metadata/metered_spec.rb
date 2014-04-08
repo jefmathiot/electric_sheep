@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe ElectricSheeps::Metadata::Metered do
+describe ElectricSheep::Metadata::Metered do
   MeteredKlazz = Class.new do
-    include ElectricSheeps::Metadata::Metered
+    include ElectricSheep::Metadata::Metered
   end
 
   describe MeteredKlazz do

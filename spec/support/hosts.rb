@@ -2,7 +2,7 @@ module Support
   module Hosts
     
     def new_host
-      @hosts ||= ElectricSheeps::Metadata::Hosts.new
+      @hosts ||= ElectricSheep::Metadata::Hosts.new
       host_id = next_host
       @hosts.add( host_id, hostname: "#{host_id}.tld")
     end

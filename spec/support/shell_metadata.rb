@@ -10,7 +10,7 @@ module Support
 
       it 'should add commands' do
         shell = subject_instance
-        shell.add(ElectricSheeps::Metadata::Command.new(id: 'exec_id', type: Object))
+        shell.add(ElectricSheep::Metadata::Command.new(id: 'exec_id', type: Object))
         shell.size.must_equal 1
       end
     end

@@ -1,15 +1,15 @@
 require 'spec_helper'
 
-describe ElectricSheeps::Commands::Compression::TarGz do
+describe ElectricSheep::Commands::Compression::TarGz do
 
   it 'should have registered as "tar_gz"' do
-    ElectricSheeps::Commands::Register.command("tar_gz").must_equal subject
+    ElectricSheep::Commands::Register.command("tar_gz").must_equal subject
   end
 
   describe "executing the command" do
 
     before do
-      @project, @logger, @shell = ElectricSheeps::Metadata::Project.new, mock, mock
+      @project, @logger, @shell = ElectricSheep::Metadata::Project.new, mock, mock
 
       @command = subject.new(@project, @logger, @shell, '/tmp', mock)
       @shell.expects(:remote?).returns(true)
@@ -24,7 +24,7 @@ describe ElectricSheeps::Commands::Compression::TarGz do
     end
 
     it 'compresses the provided file' do
-      @project.start_with!(ElectricSheeps::Resources::File.new(path: '/tmp/some-file.txt'))
+      @project.start_with!(ElectricSheep::Resources::File.new(path: '/tmp/some-file.txt'))
       @logger.expects(:info).in_sequence(@seq).
         with 'Compressing /tmp/some-file.txt to some-file.txt.tar.gz'
       @shell.expects(:exec).with('tar -cvzf "/tmp/some-file.txt.tar.gz" "/tmp/some-file.txt" &> /dev/null')
@@ -33,7 +33,7 @@ describe ElectricSheeps::Commands::Compression::TarGz do
     end
 
     it 'compresses the provided directory' do
-      @project.start_with!(ElectricSheeps::Resources::Directory.new(path: '/tmp/some-directory'))
+      @project.start_with!(ElectricSheep::Resources::Directory.new(path: '/tmp/some-directory'))
       @logger.expects(:info).in_sequence(@seq).
         with 'Compressing /tmp/some-directory to some-directory.tar.gz'
       @shell.expects(:exec).with('tar -cvzf "/tmp/some-directory.tar.gz" "/tmp/some-directory" &> /dev/null')

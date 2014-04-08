@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-describe ElectricSheeps::Config do
+describe ElectricSheep::Config do
   include Support::Queue
 
   def queue_items
     ([0]*2).map do
-      ElectricSheeps::Metadata::Project.new
+      ElectricSheep::Metadata::Project.new
     end
   end
 
@@ -14,7 +14,7 @@ describe ElectricSheeps::Config do
   end
 
   it 'initializes an empty hosts' do
-    @config.hosts.must_be_instance_of ElectricSheeps::Metadata::Hosts
+    @config.hosts.must_be_instance_of ElectricSheep::Metadata::Hosts
   end
 
 end

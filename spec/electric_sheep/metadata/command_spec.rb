@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-describe ElectricSheeps::Metadata::Command do
+describe ElectricSheep::Metadata::Command do
 
   before do
     @command = subject.new(type: 'foo')
   end
 
   it 'resolves the runner class' do
-    ElectricSheeps::Commands::Register.expects(:command).with('foo').returns(Object)
+    ElectricSheep::Commands::Register.expects(:command).with('foo').returns(Object)
     @command.command_runner.must_equal Object
   end
 

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe ElectricSheeps::Shell::LocalShell do
+describe ElectricSheep::Shell::LocalShell do
 
   before do
     @logger = mock()

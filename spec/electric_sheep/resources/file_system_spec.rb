@@ -1,7 +1,7 @@
-describe ElectricSheeps::Resources::FileSystem do
+describe ElectricSheep::Resources::FileSystem do
 
   FileSystemKlazz = Class.new do
-    include ElectricSheeps::Resources::FileSystem
+    include ElectricSheep::Resources::FileSystem
   end
 
   describe FileSystemKlazz do

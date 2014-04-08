@@ -1,10 +1,10 @@
 require 'spec_helper'
 require 'timecop'
 
-describe ElectricSheeps::Helpers::Named do
+describe ElectricSheep::Helpers::Named do
 
   NamedKlazz = Class.new do
-    include ElectricSheeps::Helpers::Named
+    include ElectricSheep::Helpers::Named
   end
 
   before do

@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
-require 'electric_sheeps/cli'
+require 'electric_sheep/cli'
 
 # See https://github.com/erikhuda/thor/issues/244
 Thor.send :define_singleton_method, :exit_on_failure? do true end
-ElectricSheeps::CLI.start(ARGV)
+ElectricSheep::CLI.start(ARGV)

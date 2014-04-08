@@ -1,9 +1,9 @@
 require 'spec_helper'
 require 'timecop'
 
-describe ElectricSheeps::Helpers::Timestamps do
+describe ElectricSheep::Helpers::Timestamps do
   TimestampsKlazz = Class.new do
-    include ElectricSheeps::Helpers::Timestamps
+    include ElectricSheep::Helpers::Timestamps
   end
 
   describe TimestampsKlazz do

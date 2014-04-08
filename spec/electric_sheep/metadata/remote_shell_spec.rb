@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe ElectricSheeps::Metadata::RemoteShell do
+describe ElectricSheep::Metadata::RemoteShell do
   include Support::ShellMetadata
   include Support::Hosts
 

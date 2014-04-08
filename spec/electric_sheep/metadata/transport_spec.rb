@@ -1,14 +1,14 @@
 require 'spec_helper'
 
-describe ElectricSheeps::Metadata::Transport do
+describe ElectricSheep::Metadata::Transport do
   include Support::Hosts
 
   Resource = Class.new do
-    include ElectricSheeps::Resources::Resource
+    include ElectricSheep::Resources::Resource
   end
 
   before do
-    transport_end = ElectricSheeps::Metadata::TransportEnd
+    transport_end = ElectricSheep::Metadata::TransportEnd
     @source = transport_end.new(host: new_host, resource: Resource.new)
     @destination = transport_end.new(host: new_host, resource: Resource.new)
     @transport = subject.new(from: @source, to: @destination)
@@ -24,7 +24,7 @@ describe ElectricSheeps::Metadata::Transport do
 
 end
 
-describe ElectricSheeps::Metadata::TransportEnd do
+describe ElectricSheep::Metadata::TransportEnd do
   include Support::Hosts
   
   before do

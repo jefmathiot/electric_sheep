@@ -1,12 +1,12 @@
 require 'spec_helper'
 
-describe ElectricSheeps::Runner do
+describe ElectricSheep::Runner do
 
   before do
-    @config = ElectricSheeps::Config.new
+    @config = ElectricSheep::Config.new
     @config.hosts.add('some-host', hostname: 'some-host.tld')
     @first_project = @config.add(
-      ElectricSheeps::Metadata::Project.new(id: 'first-project')
+      ElectricSheep::Metadata::Project.new(id: 'first-project')
     )
     @first_project.description = 'First project description'
     @logger = mock
@@ -27,7 +27,7 @@ describe ElectricSheeps::Runner do
 
     it 'should not have remaining projects' do
       @second_project = @config.add(
-        ElectricSheeps::Metadata::Project.new(id: 'second-project')
+        ElectricSheep::Metadata::Project.new(id: 'second-project')
       )
       @logger.expects(:info).in_sequence(script).
         with("Executing second-project")
@@ -38,7 +38,7 @@ describe ElectricSheeps::Runner do
     describe 'with commands' do
 
       class Dumb
-        include ElectricSheeps::Commands::Command
+        include ElectricSheep::Commands::Command
         register as: 'dumb', of_type: :command
 
         def perform
@@ -49,7 +49,7 @@ describe ElectricSheeps::Runner do
       end
 
       class Dumber
-        include ElectricSheeps::Commands::Command
+        include ElectricSheep::Commands::Command
         register as: 'dumber', of_type: :command
 
         def perform
@@ -67,8 +67,8 @@ describe ElectricSheeps::Runner do
       end
 
       def append_commands(shell)
-        shell.add ElectricSheeps::Metadata::Command.new(type: 'dumb')
-        shell.add ElectricSheeps::Metadata::Command.new(type: 'dumber')
+        shell.add ElectricSheep::Metadata::Command.new(type: 'dumb')
+        shell.add ElectricSheep::Metadata::Command.new(type: 'dumber')
         shell
       end
 
@@ -88,8 +88,8 @@ describe ElectricSheeps::Runner do
       end
 
       it 'wraps command executions in a local shell' do
-        append_commands @first_project.add(metadata = ElectricSheeps::Metadata::Shell.new)
-        shell = ElectricSheeps::Shell::LocalShell.any_instance
+        append_commands @first_project.add(metadata = ElectricSheep::Metadata::Shell.new)
+        shell = ElectricSheep::Shell::LocalShell.any_instance
         shell.expects(:open!).in_sequence(script)
         shell.expects(:mk_project_dir!).in_sequence(script).with(@first_project)
         expects_executions(shell, @logger, script)
@@ -100,12 +100,12 @@ describe ElectricSheeps::Runner do
       it 'wraps command executions in a remote shell' do
         append_commands(
           @first_project.add(
-            metadata = ElectricSheeps::Metadata::RemoteShell.new(
+            metadata = ElectricSheep::Metadata::RemoteShell.new(
               host: 'some-host', user: 'op'
             )
           )
         )
-        shell = ElectricSheeps::Shell::RemoteShell.any_instance
+        shell = ElectricSheep::Shell::RemoteShell.any_instance
         shell.expects(:open!).returns(shell).in_sequence(script)
         shell.expects(:mk_project_dir!).in_sequence(script).with(@first_project)
         expects_executions(shell, @logger, script)

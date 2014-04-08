@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe ElectricSheeps::Log::ConsoleLogger do
+describe ElectricSheep::Log::ConsoleLogger do
 
   describe 'with a single logger' do
 

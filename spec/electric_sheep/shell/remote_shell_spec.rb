@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'net/ssh/test'
 
-describe ElectricSheeps::Shell::RemoteShell do
+describe ElectricSheep::Shell::RemoteShell do
   include Net::SSH::Test
 
   module Net ; module SSH ; module Test

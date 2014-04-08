@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe ElectricSheeps::Helpers::ShellSafe do
+describe ElectricSheep::Helpers::ShellSafe do
 
   ShellSafeKlazz = Class.new do
-    include ElectricSheeps::Helpers::ShellSafe
+    include ElectricSheep::Helpers::ShellSafe
   end
 
   describe ShellSafeKlazz do

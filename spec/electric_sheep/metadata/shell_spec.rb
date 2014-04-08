@@ -1,12 +1,12 @@
 require 'spec_helper'
 
-describe ElectricSheeps::Metadata::Shell do
+describe ElectricSheep::Metadata::Shell do
   include Support::ShellMetadata
   include Support::Queue
 
   def queue_items
     ([0]*2).map do
-      ElectricSheeps::Metadata::Command.new
+      ElectricSheep::Metadata::Command.new
     end
   end
 

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe ElectricSheeps::Resources::Directory do
+describe ElectricSheep::Resources::Directory do
 
   it 'is a file system resource' do
     subject.new.respond_to?(:path).must_equal true

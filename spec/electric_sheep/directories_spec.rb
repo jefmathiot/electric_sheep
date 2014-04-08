@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe ElectricSheeps::Directories do
+describe ElectricSheep::Directories do
 
   DirectoriesKlazz = Class.new do
-    include ElectricSheeps::Directories
+    include ElectricSheep::Directories
 
     def initialize(shell)
       @shell = shell

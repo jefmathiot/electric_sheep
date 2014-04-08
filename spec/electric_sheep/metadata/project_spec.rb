@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-describe ElectricSheeps::Metadata::Project do
+describe ElectricSheep::Metadata::Project do
   include Support::Accessors
   include Support::Queue
 
   def queue_items
     [
-      ElectricSheeps::Metadata::Shell.new,
-      ElectricSheeps::Metadata::Transport.new
+      ElectricSheep::Metadata::Shell.new,
+      ElectricSheep::Metadata::Transport.new
     ]
   end
 

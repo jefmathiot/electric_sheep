@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe ElectricSheeps::Metadata::Hosts do
+describe ElectricSheep::Metadata::Hosts do
 
   before do
     @hosts = subject.new

@@ -1,17 +1,17 @@
 require 'spec_helper'
 require 'timecop'
 
-describe ElectricSheeps::Commands::Database::MongoDBDump do
+describe ElectricSheep::Commands::Database::MongoDBDump do
 
   it 'should have registered as "mongodb_dump"' do
-    ElectricSheeps::Commands::Register.command("mongodb_dump").must_equal subject
+    ElectricSheep::Commands::Register.command("mongodb_dump").must_equal subject
   end
 
   describe "executing the command" do
 
     before do
-      @project, @logger, @shell = ElectricSheeps::Metadata::Project.new, mock, mock
-      @database = ElectricSheeps::Resources::Database.new name: 'MyDatabase'
+      @project, @logger, @shell = ElectricSheep::Metadata::Project.new, mock, mock
+      @database = ElectricSheep::Resources::Database.new name: 'MyDatabase'
       @project.start_with! @database
 
       @command = subject.new(@project, @logger, @shell, '/tmp', nil)

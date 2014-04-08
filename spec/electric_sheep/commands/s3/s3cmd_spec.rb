@@ -1,14 +1,14 @@
 require 'spec_helper'
 
-describe ElectricSheeps::Commands::S3::S3cmd do
+describe ElectricSheep::Commands::S3::S3cmd do
 
   it 'should have registered as the "s3cmd" agent of type command' do
-    ElectricSheeps::Commands::Register.command('s3cmd').must_equal subject
+    ElectricSheep::Commands::Register.command('s3cmd').must_equal subject
   end
 
   before do
-    @project, @logger, @shell, @metadata = ElectricSheeps::Metadata::Project.new, mock, mock, mock
-    @project.start_with! ElectricSheeps::Resources::File.new(path: '/tmp/the-file')
+    @project, @logger, @shell, @metadata = ElectricSheep::Metadata::Project.new, mock, mock, mock
+    @project.start_with! ElectricSheep::Resources::File.new(path: '/tmp/the-file')
     @metadata.stubs(:bucket).returns('the-bucket')
     @metadata.stubs(:access_key).returns('ACCESSKEY')
     @metadata.stubs(:secret_key).returns('SECRET')
@@ -24,7 +24,7 @@ describe ElectricSheeps::Commands::S3::S3cmd do
     s3cmd.perform
 
     @project.last_product.tap do |product|
-      product.must_be_instance_of ElectricSheeps::Resources::S3Object
+      product.must_be_instance_of ElectricSheep::Resources::S3Object
       product.bucket.must_equal 'the-bucket'
       product.key.must_equal 'the-file'
       product.access_key.must_equal 'ACCESSKEY'

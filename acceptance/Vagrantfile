@@ -6,9 +6,10 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   
-  config.vm.box = "precise64-lxc"
-  config.vm.box_url = "https://vagrantcloud.com/fgrehm/precise64-lxc"
- 
+  config.vm.box = "fgrehm/precise64-lxc"
+  
+  config.omnibus.chef_version = :latest 
+
   config.vm.provider :lxc do |lxc|
     lxc.customize 'network.ipv4', '10.0.3.10/32'
   end

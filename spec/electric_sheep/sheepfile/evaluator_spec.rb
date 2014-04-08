@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe ElectricSheeps::Sheepfile::Evaluator do
+describe ElectricSheep::Sheepfile::Evaluator do
 
   before do
     @path = File.expand_path('Sheepfile')

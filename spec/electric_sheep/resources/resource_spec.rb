@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe ElectricSheeps::Resources::Resource do
+describe ElectricSheep::Resources::Resource do
   ResourceKlazz = Class.new do
-    include ElectricSheeps::Resources::Resource
+    include ElectricSheep::Resources::Resource
   end
 
   describe ResourceKlazz do

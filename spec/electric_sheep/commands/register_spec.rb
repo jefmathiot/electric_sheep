@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe ElectricSheeps::Commands::Register do
+describe ElectricSheep::Commands::Register do
 
   it 'should allow command registration' do
     class FakeAgent ; end
