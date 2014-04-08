@@ -10,7 +10,7 @@ SimpleCov.start do
   add_filter '/spec/'
 end
 
-require 'electric_sheeps'
+require 'electric_sheep'
 require 'minitest'
 require 'minitest/spec'
 require 'minitest/autorun'

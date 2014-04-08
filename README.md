@@ -1,11 +1,11 @@
-# ElectricSheeps
+# ElectricSheep
 
 A simple task system for remote resources manipulation (i.e. backup).
 
-[![Build Status](https://travis-ci.org/servebox/electric_sheeps.png)](https://travis-ci.org/servebox/electric_sheeps)
-[![Dependency Status](https://gemnasium.com/servebox/electric_sheeps.png)](https://gemnasium.com/servebox/electric_sheeps)
-[![Coverage Status](https://coveralls.io/repos/servebox/electric_sheeps/badge.png)](https://coveralls.io/r/servebox/electric_sheeps)
-[![Code Climate](https://codeclimate.com/github/servebox/electric_sheeps.png)](https://codeclimate.com/github/servebox/electric_sheeps)
+[![Build Status](https://travis-ci.org/servebox/electric_sheep.png)](https://travis-ci.org/servebox/electric_sheep)
+[![Dependency Status](https://gemnasium.com/servebox/electric_sheep.png)](https://gemnasium.com/servebox/electric_sheep)
+[![Coverage Status](https://coveralls.io/repos/servebox/electric_sheep/badge.png)](https://coveralls.io/r/servebox/electric_sheep)
+[![Code Climate](https://codeclimate.com/github/servebox/electric_sheep.png)](https://codeclimate.com/github/servebox/electric_sheep)
 
 ## Roadmap
 
@@ -36,7 +36,7 @@ Requires Ruby >= 1.9.3.
 
 Add this line to your application's Gemfile:
 
-    gem 'electric_sheeps'
+    gem 'electric_sheep'
 
 And then execute:
 
@@ -44,7 +44,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install electric_sheeps
+    $ gem install electric_sheep
 
 ## Usage
 
@@ -61,7 +61,7 @@ TODO
 Just launch ElectricSheeps inside your project with:
 
 ```
-bundle exec electric_sheeps work
+bundle exec electric_sheep work
 ```
 
 ElectricSheeps will look for a Sheepfile in the current directory.
@@ -71,7 +71,7 @@ ElectricSheeps will look for a Sheepfile in the current directory.
 ElectricSheeps can use any file as the configuration:
 
 ```
-bundle exec electric_sheeps work -c ~/Somefile 
+bundle exec electric_sheep work -c ~/Somefile 
 ```
 
 ## Using the DSL
