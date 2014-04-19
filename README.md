@@ -19,7 +19,7 @@ Neither the API, DSL or runner are ready so far. Roadmap of features for upcomin
 * :heavy_minus_sign: Commands for directories & files backups and compression
 * :heavy_minus_sign: Commands for popular RDBMS dumps (MySQL, Postgres)
 * :heavy_minus_sign: Commands for popular key-value and document stores backups (Redis, Memcached, MongoDB, CouchDB)
-* :heavy_minus_sign: Credentials encryption using public-key cryptography
+* :clock1: Credentials encryption using public-key cryptography
 * :heavy_minus_sign: Commands for archive encryption
 * :heavy_minus_sign: Reporting configuration
 * :heavy_minus_sign: Documentation of projects from metadata
@@ -82,15 +82,11 @@ The `host` method allows you to declare remote hosts. Each host should have a un
 identifier and define an hostname. You can declare as many hosts as needed.
 
 ```ruby
-host "production-mysql-master" do
-    description "MySQL - Production Master" # optional
-    name "mysql1.domain.tld"
-end
+host "production-mysql-master", hostname: "mysql1.domain.tld",
+  description "MySQL - Production Master" # optional
 
-host "backup-store-1" do
+host "backup-store-1", hostname: "store1.domain.tld",
     description "Storage Server 1"
-    name "store1.domain.tld"
-end
 ```
 
 Please note that you don't have to declare the localhost.
