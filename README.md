@@ -99,13 +99,11 @@ is initial state (such as a directory, a database, a file, etc.). You can declar
 as needed but each of them aims to manipulate a single resource.
 
 ```ruby
-project "myapp-database-backup" do
-  description "Database Full Backup"
-  resource type: :database, user: "backup-operator", password: encrypted("XXXXXXX")
+project "myapp-database-backup", description: "Database Full Backup" do
+  resource type: :database, name: "myapp_db"
 end
 
-project "www-media-backup" do
-  description "Acme uploads"
+project "www-media-backup", description: "Acme uploads" do
   resource type: :directory, path: '/var/www/uploads'
 end
 ```
@@ -123,12 +121,11 @@ executes them on the localhost. `remotely` requires the `on` option to reference
 target host.
 
 ```ruby
-project "myapp-database-backup" do
-  description "Database Full Backup"
-  resource type: :database, user: "backup-operator", password: encrypted("XXXXXXX")
+project "myapp-database-backup", description: "Database Full Backup" do
+  resource type: :database, name: "myapp_db"
 
   remotely on: "production-mysql-master", as: "operator" do
-    mysql_dump
+    mysql_dump user: "backup-operator", password: encrypted("XXXXXXXXXX")
     tar_gz delete_source: true
   end
 
@@ -141,12 +138,11 @@ end
 Transports allow you to move or copy resources from an host to another. Like shells, transports should be nested inside a project.
 
 ```ruby
-project "myapp-database-backup" do
-  description "Database Full Backup"
-  resource type: :database, user: "backup-operator", password: encrypted("XXXXXXX")
+project "myapp-database-backup", description: "Database Full Backup" do
+  resource type: :database, name: "myapp_db"
 
   remotely on: "production-mysql-master", as: "operator" do
-    mysql_dump
+    mysql_dump user: "backup-operator", password: encrypted("XXXXXXXXXX")
     tar_gz delete_source: true
   end
 
