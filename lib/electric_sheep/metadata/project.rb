@@ -15,12 +15,20 @@ module ElectricSheep
         @initial_resource = resource
       end
 
+      def use_private_key!(key)
+        @private_key=key
+      end
+
       def store_product!(resource)
         @products << resource
       end
 
       def last_product
         @products.last || @initial_resource
+      end
+
+      def private_key
+        @private_key || File.expand_path('~/.ssh/id_rsa')
       end
 
       include Options

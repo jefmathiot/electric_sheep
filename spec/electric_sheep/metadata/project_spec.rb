@@ -33,4 +33,16 @@ describe ElectricSheep::Metadata::Project do
     project.store_product!(resource = mock)
     project.last_product.must_equal resource
   end
+
+  it 'uses the default private key' do
+    subject.new.private_key.must_equal File.expand_path('~/.ssh/id_rsa')
+  end
+
+  it 'overrides the private key' do
+    project = subject.new
+    '/path/to/private/key'.tap do |key|
+      project.use_private_key! key
+      project.private_key.must_equal key
+    end
+  end
 end
