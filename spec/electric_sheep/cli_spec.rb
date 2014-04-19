@@ -10,23 +10,23 @@ describe ElectricSheep::CLI do
       before do
         @config, @logger = mock, mock
         ElectricSheep::Log::ConsoleLogger.expects(:new).with(kind_of(IO), kind_of(IO)).
-        returns(@logger)
+          returns(@logger)
         ElectricSheep::Runner.expects(:new).
-        with(all_of(
-          has_entry(config: @config),
-          has_entry(logger: @logger)
+          with(all_of(
+            has_entry(config: @config),
+            has_entry(logger: @logger)
           )).returns(mock(run!: true))
       end
 
       it 'gets the job done' do
         ElectricSheep::Sheepfile::Evaluator.expects(:new).with('Sheepfile').
-        returns(mock(evaluate: @config))
+          returns(mock(evaluate: @config))
         subject.new.work
       end
 
       it 'overrides default config option' do
         ElectricSheep::Sheepfile::Evaluator.expects(:new).with('Lambfile').
-        returns(mock(evaluate: @config))
+          returns(mock(evaluate: @config))
         subject.new([], config: 'Lambfile').work
       end
 
