@@ -14,6 +14,12 @@ module ElectricSheep
       end
     end
 
+    option :key, aliases: %w(-k), required: true
+    desc "encrypt SECRET", "Encrypt SECRET using the provided public key"
+    def encrypt(secret)
+      puts Crypto.encrypt(secret, options[:key])
+    end
+
     protected
     def configuration
       @config = Sheepfile::Evaluator.new(options[:config] || defaults[:config]).evaluate
