@@ -6,16 +6,22 @@ module ElectricSheep
 
     class << self
       def encrypt(plain_text, key_file)
-        key = OpenSSL::PKey::RSA.new(read_key_file(key_file))
-        raise "Not a public key: #{key_file}" unless key.public?
+        key = get_key(key_file, :public)
         Base64.encode64(key.public_encrypt(plain_text))
       end
 
       def decrypt(cipher_text, key_file)
-
+        key = get_key(key_file, :private)
+        key.private_decrypt(Base64.decode64(cipher_text))
       end
 
       private
+      def get_key(key_file, type)
+        OpenSSL::PKey::RSA.new(read_key_file(key_file)).tap do |key|
+          raise "Not a #{type} key: #{key_file}" unless key.send("#{type}?")
+        end
+      end
+
       def read_key_file(key_file)
         raise "Key file not found #{key_file}" unless File.exists?(key_file)
         key = File.read(key_file)
