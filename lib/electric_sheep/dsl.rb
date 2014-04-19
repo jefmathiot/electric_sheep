@@ -32,26 +32,6 @@ module ElectricSheep
 
     end
 
-    class HostDsl
-      def initialize(config, id, &block)
-        @config = config
-        @id = id
-        instance_eval &block if block_given?
-      end
-
-      def name(value)
-        @name = value
-      end
-
-      def description(value)
-        @description = value
-      end
-
-      def host
-      end
-
-    end
-
     class ProjectDsl < AbstractDsl
 
       returning :project
