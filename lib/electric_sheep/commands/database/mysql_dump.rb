@@ -11,7 +11,7 @@ module ElectricSheep
           logger.info "Creating a dump of the \"#{resource.name}\" MySQL database"
           dump = with_named_file work_dir, "#{resource.name}", timestamp: true,
             extension: 'sql' do |output|
-            shell.exec "#{cmd(resource.name, resource.user, resource.password, output)}"
+            shell.exec "#{cmd(resource.name, option(:user), option(:password), output)}"
           end
           done! Resources::Directory.new(path: dump, remote: shell.remote?)
         end
