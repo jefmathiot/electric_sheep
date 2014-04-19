@@ -55,6 +55,10 @@ module ElectricSheep
       def resource(type, options={})
         @subject.start_with! ElectricSheep::Resources.const_get(type.to_s.camelize).new(options)
       end
+
+      def private_key(path)
+        @subject.use_private_key! File.expand_path(path)
+      end
     end
 
     class ShellDsl < AbstractDsl

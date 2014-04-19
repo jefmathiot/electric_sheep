@@ -31,8 +31,21 @@ describe ElectricSheep::Dsl do
       end
       project.wont_be_nil
       project.id.must_equal "some-project"
-      project.last_product.must_be_instance_of ElectricSheep::Resources::Database
       project.description.must_equal "Some random project"
+    end
+
+    it 'sets the initial resource' do
+      project = build_project do
+        resource :database, name: 'mydb'
+      end
+      project.last_product.must_be_instance_of ElectricSheep::Resources::Database
+    end
+
+    it 'assigns the private key to use' do
+      project = build_project do
+        private_key '/path/to/private/key'
+      end
+      project.private_key.must_equal '/path/to/private/key'
     end
 
     module ShellSpecs
