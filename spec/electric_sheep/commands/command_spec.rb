@@ -41,6 +41,18 @@ describe ElectricSheep::Commands::Command do
       command.send :done!, resource
     end
 
+    it 'uses the previous product as the resource' do
+      command = subject.new(project = mock, mock, mock, '/tmp', mock)
+      project.expects(:last_product).returns(resource = mock)
+      command.send(:resource).must_equal resource
+    end
+
+    it 'extracts options values from metadata' do
+      command = subject.new(mock, mock, mock, '/tmp', metadata = mock)
+      metadata.expects(:some_option).returns('VALUE')
+      command.send(:option, :some_option).must_equal 'VALUE'
+    end
+
   end
 
   describe CommandKlazz2 do
