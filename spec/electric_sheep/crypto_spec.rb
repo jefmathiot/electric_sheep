@@ -3,7 +3,7 @@ require 'spec_helper'
 describe ElectricSheep::Crypto do
 
   def encode64s(string)
-    Base64.encode64('CIPHER').gsub /\n/, ''
+    Base64.encode64(string).gsub /\n/, ''
   end
 
   describe 'encrypting' do
