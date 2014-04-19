@@ -2,6 +2,10 @@ require 'spec_helper'
 
 describe ElectricSheep::Crypto do
 
+  def encode64s(string)
+    Base64.encode64('CIPHER').gsub /\n/, ''
+  end
+
   describe 'encrypting' do
 
     def expects_encryption(successful = true)
@@ -9,7 +13,7 @@ describe ElectricSheep::Crypto do
       key.expects(:public?).returns(successful)
       if successful
         key.expects(:public_encrypt).with('PLAIN').returns('CIPHER')
-        subject.encrypt('PLAIN', key_file.path).must_equal Base64.encode64('CIPHER')
+        subject.encrypt('PLAIN', key_file.path).must_equal encode64s('CIPHER')
       else
         ->{subject.encrypt('PLAIN', key_file.path)}.must_raise RuntimeError,
           /Not a public key/
@@ -108,9 +112,9 @@ describe ElectricSheep::Crypto do
       key.expects(:private?).returns(successful)
       if successful
         key.expects(:private_decrypt).with('CIPHER').returns('PLAIN')
-        subject.decrypt(Base64.encode64('CIPHER'), key_file.path).must_equal 'PLAIN'
+        subject.decrypt(encode64s('CIPHER'), key_file.path).must_equal 'PLAIN'
       else
-        ->{subject.decrypt(Base64.encode64('CIPHER'), key_file.path)}.must_raise RuntimeError,
+        ->{subject.decrypt(encode64s('CIPHER'), key_file.path)}.must_raise RuntimeError,
           /Not a private key/
       end
     end

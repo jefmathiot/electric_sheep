@@ -7,7 +7,7 @@ module ElectricSheep
     class << self
       def encrypt(plain_text, key_file)
         key = get_key(key_file, :public)
-        Base64.encode64(key.public_encrypt(plain_text))
+        Base64.encode64(key.public_encrypt(plain_text)).gsub(/\n/, '')
       end
 
       def decrypt(cipher_text, key_file)
