@@ -78,6 +78,10 @@ module ElectricSheep
         end
       end
 
+      def encrypted(value)
+        Metadata::Encrypted.new(value)
+      end
+
       protected
       def new_shell(options)
         Metadata::Shell.new

@@ -60,7 +60,6 @@ describe ElectricSheep::Dsl do
 
       included do
         describe "adding a command" do
-
           def build_command(options={})
             build_shell do
               do_nothing options
@@ -72,6 +71,14 @@ describe ElectricSheep::Dsl do
             build_command
             @command.must_be_instance_of ElectricSheep::Metadata::Command
             @command.type.must_equal :do_nothing
+          end
+
+          it 'allows encrypted values' do
+            value = nil
+            build_shell do
+              value = encrypted('XXXXX')
+            end
+            value.must_be_instance_of ElectricSheep::Metadata::Encrypted
           end
         end
       end
