@@ -30,7 +30,9 @@ module ElectricSheep
       end
 
       def option(name)
-        @metadata.send(name)
+        option = @metadata.send(name)
+        return option.decrypt(@project.private_key) if option.respond_to?(:decrypt)
+        option
       end
 
       module ClassMethods

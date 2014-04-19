@@ -47,9 +47,17 @@ describe ElectricSheep::Commands::Command do
       command.send(:resource).must_equal resource
     end
 
-    it 'extracts options values from metadata' do
+    it 'extracts options from metadata' do
       command = subject.new(mock, mock, mock, '/tmp', metadata = mock)
       metadata.expects(:some_option).returns('VALUE')
+      command.send(:option, :some_option).must_equal 'VALUE'
+    end
+
+    it 'decrypts options' do
+      command = subject.new(project = mock, mock, mock, '/tmp', metadata = mock)
+      metadata.expects(:some_option).returns(encrypted = mock)
+      project.expects(:private_key).returns('/path/to/private/key')
+      encrypted.expects(:decrypt).with('/path/to/private/key').returns('VALUE')
       command.send(:option, :some_option).must_equal 'VALUE'
     end
 
