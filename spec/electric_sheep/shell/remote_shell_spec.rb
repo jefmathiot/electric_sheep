@@ -5,6 +5,29 @@ describe ElectricSheep::Shell::RemoteShell do
   include Net::SSH::Test
 
   module Net ; module SSH ; module Test
+   
+    # Avoid Net::SSH::Test::Extensions to collide with Coveralls
+    class << self
+      def remove_io_aliases
+        ::IO.class_eval <<-EOF
+          class << self
+            alias_method :select, :select_for_real
+          end
+        EOF
+      end
+
+      def create_io_aliases
+        ::IO.class_eval <<-EOF
+          class << self
+            alias_method :select_for_real, :select
+            alias_method :select, :select_for_test
+          end
+        EOF
+      end
+    end
+
+    remove_io_aliases
+
     class Kex
       def exchange_keys
         result = Net::SSH::Buffer.from(:byte, NEWKEYS)
@@ -22,7 +45,12 @@ describe ElectricSheep::Shell::RemoteShell do
   end ; end ; end
 
   before do
+    Net::SSH::Test.create_io_aliases
     @logger = mock
+  end
+
+  after do
+    Net::SSH::Test.remove_io_aliases
   end
 
   it 'indicates its type' do
