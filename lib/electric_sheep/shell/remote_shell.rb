@@ -5,10 +5,11 @@ module ElectricSheep
     class RemoteShell
       include Directories
 
-      def initialize(logger, host, user)
+      def initialize(logger, host, user, private_key)
         @logger = logger
         @host = host
         @user = user
+        @private_key = private_key
       end
 
       def remote?
@@ -22,7 +23,9 @@ module ElectricSheep
       def open!
         self if opened?
         @logger.info "Starting a remote shell session for #{@user}@#{@host}"
-        @ssh_session = Net::SSH.start(@host, @user)
+        @ssh_session = Net::SSH.start(@host, @user,
+          key_data: Crypto.get_key(@private_key, :private),
+          keys_only: true)
         self
       end
 

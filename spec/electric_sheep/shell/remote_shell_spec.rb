@@ -26,7 +26,7 @@ describe ElectricSheep::Shell::RemoteShell do
   end
 
   it 'indicates its type' do
-    subject.new(nil, nil, nil).tap do |shell|
+    subject.new(nil, nil, nil, nil).tap do |shell|
       shell.remote?.must_equal true
       shell.local?.must_equal false
     end
@@ -49,10 +49,16 @@ describe ElectricSheep::Shell::RemoteShell do
     end
 
     before do
-      Net::SSH.expects(:start).returns( connection )
-      user = ENV['USER']
-      @logger.expects(:info).with("Starting a remote shell session for #{user}@localhost")
-      @shell = subject.new( @logger, 'localhost', user )
+      ElectricSheep::Crypto.expects(:get_key).
+        with('/path/to/private/key', :private).
+        returns('SECRET')
+      Net::SSH.expects(:start).
+        with('localhost', 'johndoe', key_data: 'SECRET', keys_only: true).
+        returns( connection )
+      user = 'johndoe'
+      @logger.expects(:info).
+        with("Starting a remote shell session for johndoe@localhost")
+      @shell = subject.new( @logger, 'localhost', 'johndoe', '/path/to/private/key' )
       @shell.open!
     end
 

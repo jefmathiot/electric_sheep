@@ -15,13 +15,13 @@ module ElectricSheep
         key.private_decrypt(Base64.decode64(cipher_text))
       end
 
-      private
       def get_key(key_file, type)
         OpenSSL::PKey::RSA.new(read_key_file(key_file)).tap do |key|
           raise "Not a #{type} key: #{key_file}" unless key.send("#{type}?")
         end
       end
 
+      private
       def read_key_file(key_file)
         raise "Key file not found #{key_file}" unless File.exists?(key_file)
         key = File.read(key_file)
