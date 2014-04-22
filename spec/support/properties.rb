@@ -1,5 +1,5 @@
 module Support
-  module Metadata
+  module Properties
     def defines_properties(*properties)
       properties.each do |prop|
         subject.properties.include?(prop).must_equal true,

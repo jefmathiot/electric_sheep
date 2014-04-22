@@ -12,12 +12,20 @@ module ElectricSheep
       end
 
       def command_runner
-        type && Commands::Register.command(type)
+        @options[:type] && Commands::Register.command(@options[:type])
       end
       
       def ensure_known_command
         if command_runner.nil?
           errors.add(:type, "Unknown command type #{type}")
+        end
+      end
+
+      def properties
+        unless command_runner.nil?
+          command_runner.properties.merge(super)
+        else
+          super
         end
       end
 

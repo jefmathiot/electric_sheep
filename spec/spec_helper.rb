@@ -20,7 +20,7 @@ require 'mocha/setup'
 
 require 'support/hosts'
 require 'support/shell_metadata'
-require 'support/metadata'
+require 'support/properties'
 require 'support/queue'
 
 ENV['ELECTRIC_SHEEPS_HOME'] = Dir.mktmpdir

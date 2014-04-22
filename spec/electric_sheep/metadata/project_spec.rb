@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe ElectricSheep::Metadata::Project do
   include Support::Queue
-  include Support::Metadata
+  include Support::Properties
 
   def queue_items
     [

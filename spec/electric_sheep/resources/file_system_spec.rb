@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe ElectricSheep::Resources::FileSystem do
-  include Support::Metadata
+  include Support::Properties
 
   it{
     defines_properties :path, :remote

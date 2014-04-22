@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe ElectricSheep::Metadata::RemoteShell do
   include Support::ShellMetadata
-  include Support::Metadata
+  include Support::Properties
   include Support::Hosts
 
   it{
