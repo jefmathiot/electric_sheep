@@ -1,32 +1,13 @@
 module ElectricSheep
   module Metadata
-    class Command < Base
+    class Command < Agent
       include Metered
               
       option :id, required: true
       option :type, required: true
 
-      def validate(config)
-        ensure_known_command
-        super
-      end
-
-      def command_runner
-        @options[:type] && Agents::Register.command(@options[:type])
-      end
-      
-      def ensure_known_command
-        if command_runner.nil?
-          errors.add(:type, "Unknown command type #{type}")
-        end
-      end
-
-      def options
-        unless command_runner.nil?
-          command_runner.options.merge(super)
-        else
-          super
-        end
+      def self.agent_type
+        :command
       end
 
     end

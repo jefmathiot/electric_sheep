@@ -1,6 +1,6 @@
 module ElectricSheep
   module Metadata
-    class Transport < Base
+    class Transport < Agent
       include Metered
 
       option :type, required: true
@@ -13,6 +13,10 @@ module ElectricSheep
 
       def move?
         type == :move
+      end
+
+      def self.agent_type
+        :transport
       end
 
     end

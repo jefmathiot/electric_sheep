@@ -49,7 +49,7 @@ module ElectricSheep
       shell.open!
       shell.mk_project_dir!(project)
       shell_metadata.each_item do |metadata|
-        command = metadata.command_runner.new(project, @logger, shell, 
+        command = metadata.agent.new(project, @logger, shell, 
           shell.project_dir(project), metadata )
         metadata.benchmarked do
           command.check_prerequisites
