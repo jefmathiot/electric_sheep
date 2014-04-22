@@ -2,7 +2,7 @@ module ElectricSheep
   module Commands
     module Database
       class MySQLDump
-        include ElectricSheep::Commands::Command
+        include ElectricSheep::Command
         include ElectricSheep::Helpers::Named
 
         register as: "mysql_dump"

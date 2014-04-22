@@ -2,8 +2,8 @@ module ElectricSheep
   module Commands
     module Compression
       class TarGz
-        include Command
-        include Helpers::Named
+        include ElectricSheep::Command
+        include ElectricSheep::Helpers::Named
 
         register as: "tar_gz"
 

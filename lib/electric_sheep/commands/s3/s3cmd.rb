@@ -2,7 +2,7 @@ module ElectricSheep
   module Commands
     module S3
       class S3cmd
-        include ElectricSheep::Commands::Command
+        include ElectricSheep::Command
         include ElectricSheep::Helpers::ShellSafe
 
         register as: 's3cmd'

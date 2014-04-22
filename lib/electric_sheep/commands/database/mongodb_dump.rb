@@ -2,7 +2,7 @@ module ElectricSheep
   module Commands
     module Database
       class MongoDBDump
-        include ElectricSheep::Commands::Command
+        include ElectricSheep::Command
         include ElectricSheep::Helpers::Named
 
         register as: "mongodb_dump"

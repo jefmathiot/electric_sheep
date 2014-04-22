@@ -60,7 +60,7 @@ describe ElectricSheep::Dsl do
       extend ActiveSupport::Concern
 
       class DoNothing
-        include ElectricSheep::Commands::Command
+        include ElectricSheep::Command
 
         register as: 'do_nothing'
 

@@ -38,7 +38,7 @@ describe ElectricSheep::Runner do
     describe 'with commands' do
 
       class Dumb
-        include ElectricSheep::Commands::Command
+        include ElectricSheep::Command
         register as: 'dumb', of_type: :command
 
         def perform
@@ -49,7 +49,7 @@ describe ElectricSheep::Runner do
       end
 
       class Dumber
-        include ElectricSheep::Commands::Command
+        include ElectricSheep::Command
         register as: 'dumber', of_type: :command
 
         def perform
