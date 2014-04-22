@@ -4,8 +4,8 @@ module ElectricSheep
       include Queue
       include Metered
 
-      property :id, required: true
-      property :description
+      option :id, required: true
+      option :description
 
       attr_accessor :products
 

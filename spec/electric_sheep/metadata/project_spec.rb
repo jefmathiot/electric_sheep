@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe ElectricSheep::Metadata::Project do
   include Support::Queue
-  include Support::Properties
+  include Support::Options
 
   def queue_items
     [
@@ -12,7 +12,7 @@ describe ElectricSheep::Metadata::Project do
   end
 
   it{
-    defines_properties :id, :description
+    defines_options :id, :description
     requires :id
   }
 

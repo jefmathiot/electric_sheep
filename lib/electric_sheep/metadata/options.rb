@@ -2,27 +2,84 @@ module ElectricSheep
   module Metadata
     module Options
       extend ActiveSupport::Concern
+      
+      def errors
+        @errors ||= Errors.new
+      end
 
-      included do
-        alias_method :initialize_without_options, :initialize
+      def options
+        self.class.options
+      end
 
-        def initialize(args = {})
-          self.class.init_options.each do |option|
-            self.class.send :attr_accessor, option
-            instance_variable_set "@#{option}", args.is_a?(String) ? args : args[option]
-          end
-          initialize_without_options
+      def validate(config)
+        self.options.each do |option, opts|
+          ensure_present(option) if opts[:required]
         end
+        errors.empty?
+      end
 
+      def method_missing(method, *args, &block)
+        if option?(method)
+          @options[method]
+        else
+          super
+        end
+      end
+
+      def respond_to?(method, include_all=false)
+        if option?(method)
+          true
+        else
+          super
+        end
+      end
+      
+      protected
+      def option?(method)
+        self.options.include?(method)
+      end
+
+      def ensure_present(option)
+        if @options[option].nil?
+          errors.add(option, "Option #{option} is required")
+        end
       end
 
       module ClassMethods
-        attr_reader :init_options
+        def options
+          @options ||= {}
+        end
 
-        def options(*opts)
-          @init_options = opts
+        def option(name, opts={})
+          options[name] = opts
+        end
+
+        def inherited(subclass)
+          # Allow subclasses to inherit options
+          subclass.instance_variable_set(:@options, options.dup)
         end
       end
+    end
+    
+    class Errors
+
+      def initialize
+        @errors = {}.with_indifferent_access
+      end
+
+      def add(option, message, caused_by=Errors.new)
+        @errors[option] ||= [] 
+        @errors[option] << {message: message, caused_by: caused_by}
+      end
+
+      def [](option)
+        @errors[option]
+      end
+
+      def empty?
+        @errors.empty?
+      end
+
     end
   end
 end

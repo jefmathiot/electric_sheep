@@ -2,11 +2,11 @@ require 'spec_helper'
 
 describe ElectricSheep::Metadata::RemoteShell do
   include Support::ShellMetadata
-  include Support::Properties
+  include Support::Options
   include Support::Hosts
 
   it{
-    defines_properties :host, :user
+    defines_options :host, :user
     requires :host, :user
   }
 

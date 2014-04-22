@@ -2,9 +2,9 @@ module ElectricSheep
   module Metadata
 
     class Host < Base
-      property :id, required: true
-      property :hostname, required: true
-      property :description
+      option :id, required: true
+      option :hostname, required: true
+      option :description
       # TODO Validate hostname is valid
     end
 

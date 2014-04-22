@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 describe ElectricSheep::Metadata::Command do
-  include Support::Properties
+  include Support::Options
 
   it{
-    defines_properties :id, :type
+    defines_options :id, :type
     requires :id, :type
   }
 

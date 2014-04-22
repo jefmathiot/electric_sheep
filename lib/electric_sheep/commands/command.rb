@@ -2,7 +2,7 @@ module ElectricSheep
   module Commands
     module Command
       extend ActiveSupport::Concern
-      include Metadata::Properties
+      include Metadata::Options
 
       attr_reader :logger, :shell, :work_dir
       

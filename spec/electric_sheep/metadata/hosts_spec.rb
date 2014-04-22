@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 describe ElectricSheep::Metadata::Host do
-  include Support::Properties
+  include Support::Options
   
   it{
-    defines_properties :hostname, :id, :description
+    defines_options :hostname, :id, :description
     requires :hostname
   }
 end

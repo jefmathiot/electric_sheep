@@ -3,8 +3,8 @@ module ElectricSheep
     class Command < Base
       include Metered
               
-      property :id, required: true
-      property :type, required: true
+      option :id, required: true
+      option :type, required: true
 
       def validate(config)
         ensure_known_command
@@ -21,9 +21,9 @@ module ElectricSheep
         end
       end
 
-      def properties
+      def options
         unless command_runner.nil?
-          command_runner.properties.merge(super)
+          command_runner.options.merge(super)
         else
           super
         end

@@ -2,8 +2,8 @@ module ElectricSheep
   module Metadata
     class RemoteShell < Shell
 
-      property :host, required: true
-      property :user, required: true
+      option :host, required: true
+      option :user, required: true
 
       def validate(config)
         ensure_known_host(config)

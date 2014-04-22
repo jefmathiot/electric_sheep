@@ -1,10 +1,10 @@
 module ElectricSheep
   module Metadata
     class Base
-      include Properties
+      include Options
 
-      def initialize(options={})
-        @options = options
+      def initialize(opts={})
+        @options = opts
       end
 
     end

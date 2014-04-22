@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 describe ElectricSheep::Resources::FileSystem do
-  include Support::Properties
+  include Support::Options
 
   it{
-    defines_properties :path, :remote
+    defines_options :path, :remote
     requires :path
   }
 
