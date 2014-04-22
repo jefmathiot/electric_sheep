@@ -1,3 +1,5 @@
+require 'electric_sheep/command'
+
 module ElectricSheep
   module Agents
     module Register
