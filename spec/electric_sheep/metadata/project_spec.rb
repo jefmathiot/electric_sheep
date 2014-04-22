@@ -16,7 +16,7 @@ describe ElectricSheep::Metadata::Project do
     requires :id
   }
 
-  describe "validating" do
+  describe 'validating' do
     let(:step) do
       queue_items.first
     end
@@ -27,13 +27,13 @@ describe ElectricSheep::Metadata::Project do
       end
     end
 
-    it "adds child steps errors" do
+    it 'adds child steps errors' do
       step.expects(:validate).with(instance_of(ElectricSheep::Config)).
         returns(false)
       expects_validation_error(project, :base, "Invalid step", ElectricSheep::Config.new)
     end
 
-    it "validates" do
+    it 'validates' do
       step.expects(:validate).with(instance_of(ElectricSheep::Config)).
         returns(true)
       project.validate(ElectricSheep::Config.new).must_equal true

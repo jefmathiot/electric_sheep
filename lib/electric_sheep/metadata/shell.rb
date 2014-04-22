@@ -12,7 +12,7 @@ module ElectricSheep
       def validate(config)
         each_item do |command|
           unless command.validate(config)
-            errors.add("Invalid command #{command.id}", command.errors)
+            errors.add(:base, "Invalid command #{command.id}", command.errors)
           end
         end
         reset!
