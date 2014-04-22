@@ -15,6 +15,7 @@ require 'electric_sheep/sheepfile'
 require 'electric_sheep/shell/local_shell'
 require 'electric_sheep/shell/remote_shell'
 require 'electric_sheep/commands'
+require 'electric_sheep/transports'
 
 module ElectricSheep
 end

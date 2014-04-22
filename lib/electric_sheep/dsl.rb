@@ -48,8 +48,12 @@ module ElectricSheep
         @subject.add ShellDsl.new(@config, &block).shell
       end
 
-      def transport(type, &block)
-        @subject.add TransportDsl.new(@config, &block).transport
+      def copy(options)
+        transport(:copy, options)
+      end
+      
+      def move(options)
+        transport(:move, options)
       end
 
       def resource(type, options={})
@@ -58,6 +62,11 @@ module ElectricSheep
 
       def private_key(path)
         @subject.use_private_key! File.expand_path(path)
+      end
+
+      private
+      def transport(type, options)
+        @subject.add Metadata::Transport.new(type, options, &block)
       end
     end
 

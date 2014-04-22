@@ -1,7 +1,6 @@
 module ElectricSheep
   module Resources
-    class Directory
-      include FileSystem
+    class Directory < FileSystem
       
       def file?
         false

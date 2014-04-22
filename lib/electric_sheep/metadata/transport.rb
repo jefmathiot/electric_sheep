@@ -1,17 +1,8 @@
 module ElectricSheep
   module Metadata
     class Transport
-      include Options
-
-      options :from, :to
-
-    end
-
-    class TransportEnd
-      include Options
-
-      options :host, :resource
-
+      include Metered
+      
     end
   end
 end

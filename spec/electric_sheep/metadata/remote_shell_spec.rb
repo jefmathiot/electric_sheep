@@ -2,24 +2,24 @@ require 'spec_helper'
 
 describe ElectricSheep::Metadata::RemoteShell do
   include Support::ShellMetadata
+  include Support::Metadata
   include Support::Hosts
 
-  before do
-    @host = new_host
-    @user = 'op'
-  end
+  it{
+    defines_properties :host, :user
+    requires :host, :user
+  }
 
-  it 'binds to an host' do
-    metadata = subject_instance
-    metadata.host.must_equal @host
-  end
+  describe 'validating host' do
+    it 'does not validate if host is unknown' do
+      expects_validation_error(subject.new(host: 'test'), :host,
+        /Unknown host with id test/)
+    end
 
-  it 'defines a user' do
-    metadata = subject_instance
-    metadata.user.must_equal @user
-  end
-
-  def subject_instance
-    subject.new(host: @host, user: @user)
+    it 'validates' do
+      config = ElectricSheep::Config.new
+      config.hosts.add('test', hostname: 'some.host.tld')
+      subject.new(host: 'test', user: 'operator').validate(config).must_equal true
+    end
   end
 end

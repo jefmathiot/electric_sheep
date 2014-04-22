@@ -6,9 +6,9 @@ describe ElectricSheep::Runner do
     @config = ElectricSheep::Config.new
     @config.hosts.add('some-host', hostname: 'some-host.tld')
     @first_project = @config.add(
-      ElectricSheep::Metadata::Project.new(id: 'first-project')
+      ElectricSheep::Metadata::Project.new(id: 'first-project',
+        description: 'First project description')
     )
-    @first_project.description = 'First project description'
     @logger = mock
     @runner = subject.new(config: @config, logger: @logger)
   end

@@ -16,9 +16,9 @@ end
 
 project "mysql-dump", description: "MySQL database backup" do
 
-  resource :database, name: "controldb", user: "operator", password: "pseudorandom"
+  resource :database, name: "controldb"
   remotely on: "acceptance-container", as: "vagrant" do
-    mysql_dump
+    mysql_dump user: "operator", password: "pseudorandom"
     tar_gz
   end
 

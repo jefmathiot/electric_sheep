@@ -1,12 +1,16 @@
 module ElectricSheep
   module Metadata
-    class Project
+    class Project < Base
       include Queue
       include Metered
 
-      attr_accessor :description, :products
+      property :id, required: true
+      property :description
 
-      def initialize
+      attr_accessor :products
+
+      def initialize(options={})
+        super
         reset!
         @products = []
       end
@@ -31,8 +35,15 @@ module ElectricSheep
         @private_key || File.expand_path('~/.ssh/id_rsa')
       end
 
-      include Options
-      options :id, :description
+      def validate(config)
+        each_item do |step|
+          unless step.validate(config)
+            errors.add(:base, "Invalid step #{step.to_s}", step.errors) 
+          end
+        end
+        reset!
+        super
+      end
 
     end
   end

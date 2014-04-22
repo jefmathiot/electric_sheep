@@ -16,9 +16,9 @@ Neither the API, DSL or runner are ready so far. Roadmap of features for upcomin
 * :clock11: Configuration DSL
 * :clock11: Projects runner
 * :clock11: SCP, RSYNC over SSH and Cloud Storage transports (using Fog ?)
-* :heavy_minus_sign: Commands for directories & files backups and compression
-* :heavy_minus_sign: Commands for popular RDBMS dumps (MySQL, Postgres)
-* :heavy_minus_sign: Commands for popular key-value and document stores backups (Redis, Memcached, MongoDB, CouchDB)
+* :clock11: Commands for directories & files backups and compression
+* :clock11: Commands for popular RDBMS dumps (MySQL, Postgres)
+* :clock11: Commands for popular key-value and document stores backups (Redis, Memcached, MongoDB, CouchDB)
 * :clock1: Credentials encryption using public-key cryptography
 * :heavy_minus_sign: Commands for archive encryption
 * :heavy_minus_sign: Reporting configuration
@@ -125,11 +125,9 @@ project "myapp-database-backup", description: "Database Full Backup" do
   resource type: :database, name: "myapp_db"
 
   remotely on: "production-mysql-master", as: "operator" do
-    mysql_dump user: "backup-operator", password: encrypted("XXXXXXXXXX")
+    mysql_dump user: "backup-operator", password: encrypted("XXXXXXXX")
     tar_gz delete_source: true
   end
-
-  copy to: localhost, via: :scp
 end
 ```
 
@@ -142,12 +140,14 @@ project "myapp-database-backup", description: "Database Full Backup" do
   resource type: :database, name: "myapp_db"
 
   remotely on: "production-mysql-master", as: "operator" do
-    mysql_dump user: "backup-operator", password: encrypted("XXXXXXXXXX")
+    mysql_dump user: "backup-operator", password: encrypted("XXXXXXXX")
     tar_gz delete_source: true
   end
 
-  copy to: localhost, via: :scp
-  move to: bucket('my-bucket'), via: :s3
+  move to: localhost, using: :scp, as "operator"
+  copy to: "backup-store-1", using: :scp, as: "another-user", directory: '/srv/backups/'
+  move to: bucket('my-bucket'), using: :s3, access_key: 'XXXXXXXX',
+    secret_key: encrypted('XXXXXXXX')
 end
 ```
 

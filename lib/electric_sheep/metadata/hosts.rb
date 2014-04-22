@@ -1,19 +1,20 @@
 module ElectricSheep
   module Metadata
 
-    class Hosts
-      def initialize
-        @host = Struct.new(:id, :hostname, :description)
-      end
+    class Host < Base
+      property :id, required: true
+      property :hostname, required: true
+      property :description
+      # TODO Validate hostname is valid
+    end
 
+    class Hosts
+      
       def add(id, options)
-        # TODO Validate options[:name] is a valid hostname
-        host = @host.new(id, options[:hostname], options[:description])
-        hosts[host.id] = host
+        hosts[id] = Host.new(options.merge(id: id))
       end
 
       def get(id)
-        raise "Unknown host with id #{id}" unless hosts.has_key?(id)
         hosts[id]
       end
 

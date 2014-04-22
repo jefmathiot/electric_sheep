@@ -1,12 +1,9 @@
 module ElectricSheep
   module Resources
-    module FileSystem
-      extend ActiveSupport::Concern
-      include Resource
+    class FileSystem < Resource
 
-      included do
-        options :path, :remote
-      end
+      property :path, required: true
+      property :remote
      
       def remote?
         remote == true

@@ -79,7 +79,8 @@ describe ElectricSheep::Shell::RemoteShell do
     before do
       ElectricSheep::Crypto.expects(:get_key).
         with('/path/to/private/key', :private).
-        returns('SECRET')
+        returns(pk = mock)
+      pk.expects(:export).returns('SECRET')
       Net::SSH.expects(:start).
         with('localhost', 'johndoe', key_data: 'SECRET', keys_only: true).
         returns( connection )

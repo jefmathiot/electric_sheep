@@ -1,7 +1,7 @@
 module ElectricSheep
   module Resources
-    class Database
-      include Resource
+    class Database < Resource
+      property :name, required: true
     end
   end
 end

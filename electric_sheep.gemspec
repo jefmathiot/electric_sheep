@@ -33,5 +33,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "activesupport", ">= 3.0.0"
   spec.add_dependency "session", "~> 3.1.0"
   spec.add_dependency "net-ssh", "~> 2.7.0"
+  spec.add_dependency "net-scp", "~> 1.1.0"
 
 end

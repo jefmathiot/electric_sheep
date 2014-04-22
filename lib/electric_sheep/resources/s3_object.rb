@@ -1,9 +1,11 @@
 module ElectricSheep
   module Resources
-    class S3Object
-      include Resource
+    class S3Object < Resource
 
-      options :key, :bucket, :access_key, :secret_key
+      property :key, required: true
+      property :bucket, required: true
+      property :access_key, required: true
+      property :secret_key, required: true
 
     end
   end

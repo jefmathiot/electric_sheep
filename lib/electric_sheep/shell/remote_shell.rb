@@ -24,7 +24,7 @@ module ElectricSheep
         self if opened?
         @logger.info "Starting a remote shell session for #{@user}@#{@host}"
         @ssh_session = Net::SSH.start(@host, @user,
-          key_data: Crypto.get_key(@private_key, :private),
+          key_data: Crypto.get_key(@private_key, :private).export,
           keys_only: true)
         self
       end

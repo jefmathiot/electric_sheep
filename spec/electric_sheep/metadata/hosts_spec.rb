@@ -1,5 +1,14 @@
 require 'spec_helper'
 
+describe ElectricSheep::Metadata::Host do
+  include Support::Metadata
+  
+  it{
+    defines_properties :hostname, :id, :description
+    requires :hostname
+  }
+end
+
 describe ElectricSheep::Metadata::Hosts do
 
   before do
@@ -16,11 +25,6 @@ describe ElectricSheep::Metadata::Hosts do
   it 'should find host by id' do
     host = @hosts.add('some-host', hostname: 'some-host.tld', description: 'Some host' )
     @hosts.get('some-host').must_equal host
-  end
-
-  it 'raises an error when host id is unknown' do
-    ->{ @hosts.get('another-host')  }.must_raise RuntimeError,
-        "Unknown host with id another-host"
   end
 
 end

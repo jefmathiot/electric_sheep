@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe ElectricSheep::Metadata::Project do
-  include Support::Accessors
   include Support::Queue
+  include Support::Metadata
 
   def queue_items
     [
@@ -11,14 +11,39 @@ describe ElectricSheep::Metadata::Project do
     ]
   end
 
+  it{
+    defines_properties :id, :description
+    requires :id
+  }
+
+  describe "validating" do
+    let(:step) do
+      queue_items.first
+    end
+
+    let(:project) do
+      subject.new(id: 'some-id').tap do |project|
+        project.add step
+      end
+    end
+
+    it "adds child steps errors" do
+      step.expects(:validate).with(instance_of(ElectricSheep::Config)).
+        returns(false)
+      expects_validation_error(project, :base, "Invalid step", ElectricSheep::Config.new)
+    end
+
+    it "validates" do
+      step.expects(:validate).with(instance_of(ElectricSheep::Config)).
+        returns(true)
+      project.validate(ElectricSheep::Config.new).must_equal true
+    end
+  end
+  
   it "initializes the project's id" do
     project = subject.new(id: 'some-project')
     project.id.must_equal 'some-project'
     project.products.size.must_equal 0
-  end
-
-  it 'defines a description accessor' do
-    expects_accessor(:description)
   end
 
   it 'uses the initial resource when there are no products' do

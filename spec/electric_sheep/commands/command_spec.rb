@@ -16,8 +16,7 @@ describe ElectricSheep::Commands::Command do
 
   end
 
-  class FreshAir
-    include ElectricSheep::Resources::Resource
+  class FreshAir < ElectricSheep::Resources::Resource
   end
 
   describe CommandKlazz do

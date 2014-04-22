@@ -1,7 +1,6 @@
 module ElectricSheep
   module Resources
-    class File
-      include FileSystem
+    class File < FileSystem
 
       def file?
         true

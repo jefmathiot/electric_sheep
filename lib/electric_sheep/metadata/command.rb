@@ -1,13 +1,24 @@
 module ElectricSheep
   module Metadata
-    class Command
-      include Options
+    class Command < Base
       include Metered
               
-      options :id, :type
+      property :id, required: true
+      property :type, required: true
+
+      def validate(config)
+        ensure_known_command
+        super
+      end
 
       def command_runner
-        Commands::Register.command(type)
+        type && Commands::Register.command(type)
+      end
+      
+      def ensure_known_command
+        if command_runner.nil?
+          errors.add(:type, "Unknown command type #{type}")
+        end
       end
 
     end
