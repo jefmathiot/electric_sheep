@@ -1,14 +1,14 @@
 require 'spec_helper'
 
-describe ElectricSheep::Commands::Command do
+describe ElectricSheep::Command do
 
   CommandKlazz = Class.new do
-    include ElectricSheep::Commands::Command
+    include ElectricSheep::Command
     prerequisite :check_something
   end
 
   CommandKlazz2 = Class.new do
-    include ElectricSheep::Commands::Command
+    include ElectricSheep::Command
     prerequisite :check_something
 
     def check_something
