@@ -1,6 +1,7 @@
 module ElectricSheep
   module Metadata
     class Base
+      include Properties
 
       def initialize(options={})
         @options = options
@@ -44,20 +45,6 @@ module ElectricSheep
         end
       end
 
-      class << self
-        def properties
-          @properties ||= {}
-        end
-
-        def property(name, options={})
-          properties[name] = options
-        end
-
-        def inherited(subclass)
-          # Allow subclasses to inherit properties
-          subclass.instance_variable_set(:@properties, properties.dup)
-        end
-      end
     end
 
     class Errors

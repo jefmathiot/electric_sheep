@@ -1,3 +1,4 @@
+require 'electric_sheep/metadata/properties'
 require 'electric_sheep/metadata/base'
 require 'electric_sheep/metadata/metered'
 require 'electric_sheep/metadata/encrypted'
