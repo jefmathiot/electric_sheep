@@ -48,6 +48,14 @@ describe ElectricSheep::Dsl do
       project.private_key.must_equal '/path/to/private/key'
     end
 
+    it 'gets the localhost' do
+      actual = nil
+      project = build_project do
+        actual = localhost
+      end
+      actual.local?.must_equal true
+    end
+
     module ShellSpecs
       extend ActiveSupport::Concern
 

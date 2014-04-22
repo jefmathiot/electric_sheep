@@ -9,7 +9,7 @@ describe ElectricSheep::Commands::Database::MongoDBDump do
   }
 
   it 'should have registered as "mongodb_dump"' do
-    ElectricSheep::Commands::Register.command("mongodb_dump").must_equal subject
+    ElectricSheep::Agents::Register.command("mongodb_dump").must_equal subject
   end
 
   describe "executing the command" do

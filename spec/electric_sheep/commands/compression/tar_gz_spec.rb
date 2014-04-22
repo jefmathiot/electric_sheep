@@ -8,7 +8,7 @@ describe ElectricSheep::Commands::Compression::TarGz do
   }
 
   it 'should have registered as "tar_gz"' do
-    ElectricSheep::Commands::Register.command("tar_gz").must_equal subject
+    ElectricSheep::Agents::Register.command("tar_gz").must_equal subject
   end
 
   describe "executing the command" do

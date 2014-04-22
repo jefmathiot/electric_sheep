@@ -5,7 +5,7 @@ module ElectricSheep
         include Command
         include Helpers::Named
 
-        register as: "tar_gz", of_type: :command
+        register as: "tar_gz"
 
         option :delete_source
 

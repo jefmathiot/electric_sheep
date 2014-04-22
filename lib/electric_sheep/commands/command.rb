@@ -38,7 +38,7 @@ module ElectricSheep
 
       module ClassMethods
         def register(options={})
-          ElectricSheep::Commands::Register.register(self, options)
+          ElectricSheep::Agents::Register.register(options.merge(command: self))
         end
 
         def prerequisite(*args)

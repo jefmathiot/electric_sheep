@@ -12,7 +12,7 @@ module ElectricSheep
       end
 
       def command_runner
-        @options[:type] && Commands::Register.command(@options[:type])
+        @options[:type] && Agents::Register.command(@options[:type])
       end
       
       def ensure_known_command

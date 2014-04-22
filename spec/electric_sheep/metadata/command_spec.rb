@@ -17,7 +17,7 @@ describe ElectricSheep::Metadata::Command do
   }
 
   it 'resolves the runner class' do
-    ElectricSheep::Commands::Register.expects(:command).with('foo').returns(Object)
+    ElectricSheep::Agents::Register.expects(:command).with('foo').returns(Object)
     @command.command_runner.must_equal Object
   end
 

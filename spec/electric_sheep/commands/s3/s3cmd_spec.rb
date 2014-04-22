@@ -9,7 +9,7 @@ describe ElectricSheep::Commands::S3::S3cmd do
   }
 
   it 'should have registered as the "s3cmd" agent of type command' do
-    ElectricSheep::Commands::Register.command('s3cmd').must_equal subject
+    ElectricSheep::Agents::Register.command('s3cmd').must_equal subject
   end
 
   before do

@@ -64,9 +64,14 @@ module ElectricSheep
         @subject.use_private_key! File.expand_path(path)
       end
 
+      def localhost
+        @config.hosts.localhost
+      end
+
       private
       def transport(type, options)
-        @subject.add Metadata::Transport.new(type, options, &block)
+        options[:transport]=options.delete(:using)
+        @subject.add Metadata::Transport.new(options.merge(type: type))
       end
     end
 
@@ -79,7 +84,7 @@ module ElectricSheep
       end
 
       def method_missing(method, *args, &block)
-        if Commands::Register.command(method)
+        if Agents::Register.command(method)
           opts = {type: method}.merge(args.first || {})
           @subject.add Metadata::Command.new(opts)
         else

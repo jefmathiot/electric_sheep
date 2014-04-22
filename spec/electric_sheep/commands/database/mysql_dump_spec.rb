@@ -9,7 +9,7 @@ describe ElectricSheep::Commands::Database::MySQLDump do
   }
 
   it 'should have registered as the "mysql_dump" agent of type command' do
-    ElectricSheep::Commands::Register.command("mysql_dump").must_equal subject
+    ElectricSheep::Agents::Register.command("mysql_dump").must_equal subject
   end
 
   describe "executing the command" do
