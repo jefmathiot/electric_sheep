@@ -7,6 +7,9 @@ module ElectricSheep
 
         register as: "mongodb_dump"
 
+        option :user
+        option :password
+
         def perform
           logger.info "Creating a dump of the \"#{resource.name}\" MongoDB database"
           dump = with_named_dir work_dir, resource.name, timestamp: true do |output|

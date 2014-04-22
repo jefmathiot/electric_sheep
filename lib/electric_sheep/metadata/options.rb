@@ -39,9 +39,13 @@ module ElectricSheep
         self.options.include?(method)
       end
 
-      def ensure_present(option)
-        if @options[option].nil?
-          errors.add(option, "Option #{option} is required")
+      def option(name)
+        @options[name]
+      end
+
+      def ensure_present(opt)
+        if option(opt).nil?
+          errors.add(opt, "Option #{opt} is required")
         end
       end
 

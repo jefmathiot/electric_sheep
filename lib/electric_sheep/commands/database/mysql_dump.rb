@@ -6,6 +6,9 @@ module ElectricSheep
         include ElectricSheep::Helpers::Named
 
         register as: "mysql_dump"
+        
+        option :user
+        option :password
 
         def perform
           logger.info "Creating a dump of the \"#{resource.name}\" MySQL database"

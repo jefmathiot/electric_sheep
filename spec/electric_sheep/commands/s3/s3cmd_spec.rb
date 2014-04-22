@@ -1,6 +1,12 @@
 require 'spec_helper'
 
 describe ElectricSheep::Commands::S3::S3cmd do
+  include Support::Command
+
+  it{
+    defines_options :access_key, :secret_key
+    requires :access_key, :secret_key
+  }
 
   it 'should have registered as the "s3cmd" agent of type command' do
     ElectricSheep::Commands::Register.command('s3cmd').must_equal subject

@@ -9,6 +9,9 @@ module ElectricSheep
 
         prerequisite :check_s3cmd
 
+        option :access_key, required: true
+        option :secret_key, required: true
+
         def perform
           logger.info %{Uploading file "#{resource.basename}" to S3 bucket "#{option(:bucket)}"}
           shell.exec %{s3cmd put "#{resource.path}" "s3://#{shell_safe(option(:bucket))}" } << 

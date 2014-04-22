@@ -2,6 +2,11 @@ require 'spec_helper'
 require 'timecop'
 
 describe ElectricSheep::Commands::Database::MongoDBDump do
+  include Support::Command
+  
+  it{
+    defines_options :user, :password
+  }
 
   it 'should have registered as "mongodb_dump"' do
     ElectricSheep::Commands::Register.command("mongodb_dump").must_equal subject

@@ -1,6 +1,11 @@
 require 'spec_helper'
 
 describe ElectricSheep::Commands::Compression::TarGz do
+  include Support::Command
+
+  it{
+    defines_options :delete_source
+  }
 
   it 'should have registered as "tar_gz"' do
     ElectricSheep::Commands::Register.command("tar_gz").must_equal subject

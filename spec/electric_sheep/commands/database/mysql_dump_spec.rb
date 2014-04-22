@@ -2,6 +2,11 @@ require 'spec_helper'
 require 'timecop'
 
 describe ElectricSheep::Commands::Database::MySQLDump do
+  include Support::Command
+
+  it{
+    defines_options :user, :password
+  }
 
   it 'should have registered as the "mysql_dump" agent of type command' do
     ElectricSheep::Commands::Register.command("mysql_dump").must_equal subject

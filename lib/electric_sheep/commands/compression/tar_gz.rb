@@ -7,6 +7,8 @@ module ElectricSheep
 
         register as: "tar_gz", of_type: :command
 
+        option :delete_source
+
         def perform
           logger.info "Compressing #{resource.path} to #{resource.basename}.tar.gz"
           archive = with_named_file work_dir, "#{resource.basename}.tar.gz" do |file|
