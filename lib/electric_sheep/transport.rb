@@ -14,32 +14,9 @@ module ElectricSheep
       self.send(@metadata.type)
     end
 
-    protected
-    def done!(resource)
-      @project.store_product!(resource)
-    end
-
-    def resource
-      @project.last_product
-    end
-
-    def option(name)
-      option = @metadata.send(name)
-      return option.decrypt(@project.private_key) if option.respond_to?(:decrypt)
-      option
-    end
-
     module ClassMethods
       def register(options={})
         ElectricSheep::Agents::Register.register(options.merge(transport: self))
-      end
-
-      def prerequisite(*args)
-        @prerequisites = args.dup
-      end
-
-      def prerequisites
-        @prerequisites ||= []
       end
     end
 
