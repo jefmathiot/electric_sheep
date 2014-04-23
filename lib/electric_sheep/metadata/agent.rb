@@ -6,10 +6,6 @@ module ElectricSheep
         super
       end
 
-      def agent
-        @options[:type] && Agents::Register.send(self.class.agent_type, @options[:type])
-      end
-      
       def options
         unless agent.nil?
           agent.options.merge(super)
@@ -21,7 +17,7 @@ module ElectricSheep
       private
       def ensure_known_agent
         if agent.nil?
-          errors.add(:type, "Unknown #{self.class.agent_type} type #{type}")
+          errors.add(:type, "Unknown agent type #{type}")
         end
       end
     end

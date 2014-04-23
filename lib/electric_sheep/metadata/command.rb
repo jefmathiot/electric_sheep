@@ -6,10 +6,10 @@ module ElectricSheep
       option :id, required: true
       option :type, required: true
 
-      def self.agent_type
-        :command
+      def agent
+        @options[:type] && Agents::Register.command(@options[:type])
       end
-
+      
     end
   end
 end

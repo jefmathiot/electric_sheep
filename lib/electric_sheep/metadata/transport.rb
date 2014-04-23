@@ -15,8 +15,8 @@ module ElectricSheep
         type == :move
       end
 
-      def self.agent_type
-        :transport
+      def agent
+        @options[:transport] && Agents::Register.transport(@options[:transport])
       end
 
     end
