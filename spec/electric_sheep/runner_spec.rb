@@ -34,6 +34,13 @@ describe ElectricSheep::Runner do
       @runner.run!
       @config.remaining.must_equal 0 
     end
+      
+    def expects_execution_times(*metered_objects)
+      metered_objects.each do |metered|
+        metered.execution_time.wont_be_nil
+        metered.execution_time.must_be :>, 0
+      end
+    end
 
     describe 'with commands' do
 
@@ -57,13 +64,6 @@ describe ElectricSheep::Runner do
           shell.exec('echo > /dev/null')
         end
 
-      end
-
-      def expects_execution_times(*metered_objects)
-        metered_objects.each do |metered|
-          metered.execution_time.wont_be_nil
-          metered.execution_time.must_be :>, 0
-        end
       end
 
       def append_commands(shell)
@@ -116,6 +116,18 @@ describe ElectricSheep::Runner do
       end
 
     end 
+
+    class FakeTransport
+      include ElectricSheep::Transport
+    end
+
+    it 'executes transport' do
+      @first_project.add metadata = ElectricSheep::Metadata::Transport.new
+      metadata.expects(:agent).in_sequence(script).returns(FakeTransport)
+      FakeTransport.any_instance.expects(:perform).in_sequence(script)
+      @runner.run!
+      expects_execution_times(@first_project, metadata)
+    end
 
   end
 

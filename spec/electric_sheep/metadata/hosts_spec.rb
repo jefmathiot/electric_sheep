@@ -7,14 +7,22 @@ describe ElectricSheep::Metadata::Host do
     defines_options :hostname, :id, :description
     requires :hostname
   }
-  it 'isnt local' do
+  it 'is remote' do
     subject.new.local?.must_equal false
+  end
+
+  it 'use its id when converting to string' do
+    subject.new(id: 'some-id').to_s.must_equal 'some-id'
   end
 end
 
 describe ElectricSheep::Metadata::Localhost do
   it 'is local' do
     subject.new.local?.must_equal true
+  end
+  
+  it 'use "localhost" id when converting to string' do
+    subject.new.to_s.must_equal 'localhost'
   end
 end
 
