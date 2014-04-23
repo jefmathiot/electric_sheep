@@ -3,10 +3,14 @@ module ElectricSheep
     class FileSystem < Resource
 
       option :path, required: true
-      option :remote
+      option :host
      
       def remote?
-        remote == true
+        !local?
+      end
+
+      def local?
+        host.nil? || host.local?
       end
 
       def basename
