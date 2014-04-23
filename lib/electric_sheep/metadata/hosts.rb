@@ -10,11 +10,19 @@ module ElectricSheep
       def local?
         false
       end
+
+      def to_s
+        id
+      end
     end
 
     class Localhost < Base
       def local?
         true
+      end
+
+      def to_s
+        "localhost"
       end
     end
 

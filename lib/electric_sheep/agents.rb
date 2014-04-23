@@ -1,4 +1,6 @@
+require 'electric_sheep/agent'
 require 'electric_sheep/command'
+require 'electric_sheep/transport'
 
 module ElectricSheep
   module Agents

@@ -39,7 +39,7 @@ module ElectricSheep
     def execute_remote_shell(project, metadata)
       metadata.benchmarked do
         execute_commands project, metadata, Shell::RemoteShell.new(
-          @logger, @config.hosts.get(metadata.host).hostname, metadata.user,
+          @logger, @config.hosts.get(metadata.host), metadata.user,
           project.private_key
         )
       end
@@ -59,5 +59,11 @@ module ElectricSheep
       shell.close!
     end
 
+    def execute_transport(project, metadata)
+      transport = metadata.agent.new(project, @logger, metadata)
+      metadata.benchmarked do
+        transport.perform
+      end
+    end
   end
 end
