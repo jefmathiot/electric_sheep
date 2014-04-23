@@ -14,7 +14,7 @@ module ElectricSheep
           archive = with_named_file work_dir, "#{resource.basename}.tar.gz" do |file|
             shell.exec "tar -cvzf \"#{file}\" \"#{resource.path}\" &> /dev/null"
           end
-          done! Resources::File.new(path: archive, remote: shell.remote?)
+          done! shell.file_resource(path: archive)
         end
 
       end

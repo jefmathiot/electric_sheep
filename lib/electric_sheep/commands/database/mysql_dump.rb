@@ -16,7 +16,7 @@ module ElectricSheep
             extension: 'sql' do |output|
             shell.exec "#{cmd(resource.name, option(:user), option(:password), output)}"
           end
-          done! Resources::Directory.new(path: dump, remote: shell.remote?)
+          done! shell.file_resource(path: dump)
         end
 
         private

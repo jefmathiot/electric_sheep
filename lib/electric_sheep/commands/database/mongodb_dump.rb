@@ -15,7 +15,7 @@ module ElectricSheep
           dump = with_named_dir work_dir, resource.name, timestamp: true do |output|
             shell.exec "#{cmd(resource.name, option(:user), option(:password), output)} &> /dev/null"
           end
-          done! Resources::Directory.new(path: dump, remote: shell.remote?)
+          done! shell.directory_resource(path: dump)
         end
 
         private
