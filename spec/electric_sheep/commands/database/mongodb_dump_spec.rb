@@ -20,7 +20,6 @@ describe ElectricSheep::Commands::Database::MongoDBDump do
       @project.start_with! database
 
       @command = subject.new(@project, @logger, @shell, '/tmp', @metadata = mock)
-      @shell.expects(:remote?).returns(true)
       
       @seq = sequence('command')
       @logger.expects(:info).in_sequence(@seq).with "Creating a dump of the \"MyDatabase\" MongoDB database"
@@ -30,7 +29,18 @@ describe ElectricSheep::Commands::Database::MongoDBDump do
       product = @project.last_product
       product.wont_be_nil
       product.path.must_equal '/tmp/MyDatabase-20140605-040302'
-      product.remote?.must_equal true
+    end
+
+    def expects_directory_resource
+      @shell.expects(:directory_resource).
+        with(path: '/tmp/MyDatabase-20140605-040302').
+        returns(directory('/tmp/MyDatabase-20140605-040302'))
+    end
+
+    def assert_command
+      expects_directory_resource
+      @command.perform
+      assert_product
     end
 
     it 'executes the backup command' do
@@ -41,8 +51,7 @@ describe ElectricSheep::Commands::Database::MongoDBDump do
           with("mongodump -d \"MyDatabase\" "+
                "-o \"/tmp/MyDatabase-20140605-040302\" &> /dev/null"
           )
-        @command.perform
-        assert_product
+        assert_command
       end
     end
 
@@ -52,8 +61,7 @@ describe ElectricSheep::Commands::Database::MongoDBDump do
       Timecop.travel Time.utc(2014, 6, 5, 4, 3, 2) do
         @shell.expects(:exec).in_sequence(@seq).
           with regexp_matches(/-u "operator" -p "secret"/)
-        @command.perform
-        assert_product
+        assert_command
       end
     end
 

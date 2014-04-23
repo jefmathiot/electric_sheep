@@ -87,7 +87,8 @@ describe ElectricSheep::Shell::RemoteShell do
       user = 'johndoe'
       @logger.expects(:info).
         with("Starting a remote shell session for johndoe@localhost")
-      @shell = subject.new( @logger, 'localhost', 'johndoe', '/path/to/private/key' )
+      host = ElectricSheep::Metadata::Host.new(hostname: 'localhost')
+      @shell = subject.new( @logger, host, 'johndoe', '/path/to/private/key' )
       @shell.open!
     end
 

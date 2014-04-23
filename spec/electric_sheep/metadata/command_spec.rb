@@ -9,7 +9,8 @@ describe ElectricSheep::Metadata::Command do
   }
 
   it{
-    expects_validation_error(subject.new(type: 'foo'), :type, "Unknown command type foo")
+    expects_validation_error(subject.new(type: 'foo'), :type,
+      "Unknown agent type foo")
   }
 
   it 'resolves the agent class' do

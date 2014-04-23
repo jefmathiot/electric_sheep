@@ -20,7 +20,6 @@ describe ElectricSheep::Commands::Database::MySQLDump do
       @project.start_with! database
 
       @command = subject.new(@project, @logger, @shell, '/tmp', @metadata = mock)
-      @shell.expects(:remote?).returns(true)
       
       @seq = sequence('command')
       @logger.expects(:info).in_sequence(@seq).with "Creating a dump of the \"MyDatabase\" MySQL database"
@@ -30,7 +29,18 @@ describe ElectricSheep::Commands::Database::MySQLDump do
       product = @project.last_product
       product.wont_be_nil
       product.path.must_equal '/tmp/MyDatabase-20140605-040302.sql'
-      product.remote?.must_equal true
+    end
+
+    def assert_command
+        expects_file_resource
+        @command.perform
+        assert_product
+    end
+
+    def expects_file_resource
+      @shell.expects(:file_resource).
+        with(path: '/tmp/MyDatabase-20140605-040302.sql').
+        returns(file('/tmp/MyDatabase-20140605-040302.sql'))
     end
 
     it 'executes the backup command' do
@@ -38,9 +48,8 @@ describe ElectricSheep::Commands::Database::MySQLDump do
       @metadata.stubs(:password).returns(nil)
       Timecop.travel Time.utc(2014, 6, 5, 4, 3, 2) do
         @shell.expects(:exec).in_sequence(@seq).
-          with "mysqldump \"MyDatabase\" > \"/tmp/MyDatabase-20140605-040302.sql\""
-        @command.perform
-        assert_product
+          with("mysqldump \"MyDatabase\" > \"/tmp/MyDatabase-20140605-040302.sql\"")
+        assert_command
       end
     end
 
@@ -50,8 +59,7 @@ describe ElectricSheep::Commands::Database::MySQLDump do
       Timecop.travel Time.utc(2014, 6, 5, 4, 3, 2) do
         @shell.expects(:exec).in_sequence(@seq).
           with regexp_matches(/--user="operator" --password="secret"/)
-        @command.perform
-        assert_product
+        assert_command
       end
     end
 
