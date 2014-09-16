@@ -6,13 +6,9 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   
-  config.vm.box = "fgrehm/precise64-lxc"
+  config.vm.box = "ubuntu/trusty64"
   
   config.omnibus.chef_version = :latest 
-
-  config.vm.provider :lxc do |lxc|
-    lxc.customize 'network.ipv4', '10.0.3.10/32'
-  end
 
   config.vm.provision :shell, :inline => "sudo locale-gen fr_FR.UTF-8 && sudo dpkg-reconfigure locales"
 
