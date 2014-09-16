@@ -25,14 +25,29 @@ describe ElectricSheep::Runner do
         with("Executing \"First project description\" (first-project)")
     end
 
-    it 'should not have remaining projects' do
-      @second_project = @config.add(
-        ElectricSheep::Metadata::Project.new(id: 'second-project')
-      )
-      @logger.expects(:info).in_sequence(script).
-        with("Executing second-project")
-      @runner.run!
-      @config.remaining.must_equal 0 
+    describe 'with multiple projects' do
+
+      before do
+        @second_project = @config.add(
+          ElectricSheep::Metadata::Project.new(id: 'second-project')
+        )
+      end
+
+      it 'should not have remaining projects' do
+        @logger.expects(:info).in_sequence(script).
+          with("Executing second-project")
+        @runner.run!
+        @config.remaining.must_equal 0 
+      end
+
+      it 'executes a single project when told to do so' do
+        @logger.expects(:info).never.with("Executing second-project")
+        @runner = subject.new(config: @config, project: 'first-project',
+          logger: @logger)
+        @runner.run!
+        @config.remaining.must_equal 0
+      end
+
     end
       
     def expects_execution_times(*metered_objects)

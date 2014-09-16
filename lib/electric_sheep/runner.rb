@@ -5,11 +5,14 @@ module ElectricSheep
     def initialize(options)
       @config = options[:config]
       @logger = options[:logger]
+      @project = options[:project]
     end
 
     def run!
       @config.each_item do |project|
-        execute_project(project)
+        if @project.nil? || @project == project.id
+          execute_project(project)
+        end
       end 
     end
 

@@ -14,6 +14,7 @@ describe ElectricSheep::CLI do
         ElectricSheep::Runner.expects(:new).
           with(all_of(
             has_entry(config: @config),
+            has_entry(project: 'some-project'),
             has_entry(logger: @logger)
           )).returns(mock(run!: true))
       end
@@ -21,26 +22,26 @@ describe ElectricSheep::CLI do
       it 'gets the job done' do
         ElectricSheep::Sheepfile::Evaluator.expects(:new).with('Sheepfile').
           returns(mock(evaluate: @config))
-        subject.new.work
+        subject.new([], config: 'Sheepfile', project: 'some-project').work
       end
 
-      it 'overrides default config option' do
+      it 'overrides the default config option' do
         ElectricSheep::Sheepfile::Evaluator.expects(:new).with('Lambfile').
           returns(mock(evaluate: @config))
-        subject.new([], config: 'Lambfile').work
+        subject.new([], config: 'Lambfile', project: 'some-project').work
       end
 
     end
 
-    it 'encrypt secrets' do
+    it 'encrypts secrets' do
       ElectricSheep::Crypto.expects(:encrypt).with('SECRET', '/some/key').returns('CIPHER')
       STDOUT.expects(:puts).with('CIPHER')
       subject.new([], key: '/some/key').encrypt('SECRET')
     end
 
     it 'raises a Thor error if something went wrong' do
-      ElectricSheep::Sheepfile::Evaluator.expects(:new).with('Sheepfile').
-      raises(RuntimeError.new)
+      ElectricSheep::Sheepfile::Evaluator.expects(:new).
+        raises(RuntimeError.new)
       -> { subject.new.work }.must_raise Thor::Error
     end
 

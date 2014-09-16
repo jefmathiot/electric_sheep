@@ -3,12 +3,19 @@ require 'electric_sheep'
 
 module ElectricSheep
   class CLI < Thor
-    class_option :config, aliases: %w(-c), type: :string
-
+    
     desc "work", "Start processing projects."
+    option :config, aliases: %w(-c), type: :string,
+      desc: 'Configuration file containing projects', default: 'Sheepfile'
+    option :project, aliases: %w(-p), type: :string,
+      desc: 'Name of a single project to execute'
     def work
       begin
-        Runner.new(config: configuration, logger: Log::ConsoleLogger.new(STDOUT, STDERR)).run!
+        Runner.new(
+          config: configuration,
+          project: options[:project],
+          logger: Log::ConsoleLogger.new(STDOUT, STDERR)
+        ).run!
       rescue => ex
         raise Thor::Error, ex
       end
@@ -22,11 +29,8 @@ module ElectricSheep
 
     protected
     def configuration
-      @config = Sheepfile::Evaluator.new(options[:config] || defaults[:config]).evaluate
+      Sheepfile::Evaluator.new(options[:config]).evaluate
     end
 
-    def defaults
-      { config: 'Sheepfile' }
-    end
   end
 end
