@@ -110,22 +110,5 @@ module ElectricSheep
       end
     end
 
-    class TransportDsl
-      attr_reader :transport
-
-      def initialize(config, options={}, &block)
-        instance_eval &block if block_given?
-        @transport = Metadata::Transport.new(options.merge(from: @from, to: @to))
-      end
-
-      def from(&block)
-        @from = Metadata::TransportEnd.new
-      end
-
-      def to(&block)
-        @to = Metadata::TransportEnd.new
-      end
-
-    end
   end
 end
