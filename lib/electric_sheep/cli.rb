@@ -17,7 +17,7 @@ module ElectricSheep
           logger: Log::ConsoleLogger.new(STDOUT, STDERR)
         ).run!
       rescue => ex
-        raise Thor::Error, ex
+        raise Thor::Error, ex.message + "\n" + ex.backtrace.join("\n")
       end
     end
 
