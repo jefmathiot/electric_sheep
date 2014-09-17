@@ -64,10 +64,6 @@ module ElectricSheep
         @subject.use_private_key! File.expand_path(path)
       end
 
-      def localhost
-        @config.hosts.localhost
-      end
-
       private
       def transport(type, options)
         options[:transport]=options.delete(:using)
