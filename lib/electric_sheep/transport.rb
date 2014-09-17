@@ -4,14 +4,20 @@ module ElectricSheep
     include Metadata::Options
     include Agent
     
-    def initialize(project, logger, metadata)
+    def initialize(project, logger, metadata, hosts)
       @project = project
       @logger = logger
       @metadata = metadata
+      @hosts = hosts
     end
 
     def perform
       self.send(@metadata.type)
+    end
+
+    def resolve_host(id)
+      return @hosts.localhost if id.nil?
+      @hosts.get(id)
     end
 
     module ClassMethods
