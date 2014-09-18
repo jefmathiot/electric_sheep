@@ -19,7 +19,7 @@ describe ElectricSheep::Commands::Compression::TarGz do
       @command = subject.new(@project, @logger, @shell, '/tmp', mock)
       @seq = sequence('command')
     end
-    
+
     def assert_product(file)
       product = @project.last_product
       product.wont_be_nil

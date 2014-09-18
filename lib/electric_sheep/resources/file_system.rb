@@ -4,7 +4,7 @@ module ElectricSheep
 
       option :path, required: true
       option :host
-     
+
       def remote?
         !local?
       end

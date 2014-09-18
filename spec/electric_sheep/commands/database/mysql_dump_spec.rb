@@ -20,7 +20,7 @@ describe ElectricSheep::Commands::Database::MySQLDump do
       @project.start_with! database
 
       @command = subject.new(@project, @logger, @shell, '/tmp', @metadata = mock)
-      
+
       @seq = sequence('command')
       @logger.expects(:info).in_sequence(@seq).with "Creating a dump of the \"MyDatabase\" MySQL database"
     end

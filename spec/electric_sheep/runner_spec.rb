@@ -49,7 +49,7 @@ describe ElectricSheep::Runner do
       end
 
     end
-      
+
     def expects_execution_times(*metered_objects)
       metered_objects.each do |metered|
         metered.execution_time.wont_be_nil
@@ -125,12 +125,12 @@ describe ElectricSheep::Runner do
         shell.expects(:mk_project_dir!).in_sequence(script).with(@first_project)
         expects_executions(shell, @logger, script)
         shell.expects(:close!).in_sequence(script).returns(shell)
-        
+
         @runner.run!
         expects_execution_times(@first_project, metadata)
       end
 
-    end 
+    end
 
     class FakeTransport
       include ElectricSheep::Transport

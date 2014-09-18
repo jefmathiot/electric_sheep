@@ -45,7 +45,7 @@ describe ElectricSheep::Helpers::Named do
       @named.with_named_file('/tmp', 'some-file', extension: 'rb').
         must_equal '/tmp/some-file.rb'
     end
-    
+
     it 'appends both the timestamp and extension to file name' do
       Timecop.travel(Time.utc(2014, 1, 2, 3, 2, 1)) do
         @named.with_named_file('/tmp', 'some-file', timestamp: true, extension: 'rb').

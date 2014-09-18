@@ -7,9 +7,9 @@ module ElectricSheep
 
       def copy
         from, to = resolve_hosts(resource)
-        logger.info "Will copy #{resource.basename} " + 
+        logger.info "Will copy #{resource.basename} " +
           "from #{from.to_s} " +
-          "to #{to.to_s}"  
+          "to #{to.to_s}"
       end
 
       def move

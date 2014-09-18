@@ -1,11 +1,11 @@
 module ElectricSheep
   module Shell
     module Resourceful
-      
+
       def directory_resource(options)
         Resources::Directory.new(resource_options(options))
       end
-      
+
       def file_resource(options)
         Resources::File.new(resource_options(options))
       end

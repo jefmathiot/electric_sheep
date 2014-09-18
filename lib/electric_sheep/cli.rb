@@ -3,7 +3,7 @@ require 'electric_sheep'
 
 module ElectricSheep
   class CLI < Thor
-    
+
     desc "work", "Start processing projects."
     option :config, aliases: %w(-c), type: :string,
       desc: 'Configuration file containing projects', default: 'Sheepfile'

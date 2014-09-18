@@ -5,7 +5,7 @@ module ElectricSheep
     include Agent
 
     attr_reader :shell, :work_dir
-    
+
     def initialize(project, logger, shell, work_dir, metadata)
       @project = project
       @logger = logger
@@ -13,7 +13,7 @@ module ElectricSheep
       @work_dir = work_dir
       @metadata = metadata
     end
-    
+
     def check_prerequisites
       self.class.prerequisites.each { |prerequisite|
         raise "Missing #{prerequisite} in #{self.class}" unless self.respond_to?(prerequisite)

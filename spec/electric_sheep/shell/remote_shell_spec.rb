@@ -5,7 +5,7 @@ describe ElectricSheep::Shell::RemoteShell do
   include Net::SSH::Test
 
   module Net ; module SSH ; module Test
-   
+
     # Avoid Net::SSH::Test::Extensions to collide with Coveralls
     class << self
       def remove_io_aliases

@@ -39,7 +39,7 @@ describe ElectricSheep::Metadata::Project do
       project.validate(ElectricSheep::Config.new).must_equal true
     end
   end
-  
+
   it "initializes the project's id" do
     project = subject.new(id: 'some-project')
     project.id.must_equal 'some-project'

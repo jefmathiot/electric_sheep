@@ -1,7 +1,7 @@
 module ElectricSheep
   module Resources
     class Directory < FileSystem
-      
+
       def file?
         false
       end

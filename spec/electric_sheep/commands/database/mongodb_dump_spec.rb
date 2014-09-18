@@ -3,7 +3,7 @@ require 'timecop'
 
 describe ElectricSheep::Commands::Database::MongoDBDump do
   include Support::Command
-  
+
   it{
     defines_options :user, :password
   }
@@ -20,7 +20,7 @@ describe ElectricSheep::Commands::Database::MongoDBDump do
       @project.start_with! database
 
       @command = subject.new(@project, @logger, @shell, '/tmp', @metadata = mock)
-      
+
       @seq = sequence('command')
       @logger.expects(:info).in_sequence(@seq).with "Creating a dump of the \"MyDatabase\" MongoDB database"
     end

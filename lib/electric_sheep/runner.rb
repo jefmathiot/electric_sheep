@@ -13,7 +13,7 @@ module ElectricSheep
         if @project.nil? || @project == project.id
           execute_project(project)
         end
-      end 
+      end
     end
 
     protected
@@ -52,7 +52,7 @@ module ElectricSheep
       shell.open!
       shell.mk_project_dir!(project)
       shell_metadata.each_item do |metadata|
-        command = metadata.agent.new(project, @logger, shell, 
+        command = metadata.agent.new(project, @logger, shell,
           shell.project_dir(project), metadata )
         metadata.benchmarked do
           command.check_prerequisites

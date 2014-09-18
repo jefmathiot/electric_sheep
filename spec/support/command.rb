@@ -12,7 +12,7 @@ module Support
     def file(path)
       ElectricSheep::Resources::File.new(path: path)
     end
-    
+
     def directory(path)
       ElectricSheep::Resources::Directory.new(path: path)
     end

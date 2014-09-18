@@ -1,7 +1,7 @@
 module ElectricSheep
   module Sheepfile
     class Evaluator
-      
+
       def initialize(path)
         @path = File.expand_path(path)
       end

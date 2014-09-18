@@ -1,6 +1,6 @@
 module Support
   module Hosts
-    
+
     def new_host
       @hosts ||= ElectricSheep::Metadata::Hosts.new
       host_id = next_host

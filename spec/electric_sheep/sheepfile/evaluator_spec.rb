@@ -10,7 +10,7 @@ describe ElectricSheep::Sheepfile::Evaluator do
     File.expects(:exists?).with( @path ).returns false
     -> { subject.new('Sheepfile').evaluate }.must_raise RuntimeError
   end
-  
+
   it 'raises if configuration file is not readable' do
     File.expects(:exists?).with( @path ).returns true
     File.expects(:readable?).with( @path ).returns false

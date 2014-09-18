@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe ElectricSheep::Metadata::Host do
   include Support::Options
-  
+
   it{
     defines_options :hostname, :id, :description
     requires :hostname
@@ -20,7 +20,7 @@ describe ElectricSheep::Metadata::Localhost do
   it 'is local' do
     subject.new.local?.must_equal true
   end
-  
+
   it 'use "localhost" id when converting to string' do
     subject.new.to_s.must_equal 'localhost'
   end

@@ -6,7 +6,7 @@ module ElectricSheep
       option :type, required: true
       option :transport, required: true
       option :to, required: true
-      
+
       def copy?
         type == :copy
       end

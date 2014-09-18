@@ -6,7 +6,7 @@ module ElectricSheep
         include ElectricSheep::Helpers::Named
 
         register as: "mysql_dump"
-        
+
         option :user
         option :password
 

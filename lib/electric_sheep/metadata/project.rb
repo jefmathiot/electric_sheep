@@ -38,7 +38,7 @@ module ElectricSheep
       def validate(config)
         each_item do |step|
           unless step.validate(config)
-            errors.add(:base, "Invalid step #{step.to_s}", step.errors) 
+            errors.add(:base, "Invalid step #{step.to_s}", step.errors)
           end
         end
         reset!

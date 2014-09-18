@@ -6,7 +6,7 @@ module ElectricSheep
       option :hostname, required: true
       option :description
       # TODO Validate hostname is valid
-      
+
       def local?
         false
       end
@@ -31,7 +31,7 @@ module ElectricSheep
       def localhost
         @localhost ||= Localhost.new
       end
-      
+
       def add(id, options)
         hosts[id] = Host.new(options.merge(id: id))
       end

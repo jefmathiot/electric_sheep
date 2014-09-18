@@ -51,7 +51,7 @@ module ElectricSheep
       def copy(options)
         transport(:copy, options)
       end
-      
+
       def move(options)
         transport(:move, options)
       end

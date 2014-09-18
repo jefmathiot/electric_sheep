@@ -2,7 +2,7 @@ module ElectricSheep
   module Metadata
     module Options
       extend ActiveSupport::Concern
-      
+
       def errors
         @errors ||= Errors.new
       end
@@ -33,7 +33,7 @@ module ElectricSheep
           super
         end
       end
-      
+
       protected
       def option?(method)
         self.options.include?(method)
@@ -64,7 +64,7 @@ module ElectricSheep
         end
       end
     end
-    
+
     class Errors
 
       def initialize

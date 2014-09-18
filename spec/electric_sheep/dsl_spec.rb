@@ -20,7 +20,7 @@ describe ElectricSheep::Dsl do
 
   describe "registering a project" do
 
-    def build_project(options={}, &block) 
+    def build_project(options={}, &block)
       @dsl.project 'some-project', options, &block
       @config.next!
     end

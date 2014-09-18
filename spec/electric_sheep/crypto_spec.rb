@@ -31,7 +31,7 @@ describe ElectricSheep::Crypto do
         IO.expects(:popen).with("ssh-keygen -f #{key_file.path} -e -m pem").
           returns(pem_lines)
       end
-      
+
       let(:key_file) {
         Tempfile.new('encryption-key').tap do |f|
           f.write 'ssh-rsa XXXXXXX'
@@ -43,7 +43,7 @@ describe ElectricSheep::Crypto do
         expects_conversion
         expects_encryption
       end
-      
+
       it 'raises if it where unable to convert key' do
         expects_conversion
         $?.expects(:to_i).returns(1)
@@ -66,15 +66,15 @@ describe ElectricSheep::Crypto do
           f.close
         end
       }
-      
+
       it 'encrypts the plain text' do
         expects_encryption
       end
-      
+
       it 'raises if key is not public' do
         expects_encryption(false)
       end
-    
+
     end
 
     it 'raises if key file not found' do
@@ -106,7 +106,7 @@ describe ElectricSheep::Crypto do
         f.close
       end
     }
-    
+
     def expects_decryption(successful = true)
       OpenSSL::PKey::RSA.expects(:new).with(pem_lines.join).returns(key = mock)
       key.expects(:private?).returns(successful)
@@ -122,11 +122,11 @@ describe ElectricSheep::Crypto do
     it 'encrypts the plain text' do
       expects_decryption
     end
-    
+
     it 'raises if key is not private' do
       expects_decryption(false)
     end
-    
+
     it 'raises if key file not found' do
       ->{subject.decrypt('', '/not/a/file')}.must_raise RuntimeError,
         /Key file not found/

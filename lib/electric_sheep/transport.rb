@@ -3,7 +3,7 @@ module ElectricSheep
     extend ActiveSupport::Concern
     include Metadata::Options
     include Agent
-    
+
     def initialize(project, logger, metadata, hosts)
       @project = project
       @logger = logger

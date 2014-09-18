@@ -27,7 +27,7 @@ module ElectricSheep
         key = File.read(key_file)
         return openssh_to_pem(key_file) if openssh?(key)
         return key if pem?(key)
-        raise "Key file format not supported" 
+        raise "Key file format not supported"
       end
 
       def openssh_to_pem(key_file)

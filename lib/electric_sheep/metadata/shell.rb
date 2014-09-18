@@ -8,7 +8,7 @@ module ElectricSheep
         super
         reset!
       end
-      
+
       def validate(config)
         each_item do |command|
           unless command.validate(config)
