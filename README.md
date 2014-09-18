@@ -58,35 +58,43 @@ TODO
 
 ### Start
 
-Just launch ElectricSheeps inside your project with:
+Just launch ElectricSheep inside your project with:
 
 ```
 bundle exec electric_sheep work
 ```
 
-ElectricSheeps will look for a Sheepfile in the current directory.
+ElectricSheep will look for a Sheepfile in the current directory.
 
 #### `-c` option
 
-ElectricSheeps can use any file as the configuration:
+ElectricSheep can use any file as the configuration:
 
 ```
-bundle exec electric_sheep work -c ~/Somefile 
+bundle exec electric_sheep work -c ~/Somefile
+```
+
+#### `-p` option
+
+You can run a single project to execute:
+
+```
+bundle exec electric_sheep work -p my-project
 ```
 
 ## Using the DSL
 
 ### Hosts
 
-The `host` method allows you to declare remote hosts. Each host should have a unique
-identifier and define an hostname. You can declare as many hosts as needed.
+The `host` method allows you to declare remote hosts. Each host should have a unique identifier
+and define an hostname or IP address. You can declare as many hosts as needed.
 
 ```ruby
 host "production-mysql-master", hostname: "mysql1.domain.tld",
   description "MySQL - Production Master" # optional
 
 host "backup-store-1", hostname: "store1.domain.tld",
-    description "Storage Server 1"
+  description "Storage Server 1"
 ```
 
 Please note that you don't have to declare the localhost.
@@ -100,13 +108,16 @@ as needed but each of them aims to manipulate a single resource.
 
 ```ruby
 project "myapp-database-backup", description: "Database Full Backup" do
-  resource type: :database, name: "myapp_db"
+  resource type: :database, name: "myapp_db", host: "production-mysql-master"
 end
 
 project "www-media-backup", description: "Acme uploads" do
   resource type: :directory, path: '/var/www/uploads'
 end
 ```
+
+If you omit to mention the `host` property of the resource, Electric Sheep will assume it is on
+the localhost.
 
 ### Shells & Commands
 
@@ -117,14 +128,13 @@ provide the resource in its new state (e.g. a database dump file) so that subseq
 transport can transform it again.
 
 The `remotely` method wraps commands inside an SSH session whereas the `locally` method
-executes them on the localhost. `remotely` requires the `on` option to reference the
-target host.
+executes them on the localhost.
 
 ```ruby
 project "myapp-database-backup", description: "Database Full Backup" do
-  resource type: :database, name: "myapp_db"
+  resource type: :database, name: "myapp_db", host: "production-mysql-master"
 
-  remotely on: "production-mysql-master", as: "operator" do
+  remotely as: "operator" do
     mysql_dump user: "backup-operator", password: encrypted("XXXXXXXX")
     tar_gz delete_source: true
   end
@@ -133,23 +143,27 @@ end
 
 ### Transports
 
-Transports allow you to move or copy resources from an host to another. Like shells, transports should be nested inside a project.
+Transports allow you to move or copy resources from an host to another. Like shells, transports
+should be nested inside a project.
 
 ```ruby
 project "myapp-database-backup", description: "Database Full Backup" do
-  resource type: :database, name: "myapp_db"
+  resource type: :database, name: "myapp_db", host: "production-mysql-master"
 
-  remotely on: "production-mysql-master", as: "operator" do
+  remotely as: "operator" do
     mysql_dump user: "backup-operator", password: encrypted("XXXXXXXX")
     tar_gz delete_source: true
   end
 
   move to: localhost, using: :scp, as "operator"
-  copy to: "backup-store-1", using: :scp, as: "another-user", directory: '/srv/backups/'
-  move to: bucket('my-bucket'), using: :s3, access_key: 'XXXXXXXX',
+  copy to: "backup-store-1", using: :scp, as: "another-op", directory: '/srv/backups/'
+  move to: bucket('my-bucket'), using: :s3, access_key_id: 'XXXXXXXX',
     secret_key: encrypted('XXXXXXXX')
 end
 ```
+
+The `move` method deletes the previous resource and replace it with a new one, whereas the `copy`
+command let the previous resource unchanged.
 
 ## Contributing
 
@@ -158,3 +172,4 @@ end
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
