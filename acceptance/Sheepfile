@@ -22,11 +22,11 @@ project "mongodb-dump", description: "MongoDB database backup" do
     mongodb_dump
     tar_gz
   end
-  move to: 'localhost', using: :scp, as: "vagrant"
+  copy to: 'localhost', using: :scp, as: "vagrant"
   # locally do
   #   encrypt
   # end
-  copy to: "backup-store", using: :scp
+  #copy to: "backup-store", using: :scp
   #move to: 'my/bucket', using: :s3
 end
 
