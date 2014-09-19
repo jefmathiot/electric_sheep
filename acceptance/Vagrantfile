@@ -5,13 +5,15 @@
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  
+
   config.vm.box = "ubuntu/trusty64"
-  
-  config.omnibus.chef_version = :latest 
+
+  config.omnibus.chef_version = :latest
 
   config.vm.provision :shell, :inline => "sudo locale-gen fr_FR.UTF-8 && sudo dpkg-reconfigure locales"
-
+  config.vm.provider :virtualbox do |vb|
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+  end
   config.vm.provision :chef_solo do |chef|
     chef.cookbooks_path = ['cookbooks']
     chef.add_recipe 'apt'
@@ -30,6 +32,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     }
   end
 
-  config.vm.provision :shell, inline: "echo \"#{`cat ~/.ssh/id_rsa.pub`}\" >> ~vagrant/.ssh/authorized_keys"
+  config.vm.provision :shell, inline: "echo \"#{`cat ./id_rsa.pub`}\" >> ~vagrant/.ssh/authorized_keys"
   config.vm.provision :shell, path: 'setup.sh'
 end
