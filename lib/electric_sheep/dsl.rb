@@ -57,6 +57,7 @@ module ElectricSheep
       end
 
       def resource(type, options={})
+        options[:host] = @config.hosts.get(options[:host])
         @subject.start_with! ElectricSheep::Resources.const_get(type.to_s.camelize).new(options)
       end
 
@@ -67,6 +68,7 @@ module ElectricSheep
       private
       def transport(type, options)
         options[:transport]=options.delete(:using)
+        options[:to] = @config.hosts.get(options[:to])
         @subject.add Metadata::Transport.new(options.merge(type: type))
       end
     end
@@ -101,7 +103,7 @@ module ElectricSheep
     class RemoteShellDsl < ShellDsl
       protected
       def new_shell(options)
-        opts = { host: options[:on], user: options[:as] }
+        opts = {user: options[:as] }
         Metadata::RemoteShell.new(opts)
       end
     end

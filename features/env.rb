@@ -27,7 +27,7 @@ module ElectricSheep
         expect(FileTest.exists?(path)).to be(false), "expected #{path} to be absent"
       end
     end
-    
+
     def ssh_run_simple(cmd, timeout=nil)
       options=[
         '-o', 'StrictHostKeyChecking=no',

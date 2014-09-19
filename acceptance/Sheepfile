@@ -1,28 +1,40 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-host "acceptance-container", hostname: "10.0.3.10",
-  description: "ElectricSheeps - Container for acceptance testing" # optional
+host "acceptance-container", hostname: "127.0.0.1",
+  description: "ElectricSheeps - Container for acceptance testing", # optional
+  ssh_port: 2222 #optional
 
 project "scp-move-local-to-remote" do
   resource :file, path: "dummy.file"
   move to: "acceptance-container", using: :scp, as: "vagrant"
 end
 
-project "mongodb-dump", description: "MongoDB database backup" do
+# project "scp-move-remote-to-local" do
+#   resource :file, path: "dummy.file", host: "acceptance-container"
+#   move to: localhost, using: :scp, as: "vagrant"
+# end
 
-  resource :database, name: "controldb"
-  remotely on: "acceptance-container", as: "vagrant" do
+project "mongodb-dump", description: "MongoDB database backup" do
+  private_key './acceptance/id_rsa'
+  resource :database, name: "controldb", host: "acceptance-container"
+  remotely as: "vagrant" do
     mongodb_dump
     tar_gz
   end
-
+  move to: 'localhost', using: :scp, as: "vagrant"
+  # locally do
+  #   encrypt
+  # end
+  copy to: "backup-store", using: :scp
+  #move to: 'my/bucket', using: :s3
 end
 
 project "mysql-dump", description: "MySQL database backup" do
 
-  resource :database, name: "controldb"
-  remotely on: "acceptance-container", as: "vagrant" do
+  private_key './acceptance/id_rsa'
+  resource :database, name: "controldb", host: "acceptance-container"
+  remotely as: "vagrant" do
     mysql_dump user: "operator", password: "pseudorandom"
     tar_gz
   end

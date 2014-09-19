@@ -4,8 +4,14 @@ module ElectricSheep
     class Host < Base
       option :id, required: true
       option :hostname, required: true
+      option :ssh_port
       option :description
       # TODO Validate hostname is valid
+
+      def initialize(options={})
+        options[:ssh_port] ||= 22
+        super
+      end
 
       def local?
         false
@@ -37,7 +43,7 @@ module ElectricSheep
       end
 
       def get(id)
-        hosts[id]
+        hosts[id] || localhost
       end
 
       private

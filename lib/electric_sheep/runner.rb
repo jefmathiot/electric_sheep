@@ -42,7 +42,7 @@ module ElectricSheep
     def execute_remote_shell(project, metadata)
       metadata.benchmarked do
         execute_commands project, metadata, Shell::RemoteShell.new(
-          @logger, @config.hosts.get(metadata.host), metadata.user,
+          @logger, project.last_product.host, metadata.user,
           project.private_key
         )
       end

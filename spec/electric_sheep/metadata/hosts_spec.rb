@@ -4,7 +4,7 @@ describe ElectricSheep::Metadata::Host do
   include Support::Options
 
   it{
-    defines_options :hostname, :id, :description
+    defines_options :hostname, :id, :description, :ssh_port
     requires :hostname
   }
   it 'is remote' do

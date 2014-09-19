@@ -15,11 +15,6 @@ module ElectricSheep
       self.send(@metadata.type)
     end
 
-    def resolve_host(id)
-      return @hosts.localhost if id.nil?
-      @hosts.get(id)
-    end
-
     module ClassMethods
       def register(options={})
         ElectricSheep::Agents::Register.register(options.merge(transport: self))

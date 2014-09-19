@@ -3,12 +3,15 @@ require 'spec_helper'
 describe ElectricSheep::Runner do
 
   before do
+    resource=mock
+    resource.stubs(:host).returns(mock)
     @config = ElectricSheep::Config.new
     @config.hosts.add('some-host', hostname: 'some-host.tld')
     @first_project = @config.add(
       ElectricSheep::Metadata::Project.new(id: 'first-project',
         description: 'First project description')
     )
+    @first_project.start_with! resource
     @logger = mock
     @runner = subject.new(config: @config, logger: @logger)
   end
@@ -116,7 +119,7 @@ describe ElectricSheep::Runner do
         append_commands(
           @first_project.add(
             metadata = ElectricSheep::Metadata::RemoteShell.new(
-              host: 'some-host', user: 'op'
+              user: 'op'
             )
           )
         )

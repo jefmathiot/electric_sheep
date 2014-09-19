@@ -23,8 +23,9 @@ module ElectricSheep
 
       def open!
         self if opened?
-        @logger.info "Starting a remote shell session for #{@user}@#{@host.hostname}"
+        @logger.info "Starting a remote shell session for #{@user}@#{@host.hostname} on port #{@host.ssh_port}"
         @ssh_session = Net::SSH.start(@host.hostname, @user,
+          port: @host.ssh_port,
           key_data: Crypto.get_key(@private_key, :private).export,
           keys_only: true)
         self

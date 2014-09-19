@@ -21,7 +21,7 @@ module ElectricSheep
 
       private
       def resolve_hosts(resource)
-        return resolve_host(resource.host), resolve_host(option(:to))
+        return resource.host, option(:to)
       end
     end
   end

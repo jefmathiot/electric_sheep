@@ -72,7 +72,7 @@ module ElectricSheep
       end
 
       def add(option, message, caused_by=Errors.new)
-        @errors[option] ||= [] 
+        @errors[option] ||= []
         @errors[option] << {message: message, caused_by: caused_by}
       end
 

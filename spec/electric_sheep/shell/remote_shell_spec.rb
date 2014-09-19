@@ -82,11 +82,11 @@ describe ElectricSheep::Shell::RemoteShell do
         returns(pk = mock)
       pk.expects(:export).returns('SECRET')
       Net::SSH.expects(:start).
-        with('localhost', 'johndoe', key_data: 'SECRET', keys_only: true).
+        with('localhost', 'johndoe', port: 22, key_data: 'SECRET', keys_only: true).
         returns( connection )
       user = 'johndoe'
       @logger.expects(:info).
-        with("Starting a remote shell session for johndoe@localhost")
+        with("Starting a remote shell session for johndoe@localhost on port 22")
       host = ElectricSheep::Metadata::Host.new(hostname: 'localhost')
       @shell = subject.new( @logger, host, 'johndoe', '/path/to/private/key' )
       @shell.open!
