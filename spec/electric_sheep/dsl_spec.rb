@@ -89,7 +89,7 @@ describe ElectricSheep::Dsl do
 
       def build_shell(&block)
         project = build_project do
-          opts = {on: "some-host", as: "op"}
+          opts = {as: "op"}
           remotely opts, &block
         end
         @shell = project.next!
@@ -120,6 +120,22 @@ describe ElectricSheep::Dsl do
 
       include ShellSpecs
     end
+
+    def self.describe_transport(type)
+      describe "adding a #{type}" do
+        it "appends the transport to the project's queue" do
+          project = build_project do
+            send type, to: 'some-host', using: :scp
+          end
+          transport = project.next!
+          transport.must_be_instance_of ElectricSheep::Metadata::Transport
+          transport.type.must_equal type
+        end
+      end
+    end
+    
+    describe_transport :move
+    describe_transport :copy
 
   end
 
