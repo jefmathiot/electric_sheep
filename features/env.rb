@@ -31,10 +31,12 @@ module ElectricSheep
     def ssh_run_simple(cmd, timeout=nil)
       options=[
         '-o', 'StrictHostKeyChecking=no',
+        '-o', 'PasswordAuthentication=no',
         '-o', 'UserKnownHostsFile=/dev/null',
-        '-p', '2222'
+        '-p', '2222',
+        '-i', File.join(acceptance_dir, 'id_rsa')
       ]
-      run_simple "ssh #{options.join(' ')} vagrant@127.0.0.1 \"#{cmd}\""
+      run_simple "ssh #{options.join(' ')} vagrant@127.0.0.1 \"#{cmd}\"", true, timeout
     end
   end
 end
