@@ -14,6 +14,12 @@ gem install librarian-chef
 librarian-chef install
 ```
 
+Install the "omnibus" vagrant plugin:
+
+```
+vagrant plugin install vagrant-omnibus
+```
+
 Then start the container from the current (`acceptance`) directory:
 
 ```
