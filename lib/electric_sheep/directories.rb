@@ -14,7 +14,7 @@ module ElectricSheep
 
     private
     def work_dir
-      @work_dir ||= exec('echo ${ELECTRIC_SHEEPS_HOME-"$HOME/.electric_sheep"}')[:out].chomp
+      @work_dir ||= exec('echo ${ELECTRIC_SHEEP_HOME-"$HOME/.electric_sheep"}')[:out].chomp
     end
 
   end
