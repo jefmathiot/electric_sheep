@@ -1,8 +1,9 @@
-require 'net/ssh'
+require 'electric_sheep/ssh'
 
 module ElectricSheep
   module Shell
     class RemoteShell
+      include SSH
       include Directories
       include Resourceful
 
@@ -24,10 +25,7 @@ module ElectricSheep
       def open!
         self if opened?
         @logger.info "Starting a remote shell session for #{@user}@#{@host.hostname} on port #{@host.ssh_port}"
-        @ssh_session = Net::SSH.start(@host.hostname, @user,
-          port: @host.ssh_port,
-          key_data: Crypto.get_key(@private_key, :private).export,
-          keys_only: true)
+        @ssh_session = ssh_session @host, @user, @private_key
         self
       end
 
