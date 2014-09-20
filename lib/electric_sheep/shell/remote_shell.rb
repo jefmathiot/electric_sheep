@@ -1,11 +1,11 @@
-require 'electric_sheep/ssh'
+require 'electric_sheep/helpers/ssh'
 
 module ElectricSheep
   module Shell
     class RemoteShell
-      include SSH
       include Directories
-      include Resourceful
+      include Helpers::Resourceful
+      include Helpers::SSH
 
       def initialize(logger, host, user, private_key)
         @logger = logger

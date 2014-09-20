@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe ElectricSheep::Shell::Resourceful do
+describe ElectricSheep::Helpers::Resourceful do
 
   ResourcefulKlazz = Class.new do
-    include ElectricSheep::Shell::Resourceful
+    include ElectricSheep::Helpers::Resourceful
     
     def initialize
       @host=ElectricSheep::Metadata::Host.new

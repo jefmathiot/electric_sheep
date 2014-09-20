@@ -5,7 +5,7 @@ module ElectricSheep
   module Shell
     class LocalShell
       include Directories
-      include Resourceful
+      include Helpers::Resourceful
 
       def initialize(logger)
         @logger = logger

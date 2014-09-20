@@ -1,5 +1,5 @@
 module ElectricSheep
-  module Shell
+  module Helpers
     module Resourceful
 
       def directory_resource(options)

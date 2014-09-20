@@ -1,3 +1,5 @@
+require 'electric_sheep/helpers/resourceful'
+
 module ElectricSheep
   module Transport
     extend ActiveSupport::Concern
