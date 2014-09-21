@@ -1,11 +1,9 @@
-require 'electric_sheep/helpers/ssh'
 require 'net/scp'
 
 module ElectricSheep
   module Transports
     class SCP
       include Transport
-      include Directories
       include Helpers::SSH
       include Helpers::Named
       include Helpers::Resourceful
@@ -17,7 +15,7 @@ module ElectricSheep
         logger.info "Will copy #{resource.basename} " +
           "from #{resource.host.to_s} " +
           "to #{to.to_s}"
-        remote_to_local if to.local?
+        remote_to_local(to) if to.local?
       end
 
       def move
@@ -25,22 +23,20 @@ module ElectricSheep
         logger.info "Will move #{resource.basename} " +
           "from #{from.to_s} " +
           "to #{to.to_s}"
+        remote_to_local(to, true) if to.local?
       end
 
       private
-      def remote_to_local
-        path = with_named_path work_dir, resource.name do |output| 
-          in_session resource.host do |ssh|
-              ssh.scp.download! resource.path, output
+      def remote_to_local(to, move: false)
+        directory = Helpers::Directories::project_directory(to, @project)
+        FileUtils.mkdir_p directory
+        path = with_named_path directory, resource.basename do |output|
+          in_remote_session resource.host do |ssh|
+            ssh.scp.download! resource.path, output, verbose: true
+            ssh_exec ssh, "rm -f #{resource.path}" if move
           end
         end
-        done! file_resource( path )
-      end
-
-      def in_session(host, &block)
-        ssh_session host, option(:as), @project.private_key do |ssh|
-          block.call ssh
-        end
+        done! file_resource( to, path )
       end
 
     end

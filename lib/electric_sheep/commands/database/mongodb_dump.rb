@@ -12,10 +12,14 @@ module ElectricSheep
 
         def perform
           logger.info "Creating a dump of the \"#{resource.name}\" MongoDB database"
-          dump = with_named_dir work_dir, resource.name, timestamp: true do |output|
+          dump = with_named_dir(
+            shell.project_directory,
+            resource.name,
+            timestamp: true
+          ) do |output|
             shell.exec "#{cmd(resource.name, option(:user), option(:password), output)} &> /dev/null"
           end
-          done! shell.directory_resource(path: dump)
+          done! shell.directory_resource(shell.host, dump)
         end
 
         private

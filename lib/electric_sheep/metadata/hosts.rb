@@ -3,10 +3,11 @@ module ElectricSheep
 
     class Host < Base
       option :id, required: true
+      # TODO Validate hostname is valid
       option :hostname, required: true
       option :ssh_port
       option :description
-      # TODO Validate hostname is valid
+      option :working_directory
 
       def initialize(options={})
         options[:ssh_port] ||= 22
@@ -23,6 +24,8 @@ module ElectricSheep
     end
 
     class Localhost < Base
+      attr_accessor :working_directory
+
       def local?
         true
       end

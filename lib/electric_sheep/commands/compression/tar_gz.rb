@@ -11,10 +11,14 @@ module ElectricSheep
 
         def perform
           logger.info "Compressing #{resource.path} to #{resource.basename}.tar.gz"
-          archive = with_named_file work_dir, "#{resource.basename}.tar.gz" do |file|
+          archive = with_named_file(
+            shell.project_directory,
+            resource.basename,
+            extension:"tar.gz"
+          ) do |file|
             shell.exec "tar -cvzf \"#{file}\" \"#{resource.path}\" &> /dev/null"
           end
-          done! shell.file_resource(path: archive)
+          done! shell.file_resource(shell.host, archive)
         end
 
       end

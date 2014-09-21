@@ -1,14 +1,13 @@
-require 'session'
-require 'shellwords'
-
 module ElectricSheep
   module Shell
     class LocalShell
       include Directories
       include Helpers::Resourceful
 
-      def initialize(logger)
+      def initialize(localhost, project, logger)
+        @host=localhost
         @logger = logger
+        @project=project
       end
 
       def local?

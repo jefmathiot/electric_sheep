@@ -1,9 +1,13 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+# Local working directory
+working_directory "/tmp/electric_sheep"
+
 host "acceptance-container", hostname: "127.0.0.1",
   description: "ElectricSheeps - Container for acceptance testing", # optional
-  ssh_port: 2222 #optional
+  ssh_port: 2222, #optional
+  working_directory: "/tmp/electric_sheep" #optional
 
 project "scp-move-local-to-remote" do
   resource :file, path: "dummy.file"
@@ -22,7 +26,7 @@ project "mongodb-dump", description: "MongoDB database backup" do
     mongodb_dump
     tar_gz
   end
-  copy to: 'localhost', using: :scp, as: "vagrant"
+  copy to: localhost, using: :scp, as: "vagrant"
   # locally do
   #   encrypt
   # end

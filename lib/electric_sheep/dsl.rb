@@ -14,6 +14,10 @@ module ElectricSheep
       @config.add ProjectDsl.new( @config, id, options, &block ).project
     end
 
+    def working_directory(dir)
+      @config.hosts.localhost.working_directory=dir
+    end
+
     class AbstractDsl
 
       class << self
@@ -28,6 +32,14 @@ module ElectricSheep
         @config = args.first
         build *args
         instance_eval &block if block_given?
+      end
+
+      def localhost
+        @config.hosts.localhost
+      end
+
+      def encrypted(value)
+        Metadata::Encrypted.new(value)
       end
 
     end
@@ -88,10 +100,6 @@ module ElectricSheep
         else
           super
         end
-      end
-
-      def encrypted(value)
-        Metadata::Encrypted.new(value)
       end
 
       protected

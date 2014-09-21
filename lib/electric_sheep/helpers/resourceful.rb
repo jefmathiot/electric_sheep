@@ -2,20 +2,16 @@ module ElectricSheep
   module Helpers
     module Resourceful
 
-      def directory_resource(options)
-        Resources::Directory.new(resource_options(options))
+      def directory_resource(host, path, options={})
+        Resources::Directory.new(resource_options(host, path, options))
       end
 
-      def file_resource(options)
-        Resources::File.new(resource_options(options))
+      def file_resource(host, path, options={})
+        Resources::File.new(resource_options(host, path, options))
       end
 
-      def resource_options(options)
-        if local?
-          options.merge(host: Metadata::Localhost.new)
-        else
-          options.merge(host: @host)
-        end
+      def resource_options(host, path, options={})
+        options.merge(host: host, path: path)
       end
     end
   end
