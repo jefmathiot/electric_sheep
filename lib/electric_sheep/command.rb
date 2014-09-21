@@ -4,7 +4,7 @@ module ElectricSheep
     include Metadata::Options
     include Agent
 
-    attr_reader :shell, :work_dir
+    attr_reader :shell
 
     def initialize(project, logger, shell, metadata)
       @project = project

@@ -91,14 +91,10 @@ describe ElectricSheep::Runner do
       end
 
       def expects_executions(shell, logger, sequence)
-        shell.expects(:project_directory).
-          with(@first_project).returns('/first_project')
         logger.expects(:info).in_sequence(sequence).
           with("I'm Dumb")
         shell.expects(:exec).in_sequence(sequence).with('echo "" > /dev/null')
 
-        shell.expects(:project_directory).
-          with(@first_project).returns('/first_project')
         logger.expects(:info).in_sequence(sequence).
           with("I'm Dumber")
         shell.expects(:exec).in_sequence(sequence).
@@ -109,7 +105,7 @@ describe ElectricSheep::Runner do
         append_commands @first_project.add(metadata = ElectricSheep::Metadata::Shell.new)
         shell = ElectricSheep::Shell::LocalShell.any_instance
         shell.expects(:open!).in_sequence(script)
-        shell.expects(:mk_project_dir!).in_sequence(script).with(@first_project)
+        shell.expects(:mk_project_directory!).in_sequence(script)
         expects_executions(shell, @logger, script)
         @runner.run!
         expects_execution_times(@first_project, metadata)
@@ -125,7 +121,7 @@ describe ElectricSheep::Runner do
         )
         shell = ElectricSheep::Shell::RemoteShell.any_instance
         shell.expects(:open!).returns(shell).in_sequence(script)
-        shell.expects(:mk_project_dir!).in_sequence(script).with(@first_project)
+        shell.expects(:mk_project_directory!).in_sequence(script)
         expects_executions(shell, @logger, script)
         shell.expects(:close!).in_sequence(script).returns(shell)
 
