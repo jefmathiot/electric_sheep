@@ -67,7 +67,7 @@ describe ElectricSheep::Runner do
         register as: 'dumb', of_type: :command
 
         def perform
-          logger.info "I'm #{self.class}, my work directory is #{work_dir}"
+          logger.info "I'm #{self.class}"
           shell.exec('echo "" > /dev/null')
         end
 
@@ -78,7 +78,7 @@ describe ElectricSheep::Runner do
         register as: 'dumber', of_type: :command
 
         def perform
-          logger.info "I'm #{self.class}, my work directory is #{work_dir}"
+          logger.info "I'm #{self.class}"
           shell.exec('echo > /dev/null')
         end
 
@@ -91,16 +91,16 @@ describe ElectricSheep::Runner do
       end
 
       def expects_executions(shell, logger, sequence)
-        shell.expects(:project_dir).in_sequence(sequence).
+        shell.expects(:project_directory).
           with(@first_project).returns('/first_project')
         logger.expects(:info).in_sequence(sequence).
-          with("I'm Dumb, my work directory is /first_project")
+          with("I'm Dumb")
         shell.expects(:exec).in_sequence(sequence).with('echo "" > /dev/null')
 
-        shell.expects(:project_dir).in_sequence(sequence).
+        shell.expects(:project_directory).
           with(@first_project).returns('/first_project')
         logger.expects(:info).in_sequence(sequence).
-          with("I'm Dumber, my work directory is /first_project")
+          with("I'm Dumber")
         shell.expects(:exec).in_sequence(sequence).
           with('echo > /dev/null')
       end

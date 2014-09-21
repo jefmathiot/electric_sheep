@@ -52,8 +52,7 @@ module ElectricSheep
       shell.open!
       shell.mk_project_directory!
       shell_metadata.each_item do |metadata|
-        command = metadata.agent.new(project, @logger, shell,
-          shell.project_directory, metadata )
+        command = metadata.agent.new(project, @logger, shell, metadata )
         metadata.benchmarked do
           command.check_prerequisites
           command.perform

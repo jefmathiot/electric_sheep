@@ -19,7 +19,7 @@ describe ElectricSheep::Commands::Database::MongoDBDump do
       database = ElectricSheep::Resources::Database.new name: 'MyDatabase'
       @project.start_with! database
 
-      @command = subject.new(@project, @logger, @shell, '/tmp', @metadata = mock)
+      @command = subject.new(@project, @logger, @shell, @metadata = mock)
 
       @seq = sequence('command')
       @logger.expects(:info).in_sequence(@seq).with "Creating a dump of the \"MyDatabase\" MongoDB database"

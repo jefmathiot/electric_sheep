@@ -1,3 +1,5 @@
+require 'session'
+
 module ElectricSheep
   module Shell
     class LocalShell

@@ -6,11 +6,10 @@ module ElectricSheep
 
     attr_reader :shell, :work_dir
 
-    def initialize(project, logger, shell, work_dir, metadata)
+    def initialize(project, logger, shell, metadata)
       @project = project
       @logger = logger
       @shell = shell
-      @work_dir = work_dir
       @metadata = metadata
     end
 

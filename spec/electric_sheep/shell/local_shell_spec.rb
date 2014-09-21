@@ -3,21 +3,19 @@ require 'spec_helper'
 describe ElectricSheep::Shell::LocalShell do
 
   before do
-    @logger = mock()
+    @host, @logger, @project = mock, mock, mock
+    @shell=subject.new(@host, @project, @logger)
   end
 
   it 'indicates its type' do
-    subject.new(nil).tap do |shell|
-      shell.local?.must_equal true
-      shell.remote?.must_equal false
-    end
+    @shell.local?.must_equal true
+    @shell.remote?.must_equal false
   end
 
   describe "with a session" do
 
     before do
       @logger.expects(:info).with("Starting a local shell session")
-      @shell = subject.new( @logger )
       @shell.open!
     end
 

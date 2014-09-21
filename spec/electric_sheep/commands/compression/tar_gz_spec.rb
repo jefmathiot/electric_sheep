@@ -14,43 +14,48 @@ describe ElectricSheep::Commands::Compression::TarGz do
   describe "executing the command" do
 
     before do
-      @project, @logger, @shell = ElectricSheep::Metadata::Project.new, mock, mock
+      @project, @logger, @shell, @host = ElectricSheep::Metadata::Project.new,
+        mock, mock, mock
+      @shell.expects(:project_directory).returns('/project/dir')
+      @shell.expects(:host).returns(@host)
 
-      @command = subject.new(@project, @logger, @shell, '/tmp', mock)
+      @command = subject.new(@project, @logger, @shell, @metadata=mock)
       @seq = sequence('command')
     end
 
     def assert_product(file)
       product = @project.last_product
       product.wont_be_nil
-      product.path.must_equal "/tmp/#{file}.tar.gz"
+      product.path.must_equal "/project/dir/#{file}.tar.gz"
     end
 
-    it 'compresses the provided file' do
-      @project.start_with!(file('/tmp/some-file.txt'))
-      @logger.expects(:info).in_sequence(@seq).
-        with 'Compressing /tmp/some-file.txt to some-file.txt.tar.gz'
-      @shell.expects(:exec).
-        with('tar -cvzf "/tmp/some-file.txt.tar.gz" "/tmp/some-file.txt" &> /dev/null')
-      @shell.expects(:file_resource).
-        with(path: '/tmp/some-file.txt.tar.gz').
-        returns(file('/tmp/some-file.txt.tar.gz'))
-      @command.perform
-      assert_product('some-file.txt')
+    def self.describe_compression(input_type, delete_source=false)
+      it "compresses the provided #{input_type} (delete source: #{delete_source})" do
+        input="/tmp/some-#{input_type}"
+        output="/project/dir/some-#{input_type}.tar.gz"
+        @metadata.expects(:delete_source).returns(delete_source)
+
+        @project.start_with!(send(input_type, input))
+        @logger.expects(:info).in_sequence(@seq).
+          with "Compressing #{input} to #{File.basename(output)}"
+        @shell.expects(:exec).in_sequence(@seq).
+          with("tar -cvzf \"#{output}\" \"#{input}\" &> /dev/null")
+        if delete_source
+          @shell.expects(:exec).in_sequence(@seq).
+            with("rm -f \"#{input}\"")
+        end
+        @shell.expects(:file_resource).in_sequence(@seq).
+          with(@host, output).
+          returns(send(input_type, output))
+        @command.perform
+        assert_product("some-#{input_type}")
+      end
     end
 
-    it 'compresses the provided directory' do
-      @project.start_with!(directory('/tmp/some-directory'))
-      @logger.expects(:info).in_sequence(@seq).
-        with 'Compressing /tmp/some-directory to some-directory.tar.gz'
-      @shell.expects(:exec).
-        with('tar -cvzf "/tmp/some-directory.tar.gz" "/tmp/some-directory" &> /dev/null')
-      @shell.expects(:file_resource).
-        with(path: '/tmp/some-directory.tar.gz').
-        returns(file('/tmp/some-directory.tar.gz'))
-      @command.perform
-      assert_product('some-directory')
-    end
+    describe_compression :file
+    describe_compression :directory
+    describe_compression :file, true
+    describe_compression :directory, true
 
   end
 

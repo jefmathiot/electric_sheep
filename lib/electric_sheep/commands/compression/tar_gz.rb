@@ -17,6 +17,7 @@ module ElectricSheep
             extension:"tar.gz"
           ) do |file|
             shell.exec "tar -cvzf \"#{file}\" \"#{resource.path}\" &> /dev/null"
+            shell.exec "rm -f \"#{resource.path}\"" if option(:delete_source)
           end
           done! shell.file_resource(shell.host, archive)
         end
