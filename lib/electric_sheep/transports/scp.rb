@@ -27,7 +27,7 @@ module ElectricSheep
       end
 
       private
-      def remote_to_local(to, move: false)
+      def remote_to_local(to, move=false)
         directory = Helpers::Directories::project_directory(to, @project)
         FileUtils.mkdir_p directory
         path = with_named_path directory, resource.basename do |output|
