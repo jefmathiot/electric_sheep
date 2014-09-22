@@ -18,6 +18,11 @@ describe ElectricSheep::Dsl do
     check_properties host, id: "some-host", hostname: "some-host.tld", description: "Some host"
   end
 
+  it 'defines the local working directory' do
+    @dsl.working_directory '/local/directory'
+    @config.hosts.localhost.working_directory.must_equal '/local/directory'
+  end
+
   describe "registering a project" do
 
     def build_project(options={}, &block)
@@ -48,6 +53,22 @@ describe ElectricSheep::Dsl do
       project.private_key.must_equal '/path/to/private/key'
     end
 
+    it 'provides the localhost' do
+      host=nil
+      project=build_project do
+        host=localhost
+      end
+      host.must_equal @config.hosts.localhost
+    end
+
+    it 'allows encrypted values' do
+      value = nil
+      build_project do
+        value = encrypted('XXXXX')
+      end
+      value.must_be_instance_of ElectricSheep::Metadata::Encrypted
+    end
+
     module ShellSpecs
       extend ActiveSupport::Concern
 
@@ -73,13 +94,6 @@ describe ElectricSheep::Dsl do
             @command.type.must_equal :do_nothing
           end
 
-          it 'allows encrypted values' do
-            value = nil
-            build_shell do
-              value = encrypted('XXXXX')
-            end
-            value.must_be_instance_of ElectricSheep::Metadata::Encrypted
-          end
         end
       end
 
