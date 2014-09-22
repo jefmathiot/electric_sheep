@@ -19,9 +19,9 @@ module ElectricSheep
       end
 
       def move
-        from, to = resolve_hosts(resource)
+        to=option(:to)
         logger.info "Will move #{resource.basename} " +
-          "from #{from.to_s} " +
+          "from #{resource.host.to_s} " +
           "to #{to.to_s}"
         remote_to_local(to, true) if to.local?
       end
