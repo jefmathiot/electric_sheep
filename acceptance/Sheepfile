@@ -14,7 +14,7 @@ host "backup-store", hostname: "127.0.0.1",
 
 project "scp-move-local-to-remote" do
   resource :file, path: "dummy.file"
-  move to: "main-host", using: "scp", as: "vagrant"
+  copy to: "main-host", using: "scp", as: "vagrant"
 end
 
 # project "scp-move-remote-to-local" do
