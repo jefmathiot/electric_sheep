@@ -15,11 +15,14 @@ describe ElectricSheep::Commands::Database::MySQLDump do
   describe "executing the command" do
 
     before do
-      @project, @logger, @shell = ElectricSheep::Metadata::Project.new, mock, mock
+      @project, @logger, @shell, @host = ElectricSheep::Metadata::Project.new,
+        mock, mock, mock
+      @shell.expects(:project_directory).returns('/project/dir')
+      @shell.expects(:host).returns(@host)
       database = ElectricSheep::Resources::Database.new name: 'MyDatabase'
       @project.start_with! database
 
-      @command = subject.new(@project, @logger, @shell, '/tmp', @metadata = mock)
+      @command = subject.new(@project, @logger, @shell, @metadata = mock)
 
       @seq = sequence('command')
       @logger.expects(:info).in_sequence(@seq).with "Creating a dump of the \"MyDatabase\" MySQL database"
@@ -28,7 +31,7 @@ describe ElectricSheep::Commands::Database::MySQLDump do
     def assert_product
       product = @project.last_product
       product.wont_be_nil
-      product.path.must_equal '/tmp/MyDatabase-20140605-040302.sql'
+      product.path.must_equal '/project/dir/MyDatabase-20140605-040302.sql'
     end
 
     def assert_command
@@ -39,8 +42,8 @@ describe ElectricSheep::Commands::Database::MySQLDump do
 
     def expects_file_resource
       @shell.expects(:file_resource).
-        with(path: '/tmp/MyDatabase-20140605-040302.sql').
-        returns(file('/tmp/MyDatabase-20140605-040302.sql'))
+        with(@host, '/project/dir/MyDatabase-20140605-040302.sql').
+        returns(file('/project/dir/MyDatabase-20140605-040302.sql'))
     end
 
     it 'executes the backup command' do
@@ -48,7 +51,7 @@ describe ElectricSheep::Commands::Database::MySQLDump do
       @metadata.stubs(:password).returns(nil)
       Timecop.travel Time.utc(2014, 6, 5, 4, 3, 2) do
         @shell.expects(:exec).in_sequence(@seq).
-          with("mysqldump \"MyDatabase\" > \"/tmp/MyDatabase-20140605-040302.sql\"")
+          with("mysqldump \"MyDatabase\" > \"/project/dir/MyDatabase-20140605-040302.sql\"")
         assert_command
       end
     end
