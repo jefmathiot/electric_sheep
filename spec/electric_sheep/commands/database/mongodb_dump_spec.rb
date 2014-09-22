@@ -15,7 +15,10 @@ describe ElectricSheep::Commands::Database::MongoDBDump do
   describe "executing the command" do
 
     before do
-      @project, @logger, @shell = ElectricSheep::Metadata::Project.new, mock, mock
+      @project, @logger, @shell, @host = ElectricSheep::Metadata::Project.new,
+        mock, mock, mock
+      @shell.expects(:project_directory).returns('/project/dir')
+      @shell.expects(:host).returns(@host)
       database = ElectricSheep::Resources::Database.new name: 'MyDatabase'
       @project.start_with! database
 
@@ -28,13 +31,13 @@ describe ElectricSheep::Commands::Database::MongoDBDump do
     def assert_product
       product = @project.last_product
       product.wont_be_nil
-      product.path.must_equal '/tmp/MyDatabase-20140605-040302'
+      product.path.must_equal '/project/dir/MyDatabase-20140605-040302'
     end
 
     def expects_directory_resource
       @shell.expects(:directory_resource).
-        with(path: '/tmp/MyDatabase-20140605-040302').
-        returns(directory('/tmp/MyDatabase-20140605-040302'))
+        with(@host, '/project/dir/MyDatabase-20140605-040302').
+        returns(directory('/project/dir/MyDatabase-20140605-040302'))
     end
 
     def assert_command
@@ -49,7 +52,7 @@ describe ElectricSheep::Commands::Database::MongoDBDump do
       Timecop.travel Time.utc(2014, 6, 5, 4, 3, 2) do
         @shell.expects(:exec).in_sequence(@seq).
           with("mongodump -d \"MyDatabase\" "+
-               "-o \"/tmp/MyDatabase-20140605-040302\" &> /dev/null"
+               "-o \"/project/dir/MyDatabase-20140605-040302\" &> /dev/null"
           )
         assert_command
       end
