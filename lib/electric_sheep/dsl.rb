@@ -80,7 +80,7 @@ module ElectricSheep
       private
       def transport(type, options)
         options[:transport]=options.delete(:using)
-        options[:to] = @config.hosts.get(options[:to])
+        options[:to] = options[:to]
         @subject.add Metadata::Transport.new(options.merge(type: type))
       end
     end

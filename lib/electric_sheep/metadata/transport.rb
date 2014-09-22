@@ -3,8 +3,8 @@ module ElectricSheep
     class Transport < Agent
       include Metered
 
-      option :type, required: true
       option :transport, required: true
+      option :type, required: true # move or copy
       option :to, required: true
       option :as
 

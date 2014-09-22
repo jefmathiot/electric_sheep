@@ -11,18 +11,18 @@ module ElectricSheep
       register as: "scp"
 
       def copy
-        to=option(:to)
+        to=host(option(:to))
         logger.info "Will copy #{resource.basename} " +
           "from #{resource.host.to_s} " +
-          "to #{to.to_s}"
+          "to #{to.to_s} using SCP"
         remote_to_local(to) if to.local?
       end
 
       def move
-        to=option(:to)
+        to=host(option(:to))
         logger.info "Will move #{resource.basename} " +
           "from #{resource.host.to_s} " +
-          "to #{to.to_s}"
+          "to #{to.to_s} using SCP"
         remote_to_local(to, true) if to.local?
       end
 

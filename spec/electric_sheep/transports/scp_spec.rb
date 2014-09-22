@@ -22,11 +22,12 @@ describe ElectricSheep::Transports::SCP do
         @project = ElectricSheep::Metadata::Project.new(id: "remote")
         @metadata = ElectricSheep::Metadata::Transport.new
         @hosts = mock
+        @hosts.expects(:get).with('localhost').returns(@to = ElectricSheep::Metadata::Localhost.new)
         @meta_scp = subject.new(@project, @logger, @metadata, @hosts)
-        @meta_scp.stubs(:option).with(:to).returns(@to = ElectricSheep::Metadata::Localhost.new)
+        @meta_scp.stubs(:option).with(:to).returns('localhost')
         @meta_scp.stubs(:option).with(:as).returns(@as = "user")
         @meta_scp.stubs(:resource).returns(@resource = mock)
-        @resource.stubs(:host).returns(ElectricSheep::Metadata::Host.new)
+        @resource.stubs(:host).returns(ElectricSheep::Metadata::Host.new(id: 'remote-host'))
         @resource.stubs(:basename).returns('filename.ext')
         @resource.stubs(:path).returns('remote/filename.ext')
       end
@@ -47,6 +48,6 @@ describe ElectricSheep::Transports::SCP do
 
     def should_log_msg(type)
       @logger.expects(:info).
-        with("Will #{type} filename.ext from #{@resource.host.to_s} to #{@to.to_s}")
+        with("Will #{type} filename.ext from #{@resource.host.to_s} to #{@to.to_s} using SCP")
     end
 end

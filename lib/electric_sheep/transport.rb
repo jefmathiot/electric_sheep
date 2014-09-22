@@ -17,6 +17,11 @@ module ElectricSheep
       self.send(@metadata.type)
     end
 
+    protected
+    def host(id)
+      @hosts.get(id)
+    end
+
     module ClassMethods
       def register(options={})
         ElectricSheep::Agents::Register.register(options.merge(transport: self))
