@@ -4,7 +4,7 @@ describe ElectricSheep::Helpers::Resourceful do
 
   ResourcefulKlazz = Class.new do
     include ElectricSheep::Helpers::Resourceful
-    
+
     def initialize
       @host=ElectricSheep::Metadata::Host.new
     end
@@ -29,7 +29,7 @@ describe ElectricSheep::Helpers::Resourceful do
     end
 
     describe_resource_creation 'directory', ElectricSheep::Resources::Directory
-    describe_resource_creation 'file', ElectricSheep::Resources::File 
+    describe_resource_creation 'file', ElectricSheep::Resources::File
 
   end
 end
