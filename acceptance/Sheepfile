@@ -11,7 +11,7 @@ host "acceptance-container", hostname: "127.0.0.1",
 
 project "scp-move-local-to-remote" do
   private_key './acceptance/id_rsa'
-  resource :file, path: "/tmp/electric_sheep/dummy.file"
+  resource :file, path: "dummy.file"
   copy to: "acceptance-container", using: :scp, as: "vagrant"
 end
 
