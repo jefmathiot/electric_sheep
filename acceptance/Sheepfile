@@ -7,11 +7,12 @@ working_directory "/tmp/electric_sheep"
 host "acceptance-container", hostname: "127.0.0.1",
   description: "ElectricSheeps - Container for acceptance testing", # optional
   ssh_port: 2222, #optional
-  working_directory: "/tmp/electric_sheep" #optional
+  working_directory: "/tmp/remote_electric_sheep" #optional
 
 project "scp-move-local-to-remote" do
-  resource :file, path: "dummy.file"
-  move to: "acceptance-container", using: :scp, as: "vagrant"
+  private_key './acceptance/id_rsa'
+  resource :file, path: "/tmp/electric_sheep/dummy.file"
+  copy to: "acceptance-container", using: :scp, as: "vagrant"
 end
 
 # project "scp-move-remote-to-local" do
