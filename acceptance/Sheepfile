@@ -5,26 +5,22 @@
 if File.basename(Dir.pwd)=='aruba'
   # Cucumber features
   working_directory File.expand_path('.')
+  private_key=File.join('../../', 'acceptance', 'id_rsa')
 else
   # Manual run
   working_directory File.expand_path("tmp/work_dir")
-end
-
-if File.basename(Dir.pwd)=='aruba'
-  private_key=File.join('../../', 'acceptance', 'id_rsa')
-else
   private_key='./acceptance/id_rsa'
 end
 
 host "main-host", hostname: "127.0.0.1",
-  ssh_port: 2222, #optional
-  working_directory: "/tmp/acceptance" #optional
+  ssh_port: 2222,
+  working_directory: "/tmp/acceptance"
 
 host "without-working-directory", hostname: "127.0.0.1",
-  ssh_port: 2222 #optional
+  ssh_port: 2222
 
 host "backup-store", hostname: "127.0.0.1",
-  ssh_port: 2222, #optional
+  ssh_port: 2222,
   working_directory: "/tmp/acceptance_backup" #optional
 
 ###############################################################################

@@ -49,5 +49,7 @@ World(ElectricSheep::Acceptance)
 Before do
   self.electric_dir=File.expand_path('.')
   self.ssh_run_simple 'rm -rf /tmp/acceptance /tmp/acceptance_backup'
+  self.ssh_run_simple 'rm -rf /home/vagrant/.electric_sheep'
+  FileUtils.rm_f "/home/vagrant/.electric_sheep"
 end
 

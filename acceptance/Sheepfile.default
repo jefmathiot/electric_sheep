@@ -1,0 +1,20 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+if File.basename(Dir.pwd)=='aruba'
+  # Cucumber features
+  private_key=File.join('../../', 'acceptance', 'id_rsa')
+else
+  # Manual run
+  private_key='./acceptance/id_rsa'
+end
+
+host "main-host", hostname: "127.0.0.1",
+  ssh_port: 2222
+
+project "working-directories" do
+    private_key private_key
+    resource "file", path: "dummy.file"
+    copy to: "main-host", as: "vagrant", using: "scp"
+    copy to: "localhost", as: "vagrant", using: "scp"
+end
