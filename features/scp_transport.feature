@@ -8,3 +8,7 @@ Feature: SCP transport
     When I tell the sheep to work on project "scp-move-local-to-remote"
     Then the file should have been moved to the remote host
 
+  Scenario: Move a file using SCP from the localhost to a remote host without working directory
+    Given a local file
+    When I tell the sheep to work on project "scp-move-local-to-remote-without-working-directory"
+    Then the file should have been moved to the remote host in default directory

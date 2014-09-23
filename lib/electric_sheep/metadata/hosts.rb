@@ -1,13 +1,20 @@
 module ElectricSheep
   module Metadata
 
-    class Host < Base
+    class BaseHost < Base
+      option :working_directory
+
+      def working_directory
+        option(:working_directory) || '$HOME/.electric_sheep'
+      end
+    end
+
+    class Host < BaseHost
       option :id, required: true
       # TODO Validate hostname is valid
       option :hostname, required: true
       option :ssh_port
       option :description
-      option :working_directory
 
       def initialize(options={})
         options[:ssh_port] ||= 22
@@ -21,10 +28,14 @@ module ElectricSheep
       def to_s
         id
       end
+
     end
 
-    class Localhost < Base
-      attr_accessor :working_directory
+    class Localhost < BaseHost
+
+      def working_directory=(value)
+        @options[:working_directory] = value
+      end
 
       def local?
         true

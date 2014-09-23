@@ -1,5 +1,6 @@
 require 'net/scp'
 
+
 module ElectricSheep
   module Transports
     class SCP
@@ -38,17 +39,20 @@ module ElectricSheep
             ssh_exec ssh, "rm -f #{resource.path}" if delete_source
           end
         end
+        #TODO resource on copy !
         done! file_resource( to, path )
       end
 
       def local_to_remote(to, delete_source=false)
         directory = Helpers::Directories::project_directory(to, @project)
+        resource_path = shell.exec("echo #{resource.path}")[:out]
         path = with_named_path directory, resource.basename do |output|
           in_remote_session to do |ssh|
+            output = ssh_exec(ssh, "echo #{output}")[:out]
             ssh_exec ssh, "mkdir -p #{directory}"
             ssh.scp.upload! resource.path, output, verbose: true
           end
-          FileUtils.rm_f resource.path if delete_source
+          FileUtils.rm_f resource_path if delete_source
         end
         done! file_resource( to, path )
       end

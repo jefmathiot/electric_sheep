@@ -6,11 +6,14 @@ module ElectricSheep
     include Metadata::Options
     include Agent
 
-    def initialize(project, logger, metadata, hosts)
+    attr_reader :shell
+
+    def initialize(project, logger, metadata, hosts, shell)
       @project = project
       @logger = logger
       @metadata = metadata
       @hosts = hosts
+      @shell = shell
     end
 
     def perform

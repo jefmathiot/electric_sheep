@@ -17,9 +17,8 @@ module ElectricSheep
       end
 
       def path
-        return option(:path) if option(:path).first == '/'
-        return option(:host).working_directory+'/'+option(:path) if option(:host).working_directory
-        raise "path for file #{option(:path)} is invalid please provide a working directory or provide relative path"
+        return option(:path) if Pathname.new(option(:path)).absolute?
+        ::File.join(option(:host).working_directory, option(:path))
       end
     end
   end

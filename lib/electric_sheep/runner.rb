@@ -62,10 +62,13 @@ module ElectricSheep
     end
 
     def execute_transport(project, metadata)
-      transport = metadata.agent.new(project, @logger, metadata, @config.hosts)
+      shell = Shell::LocalShell.new(@config.hosts.localhost, project, @logger)
+      shell.open!
+      transport = metadata.agent.new(project, @logger, metadata, @config.hosts, shell)
       metadata.benchmarked do
         transport.perform
       end
+      shell.close!
     end
   end
 end

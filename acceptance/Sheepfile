@@ -10,9 +10,18 @@ else
   working_directory File.expand_path("tmp/work_dir")
 end
 
+if File.basename(Dir.pwd)=='aruba'
+  private_key=File.join('../../', 'acceptance', 'id_rsa')
+else
+  private_key='./acceptance/id_rsa'
+end
+
 host "main-host", hostname: "127.0.0.1",
   ssh_port: 2222, #optional
   working_directory: "/tmp/acceptance" #optional
+
+host "without-working-directory", hostname: "127.0.0.1",
+  ssh_port: 2222 #optional
 
 host "backup-store", hostname: "127.0.0.1",
   ssh_port: 2222, #optional
@@ -21,8 +30,15 @@ host "backup-store", hostname: "127.0.0.1",
 ###############################################################################
 ## SCP
 project "scp-move-local-to-remote" do
+  private_key private_key
   resource "file", path: "dummy.file"
-  copy to: "main-host", using: "scp", as: "vagrant"
+  move to: "main-host", using: "scp", as: "vagrant"
+end
+
+project "scp-move-local-to-remote-without-working-directory" do
+  private_key private_key
+  resource "file", path: "dummy.file"
+  move to: "without-working-directory", using: "scp", as: "vagrant"
 end
 
 # project "scp-move-remote-to-local" do
