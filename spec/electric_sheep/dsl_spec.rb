@@ -53,14 +53,6 @@ describe ElectricSheep::Dsl do
       project.private_key.must_equal '/path/to/private/key'
     end
 
-    it 'provides the localhost' do
-      host=nil
-      project=build_project do
-        host=localhost
-      end
-      host.must_equal @config.hosts.localhost
-    end
-
     it 'allows encrypted values' do
       value = nil
       build_project do

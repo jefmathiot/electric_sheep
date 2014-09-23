@@ -46,7 +46,8 @@ module ElectricSheep
       end
 
       def get(id)
-        hosts[id] || localhost
+        return localhost if id=='localhost'
+        hosts[id]
       end
 
       private

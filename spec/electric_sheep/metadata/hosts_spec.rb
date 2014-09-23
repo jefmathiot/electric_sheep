@@ -44,6 +44,10 @@ describe ElectricSheep::Metadata::Hosts do
     @hosts.get('some-host').must_equal host
   end
 
+  it 'resolves localhost' do
+    @hosts.get('localhost').must_equal @hosts.localhost
+  end
+
   it 'returns a localhost singleton' do
     @hosts.localhost.must_be_instance_of ElectricSheep::Metadata::Localhost
     @hosts.localhost.must_be_same_as @hosts.localhost

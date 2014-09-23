@@ -34,10 +34,6 @@ module ElectricSheep
         instance_eval &block if block_given?
       end
 
-      def localhost
-        @config.hosts.localhost
-      end
-
       def encrypted(value)
         Metadata::Encrypted.new(value)
       end
