@@ -2,7 +2,13 @@
 # vi: set ft=ruby :
 
 # Local working directory
-working_directory File.expand_path("tmp/work_dir")
+if File.basename(Dir.pwd)=='aruba'
+  # Cucumber features
+  working_directory File.expand_path('.')
+else
+  # Manual run
+  working_directory File.expand_path("tmp/work_dir")
+end
 
 host "main-host", hostname: "127.0.0.1",
   ssh_port: 2222, #optional
@@ -12,8 +18,10 @@ host "backup-store", hostname: "127.0.0.1",
   ssh_port: 2222, #optional
   working_directory: "/tmp/acceptance_backup" #optional
 
+###############################################################################
+## SCP
 project "scp-move-local-to-remote" do
-  resource :file, path: "dummy.file"
+  resource "file", path: "dummy.file"
   copy to: "main-host", using: "scp", as: "vagrant"
 end
 
@@ -22,14 +30,29 @@ end
 #   move to: localhost, using: "scp", as: "vagrant"
 # end
 
+###############################################################################
+## S3
+project "s3-move-local-to-remote" do
+  resource "file", path: "dummy.file", host: "localhost"
+  move to: "my-bucket/my-project", using: "s3"
+end
+
+project "s3-copy-local-to-remote" do
+  resource "file", path: "dummy.file", host: "localhost"
+  copy to: "my-bucket/my-project", using: "s3"
+end
+
+###############################################################################
+## MongoDB Dump
 project "mongodb-dump", description: "MongoDB database backup" do
   private_key './acceptance/id_rsa'
   resource "database", name: "controldb", host: "main-host"
+
   remotely as: "vagrant" do
     mongodb_dump
     tar_gz
   end
-  move to: localhost, using: "scp", as: "vagrant"
+  move to: "localhost", using: "scp", as: "vagrant"
   # locally do
   #   encrypt
   # end

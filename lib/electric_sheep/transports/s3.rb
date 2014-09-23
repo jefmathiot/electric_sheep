@@ -11,20 +11,23 @@ module ElectricSheep
       option :secret_key, required: true
 
       def copy
-        logger.info "Will copy #{resource.basename} " +
-          "to #{option(:to)} using S3"
+        operate
       end
 
       def move
-        logger.info "Will move #{resource.basename} " +
-          "to #{option(:to)} using S3"
-        with_object_key do |bucket, key|
-          interactor.create(resource, bucket, key)
-          interactor.destroy(resource, bucket, key)
-        end
+        operate true
       end
 
       protected
+      def operate(delete_source=false)
+        logger.info "#{delete_source ? 'Moving' : 'Copying'} " +
+          "#{resource.basename} to #{option(:to)} using S3"
+        with_object_key do |bucket, key|
+          interactor.create(resource, bucket, key)
+          interactor.destroy(resource, bucket, key) if delete_source
+        end
+      end
+
       def interactor
         if option(:to) == 'localhost'
           DownloadInteractor.new(connection)
@@ -89,6 +92,18 @@ module ElectricSheep
 
         def destroy(resource, bucket, key)
           FileUtils.rm_f resource.path
+        end
+
+      end
+
+      class DownloadInteractor < Interactor
+
+        def create(resource, bucket, key)
+          raise "Not implemented"
+        end
+
+        def destroy(resource, bucket, key)
+          raise "Not implemented"
         end
 
       end

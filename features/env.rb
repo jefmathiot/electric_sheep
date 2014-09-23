@@ -1,5 +1,7 @@
 require 'aruba/cucumber'
 
+ENV['ELECTRIC_SHEEP_ENV']='test'
+
 module ElectricSheep
   module Acceptance
 
@@ -38,6 +40,7 @@ module ElectricSheep
       ]
       run_simple "ssh #{options.join(' ')} vagrant@127.0.0.1 \"#{cmd}\"", true, timeout
     end
+
   end
 end
 
@@ -45,5 +48,6 @@ World(ElectricSheep::Acceptance)
 
 Before do
   self.electric_dir=File.expand_path('.')
+  self.ssh_run_simple 'rm -rf /tmp/acceptance /tmp/acceptance_backup'
 end
 
