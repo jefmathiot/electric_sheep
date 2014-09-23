@@ -46,6 +46,9 @@ module ElectricSheep
         !@session.nil?
       end
 
+      def parse_env_variable(string)
+        exec("echo #{string}")[:out]
+      end
     end
   end
 end

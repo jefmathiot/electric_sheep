@@ -58,7 +58,7 @@ describe ElectricSheep::Transports::SCP do
         @resource.stubs(:host).returns(ElectricSheep::Metadata::Localhost.new)
         @resource.stubs(:basename).returns('filename.ext')
         @resource.stubs(:path).returns('local/filename.ext')
-        @shell.stubs(:exec).returns({out:"local/filename.ext"})
+        @shell.stubs(:parse_env_variable).returns("local/filename.ext")
         @meta_scp.expects(:ssh_exec).with(@ssh,'echo $HOME/.electric_sheep/remote/filename.ext').returns({out:"/remote/home/filename.ext"})
         #should create folder
         @meta_scp.expects(:ssh_exec).with(@ssh, "mkdir -p $HOME/.electric_sheep/remote")

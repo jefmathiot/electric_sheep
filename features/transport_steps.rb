@@ -13,6 +13,12 @@ Then(/^the file should have been moved to the remote host in default directory$/
   refute_local_file_exists? @resource_name
 end
 
+Then(/^the file should have been copy and moved to the remotes host$/) do
+  assert_remote_file_exists? "/tmp/acceptance/#{@project}/#{@resource_name}"
+  assert_remote_file_exists? "/tmp/acceptance_backup/#{@project}/#{@resource_name}"
+  refute_local_file_exists? @resource_name
+end
+
 Given(/^a remote bucket$/) do
   @bucket_path="tmp/s3/my-bucket"
   step "a directory named \"#{@bucket_path}\""

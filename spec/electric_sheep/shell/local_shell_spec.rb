@@ -75,5 +75,14 @@ describe ElectricSheep::Shell::LocalShell do
       end
     end
 
+    describe 'on parse_env_variable' do
+
+      it 'should parse variable correctly' do
+        @shell.exec('export FOO=bar')
+        @logger.expects(:info).with('/bar/baz')
+        @shell.parse_env_variable('/$FOO/baz').must_equal '/bar/baz'
+      end
+    end
+
   end
 end

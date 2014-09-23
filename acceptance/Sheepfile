@@ -41,6 +41,13 @@ project "scp-move-local-to-remote-without-working-directory" do
   move to: "without-working-directory", using: "scp", as: "vagrant"
 end
 
+## SCP
+project "scp-copy-and-move" do
+  private_key private_key
+  resource "file", path: "dummy.file"
+  copy to: "main-host", using: "scp", as: "vagrant"
+  move to: "backup-store", using: "scp", as: "vagrant"
+end
 # project "scp-move-remote-to-local" do
 #   resource :file, path: "dummy.file", host: "main-host"
 #   move to: localhost, using: "scp", as: "vagrant"
