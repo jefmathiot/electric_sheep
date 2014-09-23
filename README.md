@@ -66,7 +66,7 @@ bundle exec electric_sheep work
 
 ElectricSheep will look for a Sheepfile in the current directory.
 
-#### `-c` option
+#### `-c`, `--config` option
 
 ElectricSheep can use any file as the configuration:
 
@@ -74,13 +74,34 @@ ElectricSheep can use any file as the configuration:
 bundle exec electric_sheep work -c ~/Somefile
 ```
 
-#### `-p` option
+#### `-p`, `--project` option
 
 You can run a single project to execute:
 
 ```
 bundle exec electric_sheep work -p my-project
 ```
+
+### Encrypted credentials
+
+You can use any public SSH public key to encrypt sensitive data. At runtime,
+Electric Sheep will then decrypt any `encrypt('XXX')` expression using the
+project's private key:
+
+```
+bundle exec electric_sheep encrypt "SECRET" -k /path/to/id_rsa.pub
+```
+
+For a n-bit RSA key, encryption works for messages up to `(n/8)-11` bytes,
+meaning there's a limit on the size of the credentials you may encrypt:
+
+* 1024 bits: 117 characters
+* 2048 bits: 245 characters
+* 4096 bits: 501 characters
+
+#### `-k`, `--key` option
+
+The public SSH (RSA) key.
 
 ## Using the DSL
 
