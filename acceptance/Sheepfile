@@ -33,12 +33,12 @@ end
 ###############################################################################
 ## S3
 project "s3-move-local-to-remote" do
-  resource "file", path: "dummy.file", host: "localhost"
+  resource "file", path: "dummy.file"
   move to: "my-bucket/my-project", using: "s3"
 end
 
 project "s3-copy-local-to-remote" do
-  resource "file", path: "dummy.file", host: "localhost"
+  resource "file", path: "dummy.file"
   copy to: "my-bucket/my-project", using: "s3"
 end
 
