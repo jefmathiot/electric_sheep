@@ -26,11 +26,9 @@ Then start the container from the current (`acceptance`) directory:
 $ vagrant up
 ```
 
-The provisioner will copy the SSH public key (`~/.ssh/id_rsa.pub`) from the host to the container.
-
 ## Execute the tests
 
-From the **project root** :
+Head back to the project's root directory and:
 
-`cucumber`
+`bundle exec cucumber`
 
