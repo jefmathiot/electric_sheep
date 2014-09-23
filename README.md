@@ -108,11 +108,11 @@ as needed but each of them aims to manipulate a single resource.
 
 ```ruby
 project "myapp-database-backup", description: "Database Full Backup" do
-  resource type: :database, name: "myapp_db", host: "production-mysql-master"
+  resource type: "database", name: "myapp_db", host: "production-mysql-master"
 end
 
 project "www-media-backup", description: "Acme uploads" do
-  resource type: :directory, path: '/var/www/uploads'
+  resource type: "directory", path: '/var/www/uploads'
 end
 ```
 
@@ -132,7 +132,7 @@ executes them on the localhost.
 
 ```ruby
 project "myapp-database-backup", description: "Database Full Backup" do
-  resource type: :database, name: "myapp_db", host: "production-mysql-master"
+  resource type: "database", name: "myapp_db", host: "production-mysql-master"
 
   remotely as: "operator" do
     mysql_dump user: "backup-operator", password: encrypted("XXXXXXXX")
@@ -148,22 +148,26 @@ should be nested inside a project.
 
 ```ruby
 project "myapp-database-backup", description: "Database Full Backup" do
-  resource type: :database, name: "myapp_db", host: "production-mysql-master"
+  resource type: "database", name: "myapp_db", host: "production-mysql-master"
 
   remotely as: "operator" do
     mysql_dump user: "backup-operator", password: encrypted("XXXXXXXX")
     tar_gz delete_source: true
   end
 
-  move to: localhost, using: :scp, as "operator"
-  copy to: "backup-store-1", using: :scp, as: "another-op", directory: '/srv/backups/'
-  move to: bucket('my-bucket'), using: :s3, access_key_id: 'XXXXXXXX',
+  move to: "localhost", using: "scp", as "operator"
+  copy to: "backup-store-1", using: "scp", as: "another-op", directory: '/srv/backups/'
+  move to: "bucket/directory", using: "s3", access_key_id: 'XXXXXXXX',
     secret_key: encrypted('XXXXXXXX')
 end
 ```
 
 The `move` method deletes the previous resource and replace it with a new one, whereas the `copy`
 command let the previous resource unchanged.
+
+## Working Directories
+
+TODO
 
 ## Contributing
 
