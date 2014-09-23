@@ -40,7 +40,7 @@ describe ElectricSheep::Runner do
         @logger.expects(:info).in_sequence(script).
           with("Executing second-project")
         @runner.run!
-        @config.remaining.must_equal 0 
+        @config.remaining.must_equal 0
       end
 
       it 'executes a single project when told to do so' do
@@ -136,6 +136,8 @@ describe ElectricSheep::Runner do
     end
 
     it 'executes transport' do
+      shell = ElectricSheep::Shell::LocalShell.any_instance
+      shell.expects(:open!).in_sequence(script)
       @first_project.add metadata = ElectricSheep::Metadata::Transport.new
       metadata.expects(:agent).in_sequence(script).returns(FakeTransport)
       FakeTransport.any_instance.expects(:perform).in_sequence(script)

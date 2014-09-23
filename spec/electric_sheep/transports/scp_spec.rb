@@ -7,11 +7,13 @@ describe ElectricSheep::Transports::SCP do
       @logger = mock
       @ssh = $ssh = mock
       @ssh.stubs(:scp).returns(@scp = mock)
+      @shell = mock
 
       @project = ElectricSheep::Metadata::Project.new(id: "remote")
       @metadata = ElectricSheep::Metadata::Transport.new
       @hosts = mock
-      @meta_scp = subject.new(@project, @logger, @metadata, @hosts)
+      #@hosts.stubs(:get).returns(toto)
+      @meta_scp = subject.new(@project, @logger, @metadata, @hosts, @shell)
       @meta_scp.stubs(:option).with(:as).returns(@as = "user")
       @meta_scp.stubs(:resource).returns(@resource = mock)
     end
@@ -24,17 +26,10 @@ describe ElectricSheep::Transports::SCP do
     end
 
     describe 'remote to local' do
-
       before do
-        @hosts.expects(:get).with('localhost').returns(
-          @to = ElectricSheep::Metadata::Localhost.new
-        )
-        @meta_scp.stubs(:option).with(:to).returns('localhost')
-        @meta_scp.stubs(:option).with(:as).returns(@as = "user")
-        @meta_scp.stubs(:resource).returns(@resource = mock)
-        @resource.stubs(:host).returns(
-          ElectricSheep::Metadata::Host.new(id: 'remote-host')
-        )
+        @meta_scp.stubs(:option).with(:to).returns(@to = 'localhost')
+        @hosts.stubs(:get).with('localhost').returns(ElectricSheep::Metadata::Localhost.new)
+        @resource.stubs(:host).returns(ElectricSheep::Metadata::Host.new(id:'remote'))
         @resource.stubs(:basename).returns('filename.ext')
         @resource.stubs(:path).returns('remote/filename.ext')
         #should create folder
@@ -42,66 +37,49 @@ describe ElectricSheep::Transports::SCP do
       end
 
       it "should copy" do
-        should_log_msg(:copy)
-        @scp.expects(:download!).with(
-          'remote/filename.ext',
-          '$HOME/.electric_sheep/remote/filename.ext',
-          {verbose:true}
-        )
+        should_log_msg(:copy, 'remote','localhost')
+        @scp.expects(:download!).with('remote/filename.ext','$HOME/.electric_sheep/remote/filename.ext',{verbose:true})
         @meta_scp.copy
       end
 
       it "should move" do
-        should_log_msg(:move)
-        @scp.expects(:download!).with(
-          'remote/filename.ext',
-          '$HOME/.electric_sheep/remote/filename.ext',
-          {verbose:true}
-        )
-        @meta_scp.expects(:ssh_exec).with(@ssh, "rm -f remote/filename.ext").
-          returns true
+        should_log_msg(:move, 'remote', 'localhost')
+        @scp.expects(:download!).with('remote/filename.ext','$HOME/.electric_sheep/remote/filename.ext',{verbose:true})
+        @meta_scp.expects(:ssh_exec).with(@ssh, "rm -f remote/filename.ext").returns true
         @meta_scp.move
       end
     end
 
     describe 'local to remote' do
       before do
-        @meta_scp.stubs(:option).with(:to).returns('remote-host')
-        @hosts.expects(:get).with('remote-host').returns(
-          @to = ElectricSheep::Metadata::Host.new(id: 'remote')
-        )
+        @to = ElectricSheep::Metadata::Host.new(id:'remote')
+        @meta_scp.stubs(:option).with(:to).returns('remote')
+        @hosts.stubs(:get).with('remote').returns(@to)
         @resource.stubs(:host).returns(ElectricSheep::Metadata::Localhost.new)
         @resource.stubs(:basename).returns('filename.ext')
         @resource.stubs(:path).returns('local/filename.ext')
+        @shell.stubs(:exec).returns({out:"local/filename.ext"})
+        @meta_scp.expects(:ssh_exec).with(@ssh,'echo $HOME/.electric_sheep/remote/filename.ext').returns({out:"/remote/home/filename.ext"})
         #should create folder
-        @meta_scp.expects(:ssh_exec).
-          with(@ssh, "mkdir -p $HOME/.electric_sheep/remote")
+        @meta_scp.expects(:ssh_exec).with(@ssh, "mkdir -p $HOME/.electric_sheep/remote")
       end
 
       it "should copy" do
-        should_log_msg(:copy)
-        @scp.expects(:upload!).with(
-          'local/filename.ext',
-          '$HOME/.electric_sheep/remote/filename.ext',
-          {verbose:true}
-        )
+        should_log_msg(:copy, 'localhost', 'remote')
+        @scp.expects(:upload!).with('local/filename.ext','/remote/home/filename.ext',{verbose:true})
         @meta_scp.copy
       end
 
       it "should move" do
-        should_log_msg(:move)
-        @scp.expects(:upload!).with(
-          'local/filename.ext',
-          '$HOME/.electric_sheep/remote/filename.ext',
-          {verbose:true}
-        )
+        should_log_msg(:move, 'localhost', 'remote')
+        @scp.expects(:upload!).with('local/filename.ext','/remote/home/filename.ext',{verbose:true})
         FileUtils.expects(:rm_f).with('local/filename.ext')
         @meta_scp.move
       end
     end
 
-    def should_log_msg(type)
+    def should_log_msg(type, from, to)
       @logger.expects(:info).
-        with("Will #{type} filename.ext from #{@resource.host.to_s} to #{@to.to_s} using SCP")
+        with("Will #{type} filename.ext from #{from} to #{to} using SCP")
     end
 end
