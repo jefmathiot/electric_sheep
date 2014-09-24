@@ -9,8 +9,3 @@ require 'electric_sheep/metadata/remote_shell'
 require 'electric_sheep/metadata/agent'
 require 'electric_sheep/metadata/command'
 require 'electric_sheep/metadata/transport'
-
-module ElectricSheep
-  module Metadata
-  end
-end

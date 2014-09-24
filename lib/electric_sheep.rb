@@ -10,10 +10,8 @@ require 'electric_sheep/metadata'
 require 'electric_sheep/resources'
 require 'electric_sheep/runner'
 require 'electric_sheep/sheepfile'
+require 'electric_sheep/interactors'
 require 'electric_sheep/shell'
 require 'electric_sheep/agents'
 require 'electric_sheep/commands'
 require 'electric_sheep/transports'
-
-module ElectricSheep
-end

@@ -49,8 +49,7 @@ module ElectricSheep
     end
 
     def execute_commands(project, shell_metadata, shell)
-      shell.open!
-      shell.mk_project_directory!
+      shell.open!.mk_project_directory!
       shell_metadata.each_item do |metadata|
         command = metadata.agent.new(project, @logger, shell, metadata )
         metadata.benchmarked do
@@ -62,13 +61,10 @@ module ElectricSheep
     end
 
     def execute_transport(project, metadata)
-      shell = Shell::LocalShell.new(@config.hosts.localhost, project, @logger)
-      shell.open!
-      transport = metadata.agent.new(project, @logger, metadata, @config.hosts, shell)
+      transport = metadata.agent.new(project, @logger, metadata, @config.hosts)
       metadata.benchmarked do
         transport.perform
       end
-      shell.close!
     end
   end
 end

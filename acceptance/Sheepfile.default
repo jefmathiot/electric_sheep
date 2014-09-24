@@ -15,6 +15,6 @@ host "main-host", hostname: "127.0.0.1",
 project "working-directories" do
     private_key private_key
     resource "file", path: "dummy.file"
-    copy to: "main-host", as: "vagrant", using: "scp"
+    move to: "main-host", as: "vagrant", using: "scp"
     copy to: "localhost", as: "vagrant", using: "scp"
 end

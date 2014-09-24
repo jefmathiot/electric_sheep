@@ -17,8 +17,7 @@ module ElectricSheep
       end
 
       def path
-        return option(:path) if Pathname.new(option(:path)).absolute?
-        ::File.join(option(:host).working_directory, option(:path))
+        option(:path)
       end
     end
   end

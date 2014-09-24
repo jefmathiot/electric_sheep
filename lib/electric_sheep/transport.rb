@@ -6,17 +6,18 @@ module ElectricSheep
     include Metadata::Options
     include Agent
 
-    attr_reader :shell
-
-    def initialize(project, logger, metadata, hosts, shell)
+    def initialize(project, logger, metadata, hosts)
       @project = project
       @logger = logger
       @metadata = metadata
       @hosts = hosts
-      @shell = shell
+      @interactor=Interactors::ShellInteractor.new
     end
 
     def perform
+      @interactor.in_session do
+        @interactor.mk_project_directory!
+      end
       self.send(@metadata.type)
     end
 

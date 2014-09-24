@@ -1,9 +1,7 @@
 module ElectricSheep
   module Shell
-    class RemoteShell
-      include Directories
+    class RemoteShell < Base
       include Helpers::Resourceful
-      include Helpers::SSH
 
       attr_reader :host
 
@@ -24,23 +22,17 @@ module ElectricSheep
 
       def open!
         self if opened?
-        @logger.info "Starting a remote shell session for #{@user}@#{host.hostname} on port #{host.ssh_port}"
-        @ssh_session = ssh_session host, @user, @project.private_key
+        @logger.info "Starting a remote shell session for " +
+          "#{@user}@#{host.hostname} on port #{host.ssh_port}"
+        @interactor = Interactors::SshInteractor.new(host, @user, @project.private_key)
+        @interactor.session
         self
-      end
-
-      def exec(cmd)
-        ssh_exec(@ssh_session, cmd, @logger)
       end
 
       def close!
-        @ssh_session.close
-        @ssh_session = nil
+        @interactor.session.close
+        @interactor=nil
         self
-      end
-
-      def opened?
-        !!@ssh_session
       end
 
     end
