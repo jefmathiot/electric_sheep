@@ -3,6 +3,16 @@ Given(/^a local file$/) do
   step "a 102400 byte file named \"#{@resource_name}\""
 end
 
+Given(/^a local file for "(.*?)"$/) do |folder|
+  @resource_name='../'+folder+"/dummy.file"
+  step "a 102400 byte file named \"#{@resource_name}\""
+end
+
+Given(/^a remote file for "(.*?)"$/) do |folder|
+  @resource_name='../../tmp/acceptance/'+folder+"/dummy.file"
+  step "a 102400 byte file named \"#{@resource_name}\""
+end
+
 Then(/^the file should have been moved to the remote host$/) do
   assert_remote_file_exists? "/tmp/acceptance/#{@project}/#{@resource_name}"
   refute_local_file_exists? @resource_name

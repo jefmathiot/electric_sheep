@@ -13,7 +13,7 @@ module ElectricSheep
               result[:out] = out.chomp
               logger.info( result[:out] ) if logger
             end
-            unless out.nil?
+            unless err.nil?
               result[:err] = err.chomp
               logger.error( result[:err] ) if logger
             end

@@ -4,7 +4,7 @@
 # Local working directory
 if File.basename(Dir.pwd)=='aruba'
   # Cucumber features
-  working_directory File.expand_path('.')
+  working_directory File.expand_path('../')
   private_key=File.join('../../', 'acceptance', 'id_rsa')
 else
   # Manual run
@@ -15,9 +15,6 @@ end
 host "main-host", hostname: "127.0.0.1",
   ssh_port: 2222,
   working_directory: "/tmp/acceptance"
-
-host "without-working-directory", hostname: "127.0.0.1",
-  ssh_port: 2222
 
 host "backup-store", hostname: "127.0.0.1",
   ssh_port: 2222,
@@ -31,12 +28,6 @@ project "scp-move-local-to-remote" do
   move to: "main-host", using: "scp", as: "vagrant"
 end
 
-project "scp-move-local-to-remote-without-working-directory" do
-  private_key private_key
-  resource "file", path: "dummy.file"
-  move to: "without-working-directory", using: "scp", as: "vagrant"
-end
-
 ## SCP
 project "scp-copy-and-move" do
   private_key private_key
@@ -44,10 +35,6 @@ project "scp-copy-and-move" do
   copy to: "main-host", using: "scp", as: "vagrant"
   move to: "backup-store", using: "scp", as: "vagrant"
 end
-# project "scp-move-remote-to-local" do
-#   resource :file, path: "dummy.file", host: "main-host"
-#   move to: localhost, using: "scp", as: "vagrant"
-# end
 
 ###############################################################################
 ## S3

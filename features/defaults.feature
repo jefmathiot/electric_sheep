@@ -4,6 +4,6 @@ Feature: Default working directories
   I want Electric Sheep to handle its working directories seamlessly
 
   Scenario: Upload a file and get it back
-    Given a local file
+    Given a file in default directory
     When I tell the sheep to work on configuration "Sheepfile.default"
     Then the file should be present in both local and remote default working directories

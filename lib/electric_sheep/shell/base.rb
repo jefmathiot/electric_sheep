@@ -4,6 +4,8 @@ module ElectricSheep
       delegate :project_directory, to: :directories
       delegate :mk_project_directory!, to: :directories
       delegate :expand_path, to: :directories
+      delegate :session, to: :interactor
+      attr_reader :interactor
 
       def directories
         @directories||=Helpers::Directories.new(@host, @project, @interactor)

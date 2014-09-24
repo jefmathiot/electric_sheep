@@ -12,7 +12,7 @@ module ElectricSheep
       end
 
       def working_directory
-        @host.working_directory || '$HOME/.electric_sheep'
+        @host.working_directory || "$HOME/.electric_sheep"
       end
 
       def project_directory
@@ -21,7 +21,7 @@ module ElectricSheep
             working_directory,
             shell_safe(@project.id.downcase)
           ).tap do |directory|
-            @interactor.exec("echo \"#{directory}\"")[:out]
+            return @interactor.exec("echo \"#{directory}\"")[:out]
           end
         end
       end
@@ -34,7 +34,7 @@ module ElectricSheep
 
       def expand_path(path)
         return path if Pathname.new(path).absolute?
-        File.join(project_directory, shell_safe(resource.path))
+        File.join(project_directory, shell_safe(path))
       end
 
     end
