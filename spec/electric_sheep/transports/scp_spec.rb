@@ -7,13 +7,12 @@ describe ElectricSheep::Transports::SCP do
       @logger = mock
       @ssh = $ssh = mock
       @ssh.stubs(:scp).returns(@scp = mock)
-      @shell = mock
 
       @project = ElectricSheep::Metadata::Project.new(id: "remote")
       @metadata = ElectricSheep::Metadata::Transport.new
       @hosts = mock
       #@hosts.stubs(:get).returns(toto)
-      @meta_scp = subject.new(@project, @logger, @metadata, @hosts, @shell)
+      @meta_scp = subject.new(@project, @logger, @metadata, @hosts)
       @meta_scp.stubs(:option).with(:as).returns(@as = "user")
       @meta_scp.stubs(:resource).returns(@resource = mock)
     end
