@@ -1,9 +1,9 @@
-require 'shellwords'
 require 'fileutils'
 
 module ElectricSheep
   module Helpers
     class Directories
+      include ShellSafe
 
       def initialize(host, project, interactor)
         @host=host
@@ -19,7 +19,7 @@ module ElectricSheep
         unless @project_directory
           File.join(
             working_directory,
-            Shellwords.escape(@project.id.downcase)
+            shell_safe(@project.id.downcase)
           ).tap do |directory|
             @interactor.exec("echo \"#{directory}\"")[:out]
           end
@@ -34,7 +34,7 @@ module ElectricSheep
 
       def expand_path(path)
         return path if Pathname.new(path).absolute?
-        File.join(project_directory, resource.path)
+        File.join(project_directory, shell_safe(resource.path))
       end
 
     end
