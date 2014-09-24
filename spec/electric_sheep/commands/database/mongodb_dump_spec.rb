@@ -18,6 +18,7 @@ describe ElectricSheep::Commands::Database::MongoDBDump do
       @project, @logger, @shell, @host = ElectricSheep::Metadata::Project.new,
         mock, mock, mock
       @shell.expects(:project_directory).returns('/project/dir')
+      @shell.expects(:mk_project_directory!)
       @shell.expects(:host).returns(@host)
       database = ElectricSheep::Resources::Database.new name: 'MyDatabase'
       @project.start_with! database

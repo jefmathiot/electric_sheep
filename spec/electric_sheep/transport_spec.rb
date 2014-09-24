@@ -13,7 +13,7 @@ describe ElectricSheep::Transport do
 
   describe TransportKlazz do
     it 'performs using transport type from metadata' do
-      transport=subject.new(project=mock, logger=mock, metadata=mock, hosts=mock,shell=mock)
+      transport=subject.new(project=mock, logger=mock, metadata=mock, hosts=mock)
       metadata.expects(:type).returns(:do)
       transport.perform
 
