@@ -49,6 +49,7 @@ describe ElectricSheep::Command do
       command.send(:resource).must_equal resource
     end
 
+    # TODO Move to an agent spec
     it 'extracts options from metadata' do
       command = subject.new(mock, mock, @shell, metadata = mock)
       metadata.expects(:some_option).returns('VALUE')

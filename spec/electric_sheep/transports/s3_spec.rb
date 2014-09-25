@@ -41,13 +41,12 @@ describe ElectricSheep::Transports::S3 do
     end
 
     it 'uses AWS options to build a connection' do
-      metadata=ElectricSheep::Metadata::Transport.new(
-        access_key_id: 'XXXX', secret_key: 'SECRET'
-      )
-      subject.new(nil, nil, metadata, nil).send(:connection).must_equal({
-          access_key_id: 'XXXX',
-          secret_key: 'SECRET'
-      })
+      metadata=mock
+      metadata.stubs(:access_key_id).returns('XXXX')
+      metadata.stubs(:secret_key).returns('SECRET')
+      connection=subject.new(nil, nil, metadata, nil).send(:connection)
+      connection.instance_variable_get(:@aws_access_key_id).must_equal 'XXXX'
+      connection.instance_variable_get(:@aws_secret_access_key).must_equal 'SECRET'
     end
   end
 
@@ -75,7 +74,7 @@ describe ElectricSheep::Transports::S3 do
       File.exists?('./tmp/dummy.file').must_equal true,
         "Expected the source file to be present"
     end
-    
+
     it 'moves the file' do
       expects_log("Moving", "to")
       @transport.move
