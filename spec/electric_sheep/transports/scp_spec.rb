@@ -4,17 +4,16 @@ require 'net/ssh/test'
 describe ElectricSheep::Transports::SCP do
 
     before do
-      @logger = mock
-      @ssh = $ssh = mock
-      @ssh.stubs(:scp).returns(@scp = mock)
+      @logger = Logger.new(STDOUT)
 
       @project = ElectricSheep::Metadata::Project.new(id: "remote")
       @metadata = ElectricSheep::Metadata::Transport.new
       @hosts = mock
       #@hosts.stubs(:get).returns(toto)
-      @meta_scp = subject.new(@project, @logger, @metadata, @hosts)
-      @meta_scp.stubs(:option).with(:as).returns(@as = "user")
-      @meta_scp.stubs(:resource).returns(@resource = mock)
+      @subject = subject.new(@project, @logger, @metadata, @hosts)
+      @subject.stubs(:option).with(:as).returns(@as = "user")
+      @resource = ElectricSheep::Resources::FileSystem.new(path:'origin/filename.ext')
+      @subject.stubs(:resource).returns( @resource )
     end
 
     #redefine in_remote_session for testing purpose
@@ -23,58 +22,79 @@ describe ElectricSheep::Transports::SCP do
           block.call $ssh
       end
     end
+    describe 'on transport' do
 
-    describe 'remote to local' do
       before do
-        @meta_scp.stubs(:option).with(:to).returns(@to = 'localhost')
-        @hosts.stubs(:get).with('localhost').returns(ElectricSheep::Metadata::Localhost.new)
-        @resource.stubs(:host).returns(ElectricSheep::Metadata::Host.new(id:'remote'))
-        @resource.stubs(:basename).returns('filename.ext')
-        @resource.stubs(:path).returns('remote/filename.ext')
-        #should create folder
-        FileUtils.expects(:mkdir_p).with('$HOME/.electric_sheep/remote')
+          expects_open_and_close_shell
       end
 
-      it "should copy" do
-        should_log_msg(:copy, 'remote','localhost')
-        @scp.expects(:download!).with('remote/filename.ext','$HOME/.electric_sheep/remote/filename.ext',{verbose:true})
-        @meta_scp.copy
+      describe 'remote to local' do
+        before do
+          @subject.stubs(:option).with(:to).returns(@to = 'localhost')
+          @hosts.stubs(:get).with('localhost').returns(ElectricSheep::Metadata::Localhost.new)
+          @resource.stubs(:host).returns(ElectricSheep::Metadata::Host.new(id:'remote'))
+
+          ensure_target_folder_exist(@local_shell)
+
+          @remote_shell.stubs(:expand_path).with('origin/filename.ext').returns 'origin/filename.ext'
+          @local_shell.stubs(:expand_path).with('filename.ext').returns 'filename.ext'
+          expects_scp_cmp_with(@remote_shell,:download!,'origin/filename.ext','filename.ext')
+        end
+
+        it "should copy" do
+          should_log_msg(:copy, 'remote','localhost')
+          @subject.copy
+        end
+
+        it "should move" do
+          should_log_msg(:move, 'remote', 'localhost')
+          @remote_shell.expects(:exec).with( "rm -f origin/filename.ext").returns true
+          @subject.move
+        end
       end
 
-      it "should move" do
-        should_log_msg(:move, 'remote', 'localhost')
-        @scp.expects(:download!).with('remote/filename.ext','$HOME/.electric_sheep/remote/filename.ext',{verbose:true})
-        @meta_scp.expects(:ssh_exec).with(@ssh, "rm -f remote/filename.ext").returns true
-        @meta_scp.move
+      describe 'local to remote' do
+        before do
+          @to = ElectricSheep::Metadata::Host.new(id:'remote')
+          @subject.stubs(:option).with(:to).returns('remote')
+          @hosts.stubs(:get).with('remote').returns(@to)
+          @resource.stubs(:host).returns(ElectricSheep::Metadata::Localhost.new)
+          ensure_target_folder_exist(@remote_shell)
+          @local_shell.stubs(:expand_path).with('origin/filename.ext').returns 'origin/filename.ext'
+          @remote_shell.stubs(:expand_path).with('filename.ext').returns 'filename.ext'
+          expects_scp_cmp_with(@remote_shell,:upload!,'origin/filename.ext','filename.ext')
+        end
+
+        it "should copy" do
+          should_log_msg(:copy, 'localhost', 'remote')
+          @subject.copy
+        end
+
+        it "should move" do
+          should_log_msg(:move, 'localhost', 'remote')
+          @local_shell.expects(:exec).with( "rm -f origin/filename.ext").returns true
+          @subject.move
+        end
       end
     end
 
-    describe 'local to remote' do
-      before do
-        @to = ElectricSheep::Metadata::Host.new(id:'remote')
-        @meta_scp.stubs(:option).with(:to).returns('remote')
-        @hosts.stubs(:get).with('remote').returns(@to)
-        @resource.stubs(:host).returns(ElectricSheep::Metadata::Localhost.new)
-        @resource.stubs(:basename).returns('filename.ext')
-        @resource.stubs(:path).returns('local/filename.ext')
-        @shell.stubs(:parse_env_variable).returns("local/filename.ext")
-        @meta_scp.expects(:ssh_exec).with(@ssh,'echo $HOME/.electric_sheep/remote/filename.ext').returns({out:"/remote/home/filename.ext"})
-        #should create folder
-        @meta_scp.expects(:ssh_exec).with(@ssh, "mkdir -p $HOME/.electric_sheep/remote")
-      end
+    def expects_scp_cmp_with(shell, cmd, origin, target)
+      shell.expects(:session).returns(session = mock)
+      session.expects(:scp).returns(scp = mock)
+      scp.expects(cmd).with(origin,target, verbose: true)
+    end
 
-      it "should copy" do
-        should_log_msg(:copy, 'localhost', 'remote')
-        @scp.expects(:upload!).with('local/filename.ext','/remote/home/filename.ext',{verbose:true})
-        @meta_scp.copy
-      end
+    def ensure_target_folder_exist(shell)
+      shell.expects(:mk_project_directory!)
+    end
 
-      it "should move" do
-        should_log_msg(:move, 'localhost', 'remote')
-        @scp.expects(:upload!).with('local/filename.ext','/remote/home/filename.ext',{verbose:true})
-        FileUtils.expects(:rm_f).with('local/filename.ext')
-        @meta_scp.move
-      end
+    def expects_open_and_close_shell
+      ElectricSheep::Shell::LocalShell.expects(:new).returns(@local_shell=mock)
+      ElectricSheep::Shell::RemoteShell.expects(:new).returns(@remote_shell=mock)
+      @local_shell.expects(:open!).returns(@local_shell)
+      @remote_shell.expects(:open!).returns(@remote_shell)
+      @local_shell.expects(:close!).returns(@local_shell)
+      @remote_shell.expects(:close!).returns(@remote_shell)
     end
 
     def should_log_msg(type, from, to)

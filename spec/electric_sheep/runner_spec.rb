@@ -104,8 +104,8 @@ describe ElectricSheep::Runner do
       it 'wraps command executions in a local shell' do
         append_commands @first_project.add(metadata = ElectricSheep::Metadata::Shell.new)
         shell = ElectricSheep::Shell::LocalShell.any_instance
-        shell.expects(:open!).in_sequence(script)
-        shell.expects(:mk_project_directory!).in_sequence(script)
+        shell.expects(:open!).in_sequence(script).returns(shell)
+        shell.expects(:mk_project_directory!).in_sequence(script).at_least_once
         expects_executions(shell, @logger, script)
         @runner.run!
         expects_execution_times(@first_project, metadata)
@@ -120,8 +120,8 @@ describe ElectricSheep::Runner do
           )
         )
         shell = ElectricSheep::Shell::RemoteShell.any_instance
-        shell.expects(:open!).returns(shell).in_sequence(script)
-        shell.expects(:mk_project_directory!).in_sequence(script)
+        shell.expects(:open!).in_sequence(script).returns(shell)
+        shell.expects(:mk_project_directory!).in_sequence(script).at_least_once
         expects_executions(shell, @logger, script)
         shell.expects(:close!).in_sequence(script).returns(shell)
 
@@ -136,8 +136,7 @@ describe ElectricSheep::Runner do
     end
 
     it 'executes transport' do
-      shell = ElectricSheep::Shell::LocalShell.any_instance
-      shell.expects(:open!).in_sequence(script)
+
       @first_project.add metadata = ElectricSheep::Metadata::Transport.new
       metadata.expects(:agent).in_sequence(script).returns(FakeTransport)
       FakeTransport.any_instance.expects(:perform).in_sequence(script)
