@@ -36,7 +36,7 @@ module ElectricSheep
 
         @target_host = host(option(:to))
         @target_shell= shell_for(@target_host,@project)
-        @target_file = file_resource( @target_host, target_file_path )
+        @target_file = file_resource( @target_host, @origin_file.basename )
 
 
         log_info function
@@ -54,10 +54,6 @@ module ElectricSheep
 
       def copy_origin_to_host
         send('copy_from_'+host_type(@origin_file.host))
-      end
-
-      def target_file_path
-        @target_shell.expand_path(@origin_file.basename)
       end
 
       def ensure_target_folder_exist
@@ -89,7 +85,6 @@ module ElectricSheep
       def copy_with_scp_cmd(cmd,shell)
         origin_file_path = @origin_shell.expand_path(@origin_file.path)
         target_file_path = @target_shell.expand_path(@target_file.path)
-        logger.info origin_file_path, target_file_path
         shell.session.scp.send(cmd, origin_file_path, target_file_path, verbose: true)
       end
 
