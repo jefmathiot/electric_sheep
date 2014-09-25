@@ -4,8 +4,6 @@ module ElectricSheep
 
       option :key, required: true
       option :bucket, required: true
-      option :access_key, required: true
-      option :secret_key, required: true
 
     end
   end
