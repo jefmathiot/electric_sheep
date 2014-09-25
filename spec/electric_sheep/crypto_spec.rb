@@ -9,7 +9,7 @@ describe ElectricSheep::Crypto do
   describe 'encrypting' do
 
     def expects_encryption(successful = true)
-      OpenSSL::PKey::RSA.expects(:new).with(pem_lines.join).returns(key = mock)
+      OpenSSL::PKey::RSA.expects(:new).with(pem_lines).returns(key = mock)
       key.expects(:public?).returns(successful)
       if successful
         key.expects(:public_encrypt).with('PLAIN').returns('CIPHER')
@@ -20,16 +20,22 @@ describe ElectricSheep::Crypto do
       end
     end
 
-    let(:pem_lines){ [
-      "-----BEGIN RSA PUBLIC KEY-----\n",
-      "XXXXXX\n",
+    let(:pem_lines){
+      "-----BEGIN RSA PUBLIC KEY-----\n" +
+      "XXXXXX\n" +
       "-----END RSA PUBLIC KEY-----\n"
-    ] }
+    }
 
     describe 'with a key in the OpenSSH format' do
-      def expects_conversion
-        IO.expects(:popen).with("ssh-keygen -f #{key_file.path} -e -m pem").
-          returns(pem_lines)
+      let(:exec_result) do
+        {
+          out: pem_lines,
+          exit_status: 0
+        }
+      end
+
+      let(:interactor) do
+        ElectricSheep::Interactors::ShellInteractor.any_instance
       end
 
       let(:key_file) {
@@ -39,14 +45,20 @@ describe ElectricSheep::Crypto do
         end
       }
 
+      def expects_conversion
+        interactor.expects(:exec).
+          with("ssh-keygen -f #{key_file.path} -e -m pem").
+          returns(exec_result)
+      end
+
       it 'encrypts the plain text' do
         expects_conversion
         expects_encryption
       end
 
       it 'raises if it where unable to convert key' do
+        exec_result[:exit_status]=1
         expects_conversion
-        $?.expects(:to_i).returns(1)
         ->{subject.encrypt('PLAIN', key_file.path)}.must_raise RuntimeError,
           /Unable to convert key file/
       end
@@ -62,7 +74,7 @@ describe ElectricSheep::Crypto do
 
       let(:key_file) {
         Tempfile.new('encryption-key').tap do |f|
-          f.write pem_lines.join
+          f.write pem_lines
           f.close
         end
       }

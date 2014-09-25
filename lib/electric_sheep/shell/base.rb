@@ -1,15 +1,10 @@
 module ElectricSheep
   module Shell
     class Base
-      delegate :project_directory, to: :directories
-      delegate :mk_project_directory!, to: :directories
-      delegate :expand_path, to: :directories
-      delegate :session, to: :interactor
-      attr_reader :interactor
+      delegate :project_directory, :mk_project_directory!, :expand_path,
+        :session, to: :interactor
 
-      def directories
-        @directories||=Helpers::Directories.new(@host, @project, @interactor)
-      end
+      attr_reader :interactor
 
       def exec(cmd)
         raise "Shell not opened" unless opened?

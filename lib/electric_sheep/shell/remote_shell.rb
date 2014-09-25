@@ -24,7 +24,7 @@ module ElectricSheep
         self if opened?
         @logger.info "Starting a remote shell session for " +
           "#{@user}@#{host.hostname} on port #{host.ssh_port}"
-        @interactor = Interactors::SshInteractor.new(host, @user, @project.private_key)
+        @interactor = Interactors::SshInteractor.new(host, @user, @project)
         @interactor.session
         self
       end

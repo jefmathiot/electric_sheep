@@ -31,12 +31,14 @@ module ElectricSheep
       end
 
       def openssh_to_pem(key_file)
-        pem = ""
-        IO.popen("ssh-keygen -f #{key_file} -e -m pem").each do|line|
-          pem << line
+        result = nil
+        Interactors::ShellInteractor.new.tap do |interactor|
+          interactor.in_session do
+            result=interactor.exec("ssh-keygen -f #{key_file} -e -m pem")
+          end
         end
-        raise "Unable to convert key file #{key_file} to PEM" unless $?.to_i == 0
-        pem
+        raise "Unable to convert key file #{key_file} to PEM" unless result[:exit_status] == 0
+        result[:out]
       end
 
       def pem?(key)

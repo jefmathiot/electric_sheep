@@ -22,7 +22,7 @@ module ElectricSheep
       def open!
         return self if opened?
         @logger.info "Starting a local shell session"
-        @interactor = Interactors::ShellInteractor.new
+        @interactor = Interactors::ShellInteractor.new(@project)
         @interactor.session
         self
       end

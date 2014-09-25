@@ -2,10 +2,6 @@ module ElectricSheep
   module Interactors
     class ShellInteractor < Base
 
-      def session
-        @session||=::Session::Sh.new
-      end
-
       def exec(cmd, logger=nil)
         {out: '', err: ''}.tap{ |result|
           session.execute(cmd) do |out, err|
@@ -19,6 +15,11 @@ module ElectricSheep
             end
           end
         }.merge({exit_status: session.exit_status})
+      end
+
+      protected
+      def build_session
+        ::Session::Sh.new
       end
 
     end

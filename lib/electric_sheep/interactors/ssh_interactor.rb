@@ -4,20 +4,9 @@ module ElectricSheep
       delegate :upload!, to: :session
       delegate :download!, to: :session
 
-      def initialize(host, user, private_key)
-        @host=host
+      def initialize(host, project, user )
+        super(host, project)
         @user=user
-        @private_key=private_key
-      end
-
-      def session
-        @session||=Net::SSH.start(
-          @host.hostname,
-          @user,
-          port: @host.ssh_port,
-          key_data: Crypto.get_key(@private_key, :private).export,
-          keys_only: true
-        )
       end
 
       def exec(cmd, logger=nil)
@@ -45,6 +34,21 @@ module ElectricSheep
           result[key] = result[key].chomp
         end
         result
+      end
+
+      def close
+        session.close
+      end
+
+      protected
+      def build_session
+        Net::SSH.start(
+          @host.hostname,
+          @user,
+          port: @host.ssh_port,
+          key_data: Crypto.get_key(@project.private_key, :private).export,
+          keys_only: true
+        )
       end
 
     end

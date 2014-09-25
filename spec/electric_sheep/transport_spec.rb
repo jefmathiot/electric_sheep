@@ -4,7 +4,7 @@ describe ElectricSheep::Transport do
   TransportKlazz = Class.new do
     include ElectricSheep::Transport
 
-    attr_reader :project, :logger, :metadata, :hosts, :done
+    attr_reader :done
 
     def do
       @done = true
@@ -13,14 +13,15 @@ describe ElectricSheep::Transport do
 
   describe TransportKlazz do
     it 'performs using transport type from metadata' do
-      transport=subject.new(project=mock, logger=mock, metadata=mock, hosts=mock)
+      transport=subject.new(
+        project=ElectricSheep::Metadata::Project.new(id: 'some-project'),
+        logger=mock,
+        metadata=mock,
+        hosts=ElectricSheep::Metadata::Hosts.new
+      )
+      ElectricSheep::Helpers::Directories.any_instance.expects(:mk_project_directory!)
       metadata.expects(:type).returns(:do)
       transport.perform
-
-      transport.project.must_equal project
-      transport.logger.must_equal logger
-      transport.metadata.must_equal metadata
-      transport.hosts.must_equal hosts
       transport.done.must_equal true
     end
   end

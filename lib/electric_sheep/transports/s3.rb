@@ -69,7 +69,7 @@ module ElectricSheep
         def initialize(connection)
           @connection = connection
         end
-      
+
         def remote_directory(bucket)
           @connection.directories.get(bucket)
         end

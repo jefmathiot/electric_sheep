@@ -17,7 +17,7 @@ module ElectricSheep
 
       def project_directory
         unless @project_directory
-          File.join(
+          @project_directory=File.join(
             working_directory,
             shell_safe(@project.id.downcase)
           ).tap do |directory|
