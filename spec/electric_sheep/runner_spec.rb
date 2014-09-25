@@ -104,7 +104,7 @@ describe ElectricSheep::Runner do
       it 'wraps command executions in a local shell' do
         append_commands @first_project.add(metadata = ElectricSheep::Metadata::Shell.new)
         shell = ElectricSheep::Shell::LocalShell.any_instance
-        shell.expects(:open!).in_sequence(script).returns(shell)
+        shell.expects(:open!).in_sequence(script)
         shell.expects(:mk_project_directory!).in_sequence(script).at_least_once
         expects_executions(shell, @logger, script)
         @runner.run!

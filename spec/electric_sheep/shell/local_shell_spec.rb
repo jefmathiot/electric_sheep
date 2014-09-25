@@ -21,7 +21,7 @@ describe ElectricSheep::Shell::LocalShell do
 
     it "should have open a shell session" do
       @shell.opened?.must_equal true
-      @shell.instance_variable_get(:@session).must_be_instance_of( ::Session::Sh )
+      @shell.instance_variable_get(:@interactor).session.must_be_instance_of( ::Session::Sh )
     end
 
     it 'should output stdout to logger' do

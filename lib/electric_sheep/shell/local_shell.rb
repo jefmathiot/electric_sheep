@@ -28,7 +28,7 @@ module ElectricSheep
       end
 
       def close!
-        @session = nil
+        @interactor = nil
         self
       end
 

@@ -139,7 +139,7 @@ describe ElectricSheep::Shell::RemoteShell do
     end
 
     it 'should close' do
-      @shell.instance_variable_get(:@ssh_session).expects(:close)
+      @shell.instance_variable_get(:@interactor).session.expects(:close)
       @shell.close!.opened?.must_equal false
     end
 
