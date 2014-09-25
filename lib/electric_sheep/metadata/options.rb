@@ -20,6 +20,7 @@ module ElectricSheep
 
       def method_missing(method, *args, &block)
         if option?(method)
+          puts "Found option #{method}"
           @options[method]
         else
           super
@@ -27,11 +28,7 @@ module ElectricSheep
       end
 
       def respond_to?(method, include_all=false)
-        if option?(method)
-          true
-        else
-          super
-        end
+        option?(method) || super
       end
 
       protected

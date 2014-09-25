@@ -3,7 +3,6 @@ require 'electric_sheep/helpers/resourceful'
 module ElectricSheep
   module Transport
     extend ActiveSupport::Concern
-    include Metadata::Options
     include Agent
 
     def initialize(project, logger, metadata, hosts)

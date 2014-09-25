@@ -1,7 +1,6 @@
 module ElectricSheep
   module Command
     extend ActiveSupport::Concern
-    include Metadata::Options
     include Agent
 
     attr_reader :shell
