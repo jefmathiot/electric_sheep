@@ -1,7 +1,7 @@
 require 'fog'
 
 module ElectricSheep
-  module Transport
+  module Transports
     class S3
       include Transport
 
@@ -23,16 +23,16 @@ module ElectricSheep
         logger.info "#{delete_source ? 'Moving' : 'Copying'} " +
           "#{resource.basename} to #{option(:to)} using S3"
         with_object_key do |bucket, key|
-          interactor.create(resource, bucket, key)
-          interactor.destroy(resource, bucket, key) if delete_source
+          operation.create(resource, bucket, key)
+          operation.destroy(resource, bucket, key) if delete_source
         end
       end
 
-      def interactor
+      def operation
         if option(:to) == 'localhost'
-          DownloadInteractor.new(connection)
+          DownloadOperation.new(connection)
         else
-          UploadInteractor.new(connection)
+          UploadOperation.new(connection)
         end
       end
 
@@ -49,14 +49,8 @@ module ElectricSheep
       end
 
       def options
-        base_options.merge(
-          aws_access_key_id: option(:access_key_id),
-          aws_secret_access_key: option(:secret_key)
-        )
-      end
-
-      def base_options
-        if ENV['ELECTRIC_SHEEP_ENV']='test'
+        # TODO Move somewhere else ?
+        if ENV['ELECTRIC_SHEEP_ENV']=='test'
           {
             provider: 'local',
             local_root: './tmp/s3',
@@ -64,12 +58,14 @@ module ElectricSheep
           }
         else
           {
-            provider: 'AWS'
+            provider: 'AWS',
+            aws_access_key_id: option(:access_key_id),
+            aws_secret_access_key: option(:secret_key)
           }
         end
       end
 
-      class Interactor
+      class Operation
         def initialize(connection)
           @connection = connection
         end
@@ -80,7 +76,7 @@ module ElectricSheep
 
       end
 
-      class UploadInteractor < Interactor
+      class UploadOperation < Operation
 
         def create(resource, bucket, key)
           remote_directory(bucket).files.create(
@@ -96,7 +92,7 @@ module ElectricSheep
 
       end
 
-      class DownloadInteractor < Interactor
+      class DownloadOperation < Operation
 
         def create(resource, bucket, key)
           raise "Not implemented"
