@@ -49,7 +49,8 @@ module ElectricSheep
     end
 
     def execute_commands(project, shell_metadata, shell)
-      shell.open!.mk_project_directory!
+      shell.open!
+      shell.mk_project_directory!
       shell_metadata.each_item do |metadata|
         command = metadata.agent.new(project, @logger, shell, metadata )
         metadata.benchmarked do
