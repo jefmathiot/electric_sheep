@@ -2,8 +2,9 @@ module ElectricSheep
   module Commands
     module Database
       class MySQLDump
-        include ElectricSheep::Command
-        include ElectricSheep::Helpers::Named
+        include Command
+        include Helpers::Timestamps
+        include Helpers::ShellSafe
 
         register as: "mysql_dump"
 
@@ -12,14 +13,8 @@ module ElectricSheep
 
         def perform
           logger.info "Creating a dump of the \"#{resource.name}\" MySQL database"
-          dump = with_named_file(
-            shell.project_directory,
-            resource.name,
-            timestamp: true,
-            extension: 'sql'
-          ) do |output|
-            shell.exec "#{cmd(resource.name, option(:user), option(:password), output)}"
-          end
+          dump=shell.expand_path(shell_safe("#{resource.name}-#{timestamp}"))
+          shell.exec "#{cmd(resource.name, option(:user), option(:password), dump)}"
           done! shell.file_resource(shell.host, dump)
         end
 

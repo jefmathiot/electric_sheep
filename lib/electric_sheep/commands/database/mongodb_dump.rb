@@ -3,7 +3,8 @@ module ElectricSheep
     module Database
       class MongoDBDump
         include Command
-        include Helpers::Named
+        include Helpers::Timestamps
+        include Helpers::ShellSafe
 
         register as: "mongodb_dump"
 
@@ -12,13 +13,8 @@ module ElectricSheep
 
         def perform
           logger.info "Creating a dump of the \"#{resource.name}\" MongoDB database"
-          dump = with_named_dir(
-            shell.project_directory,
-            resource.name,
-            timestamp: true
-          ) do |output|
-            shell.exec "#{cmd(resource.name, option(:user), option(:password), output)} &> /dev/null"
-          end
+          dump=shell.expand_path(shell_safe("#{resource.name}-#{timestamp}"))
+          shell.exec "#{cmd(resource.name, option(:user), option(:password), dump)} &> /dev/null"
           done! shell.directory_resource(shell.host, dump)
         end
 
