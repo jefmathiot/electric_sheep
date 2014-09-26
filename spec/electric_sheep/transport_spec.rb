@@ -21,7 +21,7 @@ describe ElectricSheep::Transport do
       )
       ElectricSheep::Helpers::Directories.any_instance.expects(:mk_project_directory!)
       metadata.expects(:type).returns(:do)
-      transport.perform
+      transport.perform!
       transport.done.must_equal true
     end
   end
