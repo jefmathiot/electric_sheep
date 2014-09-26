@@ -17,22 +17,22 @@ describe ElectricSheep::Commands::Database::MySQLDump do
     before do
       @project, @logger, @shell, @host = ElectricSheep::Metadata::Project.new,
         mock, mock, mock
-      @shell.expects(:project_directory).returns('/project/dir')
-      @shell.expects(:mk_project_directory!)
+      @resource_path="\\$MyDatabase-20140605-040302"
+      @shell.expects(:expand_path).with(@resource_path).returns("/project/dir/#{@resource_path}")
       @shell.expects(:host).returns(@host)
-      database = ElectricSheep::Resources::Database.new name: 'MyDatabase'
+      database = ElectricSheep::Resources::Database.new name: '$MyDatabase'
       @project.start_with! database
 
       @command = subject.new(@project, @logger, @shell, @metadata = mock)
 
       @seq = sequence('command')
-      @logger.expects(:info).in_sequence(@seq).with "Creating a dump of the \"MyDatabase\" MySQL database"
+      @logger.expects(:info).in_sequence(@seq).with "Creating a dump of the \"$MyDatabase\" MySQL database"
     end
 
     def assert_product
       product = @project.last_product
       product.wont_be_nil
-      product.path.must_equal '/project/dir/MyDatabase-20140605-040302.sql'
+      product.path.must_equal "/project/dir/#{@resource_path}"
     end
 
     def assert_command
@@ -43,8 +43,8 @@ describe ElectricSheep::Commands::Database::MySQLDump do
 
     def expects_file_resource
       @shell.expects(:file_resource).
-        with(@host, '/project/dir/MyDatabase-20140605-040302.sql').
-        returns(file('/project/dir/MyDatabase-20140605-040302.sql'))
+        with(@host, "/project/dir/#{@resource_path}").
+        returns(file("/project/dir/#{@resource_path}"))
     end
 
     it 'executes the backup command' do
@@ -52,7 +52,7 @@ describe ElectricSheep::Commands::Database::MySQLDump do
       @metadata.stubs(:password).returns(nil)
       Timecop.travel Time.utc(2014, 6, 5, 4, 3, 2) do
         @shell.expects(:exec).in_sequence(@seq).
-          with("mysqldump \"MyDatabase\" > \"/project/dir/MyDatabase-20140605-040302.sql\"")
+          with("mysqldump \"\\$MyDatabase\" > \"/project/dir/#{@resource_path}\"")
         assert_command
       end
     end
