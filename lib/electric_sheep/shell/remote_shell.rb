@@ -8,7 +8,7 @@ module ElectricSheep
         super(host, project, logger)
         @user = user
       end
-      
+
       def interactor
         @interactor ||= Interactors::SshInteractor.new(
           @host,

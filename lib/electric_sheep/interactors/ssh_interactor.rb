@@ -1,8 +1,6 @@
 module ElectricSheep
   module Interactors
     class SshInteractor < Base
-      delegate :upload!, to: :session
-      delegate :download!, to: :session
 
       def initialize(host, project, user, logger=nil)
         super(host, project, logger)
@@ -38,6 +36,10 @@ module ElectricSheep
 
       def close
         session.close
+      end
+
+      def scp
+        session.scp
       end
 
       protected
