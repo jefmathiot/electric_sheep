@@ -13,8 +13,8 @@ module ElectricSheep
 
       def mk_project_directory!
         @interactor.exec(
-          "mkdir -p #{project_directory} ; chmod 0700 #{project_directory}"
-        )[:out]
+          "mkdir -p \"#{project_directory}\" ; chmod 0700 \"#{project_directory}\""
+        )
       end
 
       def expand_path(path)
