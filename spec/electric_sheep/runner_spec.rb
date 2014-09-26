@@ -60,71 +60,24 @@ describe ElectricSheep::Runner do
       end
     end
 
-    describe 'with commands' do
-
-      class Dumb
-        include ElectricSheep::Command
-        register as: 'dumb', of_type: :command
-
-        def perform
-          logger.info "I'm #{self.class}"
-          shell.exec('echo "" > /dev/null')
-        end
-
-      end
-
-      class Dumber
-        include ElectricSheep::Command
-        register as: 'dumber', of_type: :command
-
-        def perform
-          logger.info "I'm #{self.class}"
-          shell.exec('echo > /dev/null')
-        end
-
-      end
-
-      def append_commands(shell)
-        shell.add ElectricSheep::Metadata::Command.new(type: 'dumb')
-        shell.add ElectricSheep::Metadata::Command.new(type: 'dumber')
-        shell
-      end
-
-      def expects_executions(shell, logger, sequence)
-        logger.expects(:info).in_sequence(sequence).
-          with("I'm Dumb")
-        shell.expects(:exec).in_sequence(sequence).with('echo "" > /dev/null')
-
-        logger.expects(:info).in_sequence(sequence).
-          with("I'm Dumber")
-        shell.expects(:exec).in_sequence(sequence).
-          with('echo > /dev/null')
-      end
+    describe 'with shells' do
 
       it 'wraps command executions in a local shell' do
-        append_commands @first_project.add(metadata = ElectricSheep::Metadata::Shell.new)
+        @first_project.add(metadata = ElectricSheep::Metadata::Shell.new)
         shell = ElectricSheep::Shell::LocalShell.any_instance
-        shell.expects(:open!).in_sequence(script)
-        shell.expects(:mk_project_directory!).in_sequence(script).at_least_once
-        expects_executions(shell, @logger, script)
+        shell.expects(:perform!).in_sequence(script)
         @runner.run!
         expects_execution_times(@first_project, metadata)
       end
 
       it 'wraps command executions in a remote shell' do
-        append_commands(
-          @first_project.add(
-            metadata = ElectricSheep::Metadata::RemoteShell.new(
-              user: 'op'
-            )
+        @first_project.add(
+          metadata = ElectricSheep::Metadata::RemoteShell.new(
+            user: 'op'
           )
         )
         shell = ElectricSheep::Shell::RemoteShell.any_instance
-        shell.expects(:open!).in_sequence(script).returns(shell)
-        shell.expects(:mk_project_directory!).in_sequence(script).at_least_once
-        expects_executions(shell, @logger, script)
-        shell.expects(:close!).in_sequence(script).returns(shell)
-
+        shell.expects(:perform!).in_sequence(script).returns(shell)
         @runner.run!
         expects_execution_times(@first_project, metadata)
       end
@@ -138,8 +91,8 @@ describe ElectricSheep::Runner do
     it 'executes transport' do
 
       @first_project.add metadata = ElectricSheep::Metadata::Transport.new
-      metadata.expects(:agent).in_sequence(script).returns(FakeTransport)
-      FakeTransport.any_instance.expects(:perform).in_sequence(script)
+      metadata.expects(:agent).in_sequence(script).at_least(1).returns(FakeTransport)
+      FakeTransport.any_instance.expects(:perform!).in_sequence(script)
       @runner.run!
       expects_execution_times(@first_project, metadata)
     end
