@@ -28,7 +28,24 @@ project "scp-move-local-to-remote" do
   move to: "main-host", using: "scp", as: "vagrant"
 end
 
-## SCP
+project "scp-copy-local-to-remote" do
+  private_key private_key
+  resource "file", path: "dummy.file"
+  copy to: "main-host", using: "scp", as: "vagrant"
+end
+
+project "scp-copy-remote-to-local" do
+  private_key private_key
+  resource "file", path: "dummy.file", host: "main-host"
+  copy to: "localhost", using: "scp", as: "vagrant"
+end
+
+project "scp-move-remote-to-local" do
+  private_key private_key
+  resource "file", path: "dummy.file", host: "main-host"
+  move to: "localhost", using: "scp", as: "vagrant"
+end
+
 project "scp-copy-and-move" do
   private_key private_key
   resource "file", path: "dummy.file"

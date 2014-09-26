@@ -23,10 +23,26 @@ module ElectricSheep
       ssh_run_simple("test -s #{path}", 10)
     end
 
+    def refute_remote_file_exists?(path)
+      begin
+        ssh_run_simple("test -s #{path}", 10)
+        false
+      rescue RSpec::Expectations::ExpectationNotMetError
+        true
+      end
+    end
+
     def refute_local_file_exists?(path)
       in_current_dir do
         path = File.expand_path(path)
         expect(FileTest.exists?(path)).to be(false), "expected #{path} to be absent"
+      end
+    end
+
+    def assert_local_file_exists?(path)
+      in_current_dir do
+        path = File.expand_path(path)
+        expect(FileTest.exists?(path)).to be(true), "expected #{path} to be present"
       end
     end
 
