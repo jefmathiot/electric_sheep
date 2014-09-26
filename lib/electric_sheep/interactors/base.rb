@@ -22,7 +22,7 @@ module ElectricSheep
 
       def in_session(&block)
         session
-        block.call
+        block.call if block_given?
         close
       end
 
