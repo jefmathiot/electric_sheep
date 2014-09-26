@@ -6,37 +6,59 @@ describe ElectricSheep::Helpers::Directories do
     sequence('shell')
   end
 
-  let(:host) do
-    mock
-  end
-
-  describe 'returning working directory' do
-    it 'defaults to home' do
-      host.expects(:working_directory).returns(nil)
-      subject.new(host,nil,nil).working_directory.must_equal '$HOME/.electric_sheep'
-    end
-
-    it 'uses the host working directory if any' do
-      host.expects(:working_directory).returns('/tmp')
-      subject.new(host,nil,nil).working_directory.must_equal '/tmp'
+  [:host, :project, :interactor].each do |var|
+    let(var) do
+      mock
     end
   end
 
-  describe 'returning project directory' do
-    it 'uses the project id' do
-      host.expects(:working_directory).returns('/tmp')
-      project=mock
-      project.expects(:id).returns('project_path')
-      interactor = mock
-      interactor.expects(:exec).with("echo \"/tmp/project_path\"").returns({out:"/tmp/some_project"})
-      subject.new(host,project,interactor).project_directory.must_equal "/tmp/some_project"
+  let(:directories) do
+    subject.new(host, project, interactor)
+  end
+
+  describe 'expanding paths' do
+    it 'raises unless project directory created' do
+      -> { directories.expand_path('some-file') }.must_raise RuntimeError,
+        /Project directory has not been created/
+    end
+
+    [nil, '/host/working/dir'].each do |working_dir|
+      describe "with#{working_dir ? '' : 'out'} an explicit working directory" do
+        describe 'with the project directory created' do
+
+          let(:script) do
+            sequence(:script)
+          end
+
+          let(:raw_directory) do
+            "#{working_dir || '$HOME/.electric_sheep'}/unsafe\\$-project-name"
+          end
+
+          let(:project_directory) do
+            "/home/user/.electric_sheep/unsafe\\$-project-name"
+          end
+
+          before do
+            host.expects(:working_directory).returns(working_dir)
+            project.expects(:id).returns('UNSAFE$-PROJECT-NAME')
+            interactor.expects(:exec).
+              with("echo \"#{raw_directory}\"").
+              returns(out: project_directory)
+            interactor.expects(:exec).
+              with("mkdir -p \"#{project_directory}\" ; chmod 0700 \"#{project_directory}\"")
+            directories.mk_project_directory!
+          end
+
+          it 'expands relative paths' do
+            directories.expand_path('path').must_equal "#{project_directory}/path"
+          end
+
+          it 'does not expand absolute paths' do
+            directories.expand_path('/path').must_equal "/path"
+          end
+        end
+      end
     end
   end
 
-  it 'make project directory' do
-     instance = subject.new(nil,nil,interactor = mock)
-     interactor.expects(:exec).with('mkdir -p folder_path ; chmod 0700 folder_path').returns({out:"folder_path"})
-     instance.stubs(:project_directory).returns("folder_path")
-     instance.mk_project_directory!.must_equal "folder_path"
-  end
 end
