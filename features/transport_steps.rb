@@ -8,12 +8,13 @@ Given(/^a local file for "(.*?)"$/) do |folder|
   step "a 102400 byte file named \"#{@resource_name}\""
 end
 
-Given(/^a remote file for "(.*?)"$/) do |folder|
-  @project = folder
-  @folder = '/tmp/acceptance/'+folder
-  @resource_name='/tmp/acceptance/'+folder+"/dummy.file"
-  ssh_run_simple("mkdir -p #{ @folder}")
-  ssh_run_simple("touch #{ @resource_name}")
+Given(/^a remote file for "(.*?)"$/) do |project|
+  @project = project
+  "/tmp/acceptance/#{project}".tap do |project_directory|
+    @resource_name="#{project_directory}/dummy.file"
+    ssh_run_simple("mkdir -p #{project_directory}")
+    ssh_run_simple("echo 'content' >> #{@resource_name}")
+  end
   assert_remote_file_exists? @resource_name
 end
 
