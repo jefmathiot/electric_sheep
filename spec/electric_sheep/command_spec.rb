@@ -21,7 +21,6 @@ describe ElectricSheep::Command do
 
   before do
     @shell = mock
-    @shell.expects(:mk_project_directory!)
   end
 
   describe CommandKlazz do
