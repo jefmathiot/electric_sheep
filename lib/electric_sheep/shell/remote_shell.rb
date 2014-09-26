@@ -1,38 +1,27 @@
 module ElectricSheep
   module Shell
     class RemoteShell < Base
-      include Helpers::Resourceful
 
       attr_reader :host
 
-      def initialize(logger, host, user, project)
-        @logger = logger
-        @host = host
+      def initialize(host, project, logger, user)
+        super(host, project, logger)
         @user = user
-        @project=project
+      end
+      
+      def interactor
+        @interactor ||= Interactors::SshInteractor.new(
+          @host,
+          @project,
+          @user,
+          @logger
+        )
       end
 
-      def remote?
-        true
-      end
-
-      def local?
-        false
-      end
-
-      def open!
-        self if opened?
+      def perform!(metadata)
         @logger.info "Starting a remote shell session for " +
           "#{@user}@#{host.hostname} on port #{host.ssh_port}"
-        @interactor = Interactors::SshInteractor.new(host, @user, @project)
-        @interactor.session
-        self
-      end
-
-      def close!
-        @interactor.session.close
-        @interactor=nil
-        self
+        super
       end
 
     end

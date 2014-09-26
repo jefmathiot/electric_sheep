@@ -4,8 +4,8 @@ module ElectricSheep
       delegate :upload!, to: :session
       delegate :download!, to: :session
 
-      def initialize(host, project, user )
-        super(host, project)
+      def initialize(host, project, user, logger=nil)
+        super(host, project, logger)
         @user=user
       end
 

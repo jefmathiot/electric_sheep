@@ -3,35 +3,23 @@ require 'session'
 module ElectricSheep
   module Shell
     class LocalShell < Base
-      include Helpers::Resourceful
 
-      def initialize(localhost, project, logger)
-        @host=localhost
-        @logger = logger
-        @project=project
+      def initialize(host, project, logger)
+        super
       end
 
-      def local?
-        true
+      def interactor
+        @interactor ||= Interactors::ShellInteractor.new(
+          @host, 
+          @project, 
+          @logger
+        )
       end
 
-      def remote?
-        false
-      end
-
-      def open!
-        return self if opened?
+      def perform!(metadata)
         @logger.info "Starting a local shell session"
-        @interactor = Interactors::ShellInteractor.new(@project)
-        @interactor.session
-        self
+        super
       end
-
-      def close!
-        @interactor = nil
-        self
-      end
-
     end
   end
 end

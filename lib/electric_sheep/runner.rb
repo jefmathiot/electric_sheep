@@ -35,36 +35,27 @@ module ElectricSheep
 
     def execute_shell(project, metadata)
       metadata.benchmarked do
-        execute_commands project, metadata,
-          Shell::LocalShell.new(@config.hosts.localhost, project, @logger)
+          Shell::LocalShell.new(
+            @config.hosts.localhost, project, @logger
+          ).perform!(metadata)
       end
     end
 
     def execute_remote_shell(project, metadata)
       metadata.benchmarked do
-        execute_commands project, metadata, Shell::RemoteShell.new(
-          @logger, project.last_product.host, metadata.user, project
-        )
+        Shell::RemoteShell.new(
+          project.last_product.host,
+          project,
+          @logger,
+          metadata.user
+        ).perform!(metadata)
       end
-    end
-
-    def execute_commands(project, shell_metadata, shell)
-      shell.open!
-      shell.mk_project_directory!
-      shell_metadata.each_item do |metadata|
-        command = metadata.agent.new(project, @logger, shell, metadata )
-        metadata.benchmarked do
-          command.check_prerequisites
-          command.perform
-        end
-      end
-      shell.close!
     end
 
     def execute_transport(project, metadata)
       transport = metadata.agent.new(project, @logger, metadata, @config.hosts)
       metadata.benchmarked do
-        transport.perform
+        transport.perform!
       end
     end
   end

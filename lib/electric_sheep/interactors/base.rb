@@ -1,20 +1,23 @@
 module ElectricSheep
   module Interactors
     class Base
-      delegate :project_directory, :mk_project_directory!, :expand_path,
-        to: :directories
+      delegate :expand_path, to: :directories
 
       attr_reader :directories
 
-      def initialize(host, project)
+      def initialize(host, project, logger=nil)
         @host=host
         @project = project
+        @logger = logger
         @directories=Helpers::Directories.new(host, project, self)
       end
 
       def session
-        @session||=build_session
-        mk_project_directory!
+        unless @session
+          @session=build_session
+          @directories.mk_project_directory!
+        end
+        @session
       end
 
       def in_session(&block)

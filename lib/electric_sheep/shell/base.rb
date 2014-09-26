@@ -1,18 +1,36 @@
 module ElectricSheep
   module Shell
     class Base
-      delegate :project_directory, :mk_project_directory!, :expand_path,
-        :session, to: :interactor
+      include Helpers::Resourceful
+
+      delegate :expand_path, :exec, to: :interactor
 
       attr_reader :interactor
 
-      def exec(cmd)
-        raise "Shell not opened" unless opened?
-        @interactor.exec(cmd, @logger)
+      def initialize(host, project, logger)
+        @host = host
+        @project=project
+        @logger = logger
       end
 
-      def opened?
-        !!@interactor
+      def perform!(metadata)
+        interactor.in_session do
+          metadata.each_item do |cmd_metadata|
+            command =cmd_metadata.agent.new(@project, @logger, self, cmd_metadata )
+            cmd_metadata.benchmarked do
+              command.check_prerequisites
+              command.perform
+            end
+          end
+        end
+      end
+
+      def local?
+        @host.local?
+      end
+
+      def remote?
+        !@host.local?
       end
 
     end

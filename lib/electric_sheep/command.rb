@@ -10,7 +10,6 @@ module ElectricSheep
       @logger = logger
       @shell = shell
       @metadata = metadata
-      @shell.mk_project_directory!
     end
 
     def check_prerequisites

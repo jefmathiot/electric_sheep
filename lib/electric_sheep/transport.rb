@@ -12,30 +12,19 @@ module ElectricSheep
       @hosts = hosts
     end
 
-    def perform
-      mk_project_directory!(@hosts.localhost)
+    def perform!
+      # Create a session so that required directories are created
+      local_interactor.in_session
       self.send(@metadata.type)
     end
 
     protected
     def local_interactor
-      @local_interactor ||= Interactors::ShellInteractor.new(@project)
+      @local_interactor ||= Interactors::ShellInteractor.new(@hosts.localhost, @project)
     end
 
     def host(id)
       @hosts.get(id)
-    end
-
-    def mk_project_directory!(host, interactor=nil)
-      interactor ||= local_interactor
-      interactor.in_session do
-        directories(host, interactor)
-        mk_project_directory!
-      end
-    end
-
-    def directories(host, interactor)
-      Helpers::Directories.new(host, @project, interactor)
     end
 
     module ClassMethods
