@@ -16,7 +16,7 @@ module ElectricSheep
       def perform!(metadata)
         interactor.in_session do
           metadata.each_item do |cmd_metadata|
-            command =cmd_metadata.agent.new(@project, @logger, self, cmd_metadata )
+            command=cmd_metadata.agent.new(@project, @logger, self, cmd_metadata )
             cmd_metadata.benchmarked do
               command.check_prerequisites
               command.perform
