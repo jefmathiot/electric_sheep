@@ -78,7 +78,7 @@ module ElectricSheep
       class UploadOperation < Operation
 
         def perform(delete_source, &block)
-          return unless from.host.local? && !to.host.local?
+          return false unless from.host.local? && !to.host.local?
           to.interactor.in_session do
             scp_cmd(to,:upload!)
           end
@@ -93,7 +93,7 @@ module ElectricSheep
       class DownloadOperation < Operation
 
         def perform(delete_source, &block)
-          return unless !from.host.local? && to.host.local?
+          return false unless !from.host.local? && to.host.local?
           from.interactor.in_session do
             scp_cmd(from,:download!)
             from.interactor.exec("rm -f #{@source}") if delete_source
