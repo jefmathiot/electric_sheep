@@ -8,7 +8,7 @@ describe ElectricSheep::Commands::Database::MongoDBDump do
     defines_options :user, :password
   }
 
-  it 'should have registered as "mongodb_dump"' do
+  it 'has registered as "mongodb_dump"' do
     ElectricSheep::Agents::Register.command("mongodb_dump").must_equal subject
   end
 
@@ -17,28 +17,28 @@ describe ElectricSheep::Commands::Database::MongoDBDump do
     before do
       @project, @logger, @shell, @host = ElectricSheep::Metadata::Project.new,
         mock, mock, mock
-      @shell.expects(:project_directory).returns('/project/dir')
-      @shell.expects(:mk_project_directory!)
+      @resource_path="\\$MyDatabase-20140605-040302"
+      @shell.expects(:expand_path).with(@resource_path).returns("/project/dir/#{@resource_path}")
       @shell.expects(:host).returns(@host)
-      database = ElectricSheep::Resources::Database.new name: 'MyDatabase'
+      database = ElectricSheep::Resources::Database.new name: '$MyDatabase'
       @project.start_with! database
 
       @command = subject.new(@project, @logger, @shell, @metadata = mock)
 
       @seq = sequence('command')
-      @logger.expects(:info).in_sequence(@seq).with "Creating a dump of the \"MyDatabase\" MongoDB database"
+      @logger.expects(:info).in_sequence(@seq).with "Creating a dump of the \"$MyDatabase\" MongoDB database"
     end
 
     def assert_product
       product = @project.last_product
       product.wont_be_nil
-      product.path.must_equal '/project/dir/MyDatabase-20140605-040302'
+      product.path.must_equal "/project/dir/#{@resource_path}"
     end
 
     def expects_directory_resource
       @shell.expects(:directory_resource).
-        with(@host, '/project/dir/MyDatabase-20140605-040302').
-        returns(directory('/project/dir/MyDatabase-20140605-040302'))
+        with(@host, "/project/dir/#{@resource_path}").
+        returns(directory("/project/dir/#{@resource_path}"))
     end
 
     def assert_command
@@ -52,8 +52,8 @@ describe ElectricSheep::Commands::Database::MongoDBDump do
       @metadata.stubs(:password).returns(nil)
       Timecop.travel Time.utc(2014, 6, 5, 4, 3, 2) do
         @shell.expects(:exec).in_sequence(@seq).
-          with("mongodump -d \"MyDatabase\" "+
-               "-o \"/project/dir/MyDatabase-20140605-040302\" &> /dev/null"
+          with("mongodump -d \"\\$MyDatabase\" "+
+               "-o \"/project/dir/#{@resource_path}\" &> /dev/null"
           )
         assert_command
       end

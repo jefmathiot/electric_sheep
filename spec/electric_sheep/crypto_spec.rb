@@ -23,19 +23,16 @@ describe ElectricSheep::Crypto do
     let(:pem_lines){
       "-----BEGIN RSA PUBLIC KEY-----\n" +
       "XXXXXX\n" +
-      "-----END RSA PUBLIC KEY-----\n"
+      "-----END RSA PUBLIC KEY-----"
     }
 
     describe 'with a key in the OpenSSH format' do
       let(:exec_result) do
-        {
-          out: pem_lines,
-          exit_status: 0
-        }
+        pem_lines
       end
 
-      let(:interactor) do
-        ElectricSheep::Interactors::ShellInteractor.any_instance
+      let(:session) do
+        ::Session::Sh.any_instance
       end
 
       let(:key_file) {
@@ -46,24 +43,26 @@ describe ElectricSheep::Crypto do
       }
 
       def expects_conversion
-        interactor.expects(:exec).
+        session.expects(:execute).
           with("ssh-keygen -f #{key_file.path} -e -m pem").
-          returns(exec_result)
+          yields exec_result, nil
       end
 
       it 'encrypts the plain text' do
+        session.expects(:exit_status).returns 0
         expects_conversion
         expects_encryption
       end
 
       it 'raises if it where unable to convert key' do
-        exec_result[:exit_status]=1
+        session.expects(:exit_status).returns 1
         expects_conversion
         ->{subject.encrypt('PLAIN', key_file.path)}.must_raise RuntimeError,
           /Unable to convert key file/
       end
 
       it 'raises if key is not public' do
+        session.expects(:exit_status).returns 0
         expects_conversion
         expects_encryption(false)
       end

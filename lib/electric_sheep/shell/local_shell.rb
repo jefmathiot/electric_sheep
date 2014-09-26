@@ -8,6 +8,12 @@ module ElectricSheep
         super
       end
 
+      def perform!(metadata)
+        @logger.info "Starting a local shell session"
+        super
+      end
+      
+      protected
       def interactor
         @interactor ||= Interactors::ShellInteractor.new(
           @host, 
@@ -16,10 +22,6 @@ module ElectricSheep
         )
       end
 
-      def perform!(metadata)
-        @logger.info "Starting a local shell session"
-        super
-      end
     end
   end
 end
