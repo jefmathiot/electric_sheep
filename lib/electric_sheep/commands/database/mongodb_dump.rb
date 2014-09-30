@@ -20,8 +20,8 @@ module ElectricSheep
 
         private
         def cmd(db, user, password, output)
-          cmd = "mongodump -d \"#{shell_safe(db)}\" -o \"#{output}\""
-          cmd << " -u \"#{shell_safe(user)}\" -p \"#{shell_safe(password)}\"" unless user.nil?
+          cmd = "mongodump -d #{shell_safe(db)} -o #{output}"
+          cmd << " -u #{shell_safe(user)} -p #{shell_safe(password)}" unless user.nil?
           cmd
         end
 

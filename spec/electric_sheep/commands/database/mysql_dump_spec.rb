@@ -52,17 +52,18 @@ describe ElectricSheep::Commands::Database::MySQLDump do
       @metadata.stubs(:password).returns(nil)
       Timecop.travel Time.utc(2014, 6, 5, 4, 3, 2) do
         @shell.expects(:exec).in_sequence(@seq).
-          with("mysqldump \"\\$MyDatabase\" > \"/project/dir/#{@resource_path}\"")
+          with("mysqldump \\$MyDatabase > \"/project/dir/#{@resource_path}\"")
         assert_command
       end
     end
 
     it 'appends credentials to the command' do
-      @metadata.stubs(:user).returns('operator')
-      @metadata.stubs(:password).returns('secret')
+      @metadata.stubs(:user).returns("$operator")
+      @metadata.stubs(:password).returns("$secret")
       Timecop.travel Time.utc(2014, 6, 5, 4, 3, 2) do
         @shell.expects(:exec).in_sequence(@seq).
-          with regexp_matches(/--user="operator" --password="secret"/)
+          with ("mysqldump --user=\\$operator --password=\\$secret \\$MyDatabase " +
+            "> \"/project/dir/#{@resource_path}\"")
         assert_command
       end
     end

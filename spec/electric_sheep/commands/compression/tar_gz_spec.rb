@@ -40,10 +40,10 @@ describe ElectricSheep::Commands::Compression::TarGz do
         @logger.expects(:info).in_sequence(@seq).
           with "Compressing #{input} to $some-#{input_type}.tar.gz"
         @shell.expects(:exec).in_sequence(@seq).
-          with("tar -cvzf \"#{output}\" \"#{safe_input}\" &> /dev/null")
+          with("tar -cvzf #{output} #{safe_input} &> /dev/null")
         if delete_source
           @shell.expects(:exec).in_sequence(@seq).
-            with("rm -f \"#{safe_input}\"")
+            with("rm -f #{safe_input}")
         end
         @shell.expects(:file_resource).in_sequence(@seq).
           with(@host, output).

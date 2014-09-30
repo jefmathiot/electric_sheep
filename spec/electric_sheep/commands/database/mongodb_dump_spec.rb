@@ -52,19 +52,23 @@ describe ElectricSheep::Commands::Database::MongoDBDump do
       @metadata.stubs(:password).returns(nil)
       Timecop.travel Time.utc(2014, 6, 5, 4, 3, 2) do
         @shell.expects(:exec).in_sequence(@seq).
-          with("mongodump -d \"\\$MyDatabase\" "+
-               "-o \"/project/dir/#{@resource_path}\" &> /dev/null"
+          with("mongodump -d \\$MyDatabase "+
+            "-o /project/dir/#{@resource_path} &> /dev/null"
           )
         assert_command
       end
     end
 
     it 'appends credentials to the command' do
-      @metadata.stubs(:user).returns('operator')
-      @metadata.stubs(:password).returns('secret')
+      @metadata.stubs(:user).returns('$operator')
+      @metadata.stubs(:password).returns('$secret')
       Timecop.travel Time.utc(2014, 6, 5, 4, 3, 2) do
         @shell.expects(:exec).in_sequence(@seq).
-          with regexp_matches(/-u "operator" -p "secret"/)
+          with("mongodump -d \\$MyDatabase "+
+            "-o /project/dir/#{@resource_path} " +
+            "-u \\$operator -p \\$secret " +
+            "&> /dev/null"
+          )
         assert_command
       end
     end
