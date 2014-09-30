@@ -67,5 +67,6 @@ Before do
   self.ssh_run_simple 'rm -rf /tmp/acceptance /tmp/acceptance_backup'
   self.ssh_run_simple 'rm -rf /home/vagrant/.electric_sheep'
   FileUtils.rm_f "/home/vagrant/.electric_sheep"
+  @aruba_timeout_seconds = 10
 end
 
