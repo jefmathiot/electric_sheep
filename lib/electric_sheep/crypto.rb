@@ -23,6 +23,7 @@ module ElectricSheep
 
       private
       def read_key_file(key_file)
+        key_file=File.expand_path(key_file)
         raise "Key file not found #{key_file}" unless File.exists?(key_file)
         key = File.read(key_file)
         return openssh_to_pem(key_file) if openssh?(key)
