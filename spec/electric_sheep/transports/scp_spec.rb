@@ -43,7 +43,10 @@ describe ElectricSheep::Transports::SCP do
         it 'try to perform all operations type' do
           retrieve_hosts
           retrieve_interactors
-          [ElectricSheep::Transports::SCP::DownloadOperation,ElectricSheep::Transports::SCP::UploadOperation].each do |klazz|
+          [
+            ElectricSheep::Transports::SCP::DownloadOperation,
+            ElectricSheep::Transports::SCP::UploadOperation
+          ].each do |klazz|
             instance = klazz.any_instance
             instance.expects(:perform).with(false)
           end

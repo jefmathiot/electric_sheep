@@ -27,22 +27,26 @@ module ElectricSheep
       end
 
       def operate(operation)
-        operation_opts=Struct.new(:host, :interactor, :file)
+        operation_opts=Struct.new(:resource, :interactor)
         from=operation_opts.new(
-          resource.host,
-          interactor_for(resource.host),
-          resource
+          resource,
+          interactor_for(resource.host)
         )
+        target_host=host(option(:to))
         to=operation_opts.new(
-          target_host=host(option(:to)),
-          interactor_for(target_host),
-          file_resource(target_host, resource.basename)
+          build_resource(resource.directory?, target_host, resource.basename),
+          interactor_for(target_host)
         )
         [DownloadOperation, UploadOperation].each do |op_klazz|
-          op_klazz.new(from:from, to:to).perform(operation==:move) do |host, path|
-            done! file_resource(host, path)
+          delete_source=operation==:move
+          op_klazz.new(from: from, to: to).perform(delete_source) do |host, path|
+            done! build_resource(resource.directory?, option(:to), path)
           end
         end
+      end
+
+      def build_resource(directory, host, path)
+        send("#{directory ? :directory : :file}_resource", host, path)
       end
 
       class Operation
@@ -59,18 +63,32 @@ module ElectricSheep
           @options[:to]
         end
 
-        def result(target,source, delete_source)
+        def result(target, source, delete_source)
           if delete_source
-            return to.host, target
+            return to.resource.host, target
           else
-            return from.host, source
+            return from.resource.host, source
           end
         end
 
-        def scp_cmd(target, cmd)
-          @source=from.interactor.expand_path(from.file.path)
-          @target=to.interactor.expand_path(to.file.path)
-          target.interactor.scp.send(cmd, @source, @target)
+        def copy(target, action)
+          @source=from.interactor.expand_path(from.resource.path)
+          @target=to.interactor.expand_path(to.resource.path)
+          # TODO Allow the target directory name to be changed
+          # Recursive creates a target directory then copies the source directory in it.
+          # We end up with two nested directories of the same name.
+          # See http://net-ssh.github.io/net-scp/classes/Net/SCP.html#method-i-download-21
+          @target=File.dirname(@target) if from.resource.directory?
+          target.interactor.scp.send(
+            "#{action}!",
+            @source,
+            @target,
+            recursive: from.resource.directory?
+          )
+        end
+
+        def delete_cmd
+          "rm -rf #{@source}"
         end
 
       end
@@ -78,12 +96,12 @@ module ElectricSheep
       class UploadOperation < Operation
 
         def perform(delete_source, &block)
-          return false unless from.host.local? && !to.host.local?
+          return unless from.resource.host.local? && !to.resource.host.local?
           to.interactor.in_session do
-            scp_cmd(to,:upload!)
+            copy(to, :upload)
           end
           from.interactor.in_session do
-            from.interactor.exec("rm -f #{@source}") if delete_source
+            from.interactor.exec(delete_cmd) if delete_source
           end
           yield result(@target,@source, delete_source)
         end
@@ -93,10 +111,10 @@ module ElectricSheep
       class DownloadOperation < Operation
 
         def perform(delete_source, &block)
-          return false unless !from.host.local? && to.host.local?
+          return unless !from.resource.host.local? && to.resource.host.local?
           from.interactor.in_session do
-            scp_cmd(from,:download!)
-            from.interactor.exec("rm -f #{@source}") if delete_source
+            copy(from, :download)
+            from.interactor.exec(delete_cmd) if delete_source
           end
           yield result(@target,@source, delete_source)
         end
