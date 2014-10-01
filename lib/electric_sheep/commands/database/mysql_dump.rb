@@ -22,7 +22,7 @@ module ElectricSheep
         def cmd(db, user, password, output)
           cmd = "mysqldump"
           cmd << " --user=#{shell_safe(user)} --password=#{shell_safe(password)}" unless user.nil?
-          cmd << " #{shell_safe(db)} > \"#{output}\""
+          cmd << " #{shell_safe(db)} > #{output}"
         end
       end
     end
