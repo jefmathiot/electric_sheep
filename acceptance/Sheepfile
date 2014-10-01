@@ -75,6 +75,13 @@ project "tar-gz-file" do
   end
 end
 
+project "tar-gz-directory" do
+  private_key private_key
+  resource "file", path: "dummy-directory", host: "main-host"
+  remotely as: "vagrant" do
+    tar_gz
+  end
+end
 
 ###############################################################################
 ## MongoDB Dump

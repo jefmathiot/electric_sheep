@@ -8,7 +8,7 @@ Given(/^a local file for "(.*?)"$/) do |folder|
   step "a 102400 byte file named \"#{@resource_name}\""
 end
 
-Given(/^a remote file for "(.*?)"$/) do |project|
+Given(/^a remote file in the project "(.*?)"$/) do |project|
   @project = project
   "/tmp/acceptance/#{project}".tap do |project_directory|
     @resource_name="#{project_directory}/dummy.file"
@@ -43,7 +43,7 @@ Then(/^the file should have been moved to the remote host in default directory$/
   refute_local_file_exists? @resource_name
 end
 
-Then(/^the file should have been copy and moved to the remotes host$/) do
+Then(/^the file should have been copy and moved to the remote hosts$/) do
   assert_remote_file_exists? "/tmp/acceptance/#{@project}/#{@resource_name}"
   assert_remote_file_exists? "/tmp/acceptance_backup/#{@project}/#{@resource_name}"
   refute_local_file_exists? @resource_name
@@ -61,4 +61,18 @@ Then(/^the file should have been (copied|moved) to the remote bucket$/) do |op|
   else
     step "a file named \"#{@resource_name}\" should exist"
   end
+end
+
+Given(/^a remote directory containing multiple files in the project "(.*?)"$/) do |project|
+  @project = project
+  "/tmp/acceptance/#{project}".tap do |project_directory|
+    @resource_name="#{project_directory}/dummy-directory"
+    ssh_run_simple("mkdir -p #{@resource_name}")
+    @files=[1, 2].map do |index|
+      "dummy.file.#{index}".tap do |file|
+        ssh_run_simple("echo 'content' >> #{@resource_name}/#{file}")
+      end
+    end
+  end
+  assert_remote_file_exists? @resource_name
 end
