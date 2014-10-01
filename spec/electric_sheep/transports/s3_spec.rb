@@ -65,6 +65,7 @@ describe ElectricSheep::Transports::S3 do
     def expects_bucket_object
       File.exists?("#{directory_path}/dummy.file").must_equal true,
         "Expected the remote file to be present"
+      @project.last_product.must_be_instance_of ElectricSheep::Resources::S3Object
     end
 
     it 'makes a copy' do
@@ -73,6 +74,7 @@ describe ElectricSheep::Transports::S3 do
       # Local file
       File.exists?('./tmp/dummy.file').must_equal true,
         "Expected the source file to be present"
+      @project.last_product.must_be_instance_of ElectricSheep::Resources::File
     end
 
     it 'moves the file' do

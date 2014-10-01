@@ -1,6 +1,6 @@
 module ElectricSheep
   module Resources
-    class S3Object < Resource
+    class S3Object < Metadata::Base
 
       option :key, required: true
       option :bucket, required: true

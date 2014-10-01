@@ -4,6 +4,7 @@ module ElectricSheep
   module Transports
     class S3
       include Transport
+      include Helpers::Resourceful
 
       register as: "s3"
 
@@ -24,7 +25,8 @@ module ElectricSheep
           "#{resource.basename} to #{option(:to)} using S3"
         with_object_key do |bucket, key|
           operation.create(resource, bucket, key)
-          operation.destroy(resource, bucket, key) if delete_source
+          operation.destroy(resource) if delete_source
+          exec_done(bucket, key, delete_source)
         end
       end
 
@@ -62,6 +64,18 @@ module ElectricSheep
             aws_access_key_id: option(:access_key_id),
             aws_secret_access_key: option(:secret_key)
           }
+        end
+      end
+
+      def exec_done(bucket, key, delete_source=nil)
+        if delete_source
+          if option(:to) == 'localhost'
+            # TODO
+          else
+            done! s3_resource(bucket, key)
+          end
+        else
+          done! resource
         end
       end
 
