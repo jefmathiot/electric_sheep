@@ -66,6 +66,17 @@ project "s3-copy-local-to-remote" do
 end
 
 ###############################################################################
+## TarGz
+project "tar-gz-file" do
+  private_key private_key
+  resource "file", path: "dummy.file", host: "main-host"
+  remotely as: "vagrant" do
+    tar_gz
+  end
+end
+
+
+###############################################################################
 ## MongoDB Dump
 project "mongodb-dump", description: "MongoDB database backup" do
   private_key './acceptance/id_rsa'
