@@ -13,7 +13,7 @@ module ElectricSheep
 
         def perform
           logger.info "Creating a dump of the \"#{resource.name}\" MongoDB database"
-          dump=shell.expand_path(shell_safe("#{resource.name}-#{timestamp}"))
+          dump=shell.expand_path("#{resource.name}-#{timestamp}")
           shell.exec "#{cmd(resource.name, option(:user), option(:password), dump)} &> /dev/null"
           done! shell.directory_resource(shell.host, dump)
         end

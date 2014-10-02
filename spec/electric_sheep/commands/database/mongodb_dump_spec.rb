@@ -18,7 +18,7 @@ describe ElectricSheep::Commands::Database::MongoDBDump do
       @project, @logger, @shell, @host = ElectricSheep::Metadata::Project.new,
         mock, mock, mock
       @resource_path="\\$MyDatabase-20140605-040302"
-      @shell.expects(:expand_path).with(@resource_path).returns("/project/dir/#{@resource_path}")
+      @shell.expects(:expand_path).with("$MyDatabase-20140605-040302").returns("/project/dir/#{@resource_path}")
       @shell.expects(:host).returns(@host)
       database = ElectricSheep::Resources::Database.new name: '$MyDatabase'
       @project.start_with! database
