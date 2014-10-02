@@ -5,6 +5,10 @@ module ElectricSheep
       option :key, required: true
       option :bucket, required: true
 
+      def basename
+        Pathname.new(key).basename.to_s
+      end
+
     end
   end
 end
