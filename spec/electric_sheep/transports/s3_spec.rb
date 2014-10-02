@@ -22,7 +22,7 @@ describe ElectricSheep::Transports::S3 do
 
   before do
     @logger = mock
-    @project=ElectricSheep::Metadata::Project.new
+    @project=ElectricSheep::Metadata::Project.new(id: "s3")
     @hosts = ElectricSheep::Metadata::Hosts.new
     @hosts.localhost.working_directory = working_directory
     FileUtils.rm_f working_directory
@@ -61,7 +61,7 @@ describe ElectricSheep::Transports::S3 do
       metadata=ElectricSheep::Metadata::Transport.new(
         to: 'my-bucket/key-prefix', transport: 's3', access_key_id: 'XXXX', secret_key: 'SECRET'
       )
-      @transport=subject.new(@project, @logger, metadata, @hosts)
+      @transport = subject.new(@project, @logger, metadata, @hosts)
       @project.start_with! ElectricSheep::Resources::File.new(
         path: './tmp/dummy.file'
       )
@@ -98,11 +98,13 @@ describe ElectricSheep::Transports::S3 do
       metadata=ElectricSheep::Metadata::Transport.new(
         to: 'localhost', transport: 's3'
       )
-      @transport=subject.new(@project, @logger, metadata, @hosts)
+      @transport = subject.new(@project, @logger, metadata, @hosts)
       @project.start_with! ElectricSheep::Resources::S3Object.new(
         bucket: 'my-bucket',
         key: 'key-prefix/dummy.file'
       )
+      directories = ElectricSheep::Helpers::Directories.new(@hosts.localhost, @project, @transport.send(:local_interactor))
+      directories.mk_project_directory!
       FileUtils.touch "#{directory_path}/dummy.file"
     end
 
@@ -110,7 +112,7 @@ describe ElectricSheep::Transports::S3 do
       expects_log("Copying", "to", "localhost")
       @transport.copy
       # Local file
-      File.exists?("#{working_directory}/dummy.file").must_equal true,
+      File.exists?("#{working_directory}/#{@project.id}/dummy.file").must_equal true,
         "Expected the target file to be present"
       @project.last_product.must_be_instance_of ElectricSheep::Resources::S3Object
     end
@@ -119,7 +121,7 @@ describe ElectricSheep::Transports::S3 do
       expects_log("Moving", "to", "localhost")
       @transport.move
       # Local file
-      File.exists?("#{working_directory}/dummy.file").must_equal true,
+      File.exists?("#{working_directory}/#{@project.id}/dummy.file").must_equal true,
         "Expected the target file to be present"
       File.exists?("#{directory_path}/dummy.file").must_equal false,
         "Expected the source file to be absent"
