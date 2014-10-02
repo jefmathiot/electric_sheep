@@ -8,6 +8,7 @@ describe ElectricSheep::Transports::SCP do
       @remote_host = ElectricSheep::Metadata::Host.new
       @remote_resource = ElectricSheep::Resources::File.new(host:@remote_host,path:"local_file_path")
       @local_resource  = ElectricSheep::Resources::File.new(host:@local_host,path:"remote_file_path")
+      @operation_opts = Struct.new(:resource, :interactor)
     end
 
     describe 'with a scp transport' do
@@ -121,9 +122,8 @@ describe ElectricSheep::Transports::SCP do
 
         describe 'on invalid data' do
           before do
-            oo = Struct.new(:resource, :interactor)
-            @from = oo.new(@local_resource,'finteractor')
-            @to   = oo.new(@local_resource,'tinteractor')
+            @from = @operation_opts.new(@local_resource,'finteractor')
+            @to   = @operation_opts.new(@local_resource,'tinteractor')
             @operation = ElectricSheep::Transports::SCP::UploadOperation.new({from:@from,to:@to})
           end
           it 'do nothing' do
@@ -134,9 +134,8 @@ describe ElectricSheep::Transports::SCP do
         describe 'on valid data' do
 
           before do
-            oo = Struct.new(:resource, :interactor)
-            @from = oo.new(@local_resource, @interactor)
-            @to   = oo.new(@remote_resource, @interactor)
+            @from = @operation_opts.new(@local_resource, @interactor)
+            @to   = @operation_opts.new(@remote_resource, @interactor)
             @operation = ElectricSheep::Transports::SCP::UploadOperation.new({from:@from,to:@to})
           end
 
@@ -173,9 +172,8 @@ describe ElectricSheep::Transports::SCP do
 
         describe 'on invalid data' do
           before do
-            oo = Struct.new(:resource, :interactor)
-            @from = oo.new(@local_resource, @interactor)
-            @to   = oo.new(@local_resource, @interactor)
+            @from = @operation_opts.new(@local_resource, @interactor)
+            @to   = @operation_opts.new(@local_resource, @interactor)
             @operation = ElectricSheep::Transports::SCP::DownloadOperation.new({from:@from,to:@to})
           end
           it 'do nothing' do
@@ -185,9 +183,8 @@ describe ElectricSheep::Transports::SCP do
 
         describe 'on valid data' do
           before do
-            oo = Struct.new(:resource, :interactor)
-            @from = oo.new(@remote_resource, @interactor)
-            @to   = oo.new(@local_resource, @interactor)
+            @from = @operation_opts.new(@remote_resource, @interactor)
+            @to   = @operation_opts.new(@local_resource, @interactor)
             @operation = ElectricSheep::Transports::SCP::DownloadOperation.new({from:@from,to:@to})
           end
           it 'upload file' do
