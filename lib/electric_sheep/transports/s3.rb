@@ -99,7 +99,7 @@ module ElectricSheep
           @options = options
         end
 
-        %i{connection bucket key resource delete_source to host local_interactor}.each do |method|
+        [:connection, :bucket, :key, :resource, :delete_source, :to, :host, :local_interactor].each do |method|
           define_method method do
             @options[method]
           end
