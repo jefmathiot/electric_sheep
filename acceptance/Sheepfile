@@ -71,7 +71,7 @@ project "s3-move-remote-to-local" do
 end
 
 project "s3-copy-remote-to-local" do
-  resource "s3_object", bucket: "my-bucket", key: "my-projectdummy.file"
+  resource "s3_object", bucket: "my-bucket", key: "my-project/dummy.file"
   copy to: "localhost", using: "s3"
 end
 
