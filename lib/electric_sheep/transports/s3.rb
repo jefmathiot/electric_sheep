@@ -37,7 +37,8 @@ module ElectricSheep
             resource: resource,
             delete_source: delete_source,
             to: option(:to),
-            host: host(option(:to))
+            host: host(option(:to)),
+            local_interactor: local_interactor
           }
           if option(:to) == 'localhost'
             return DownloadOperation.new(operation_options)
@@ -68,7 +69,7 @@ module ElectricSheep
         if ENV['ELECTRIC_SHEEP_ENV']=='test'
           {
             provider: 'local',
-            local_root: './tmp/s3',
+            local_root: File.basename(Dir.pwd) == 'tmp' ? './s3' : './tmp/s3',
             endpoint: 'http://s3.amazonaws.com'
           }
         else
@@ -98,7 +99,7 @@ module ElectricSheep
           @options = options
         end
 
-        %i{connection bucket key resource delete_source to host}.each do |method|
+        %i{connection bucket key resource delete_source to host local_interactor}.each do |method|
           define_method method do
             @options[method]
           end
@@ -126,8 +127,7 @@ module ElectricSheep
       class DownloadOperation < Operation
 
         def perform!(&block)
-          dir = host.working_directory
-          path = File.join(dir, resource.basename)
+          path = local_interactor.expand_path(resource.basename)
           @options[:path] = path
           file = remote_directory.files.get key
           File.open(path, "w") do |f|
