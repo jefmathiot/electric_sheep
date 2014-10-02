@@ -2,13 +2,13 @@
 # vi: set ft=ruby :
 
 # Local working directory
-if File.basename(Dir.pwd)=='aruba'
+if File.basename(Dir.pwd)=='tmp'
   # Cucumber features
-  working_directory File.expand_path('../')
-  private_key=File.join('../../', 'acceptance', 'id_rsa')
+  working_directory File.expand_path('./')
+  private_key=File.join('../', 'acceptance', 'id_rsa')
 else
   # Manual run
-  working_directory File.expand_path("tmp/work_dir")
+  working_directory File.expand_path("tmp")
   private_key='./acceptance/id_rsa'
 end
 
@@ -71,7 +71,7 @@ project "s3-move-remote-to-local" do
 end
 
 project "s3-copy-remote-to-local" do
-  resource "s3_object", bucket: "my-bucket", key: "my-projectdummy.file"
+  resource "s3_object", bucket: "my-bucket", key: "my-project/dummy.file"
   copy to: "localhost", using: "s3"
 end
 

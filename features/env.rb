@@ -1,4 +1,5 @@
 require 'aruba/cucumber'
+require_relative 'aruba/aruba_helper' 
 
 ENV['ELECTRIC_SHEEP_ENV']='test'
 
