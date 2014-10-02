@@ -14,12 +14,12 @@ Feature: SCP transport
     Then the file should have been copied to the remote host
 
   Scenario: Move a file using SCP from remote to local host
-    Given a remote file for "scp-move-remote-to-local"
+    Given a remote file in the project "scp-move-remote-to-local"
     When I tell the sheep to work on project "scp-move-remote-to-local"
     Then the file should have been moved to the localhost
 
   Scenario: Copy a file using SCP from remote to local host
-    Given a remote file for "scp-copy-remote-to-local"
+    Given a remote file in the project "scp-copy-remote-to-local"
     When I tell the sheep to work on project "scp-copy-remote-to-local"
     Then the file should have been copied to the localhost
 
