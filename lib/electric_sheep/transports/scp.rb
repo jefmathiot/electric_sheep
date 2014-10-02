@@ -72,23 +72,23 @@ module ElectricSheep
         end
 
         def copy(target, action)
-          @source=from.interactor.expand_path(from.resource.path)
-          @target=to.interactor.expand_path(to.resource.path)
+          @source_path=from.interactor.expand_path(from.resource.path)
+          @target_path=to.interactor.expand_path(to.resource.path)
           # TODO Allow the target directory name to be changed
           # Recursive creates a target directory then copies the source directory in it.
           # We end up with two nested directories of the same name.
           # See http://net-ssh.github.io/net-scp/classes/Net/SCP.html#method-i-download-21
-          @target=File.dirname(@target) if from.resource.directory?
+          @target_path=File.dirname(@target_path) if from.resource.directory?
           target.interactor.scp.send(
             "#{action}!",
-            @source,
-            @target,
+            @source_path,
+            @target_path,
             recursive: from.resource.directory?
           )
         end
 
         def delete_cmd
-          "rm -rf #{@source}"
+          "rm -rf #{@source_path}"
         end
 
       end
@@ -103,7 +103,7 @@ module ElectricSheep
           from.interactor.in_session do
             from.interactor.exec(delete_cmd) if delete_source
           end
-          yield result(@target,@source, delete_source)
+          yield result(@target_path, @source_path, delete_source)
         end
 
       end
@@ -116,7 +116,7 @@ module ElectricSheep
             copy(from, :download)
             from.interactor.exec(delete_cmd) if delete_source
           end
-          yield result(@target,@source, delete_source)
+          yield result(@target_path, @source_path, delete_source)
         end
 
       end

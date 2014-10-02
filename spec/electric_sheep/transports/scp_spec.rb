@@ -48,18 +48,19 @@ describe ElectricSheep::Transports::SCP do
       subject.new(project, logger, metadata, hosts)
     end
 
-    it 'delegates "copy" to operate' do
+    it 'delegates "copy"' do
       transport.expects(:operate).with(:copy)
       transport.copy
     end
 
-    it 'delegates "move" to operate' do
+    it 'delegates "move"' do
       transport.expects(:operate).with(:move)
       transport.move
     end
 
     it 'retrieves the local interactor' do
-      transport.send(:interactor_for, hosts.localhost).must_equal transport.send(:local_interactor)
+      transport.send(:interactor_for, hosts.localhost).
+        must_equal transport.send(:local_interactor)
     end
 
     it 'creates a remote interactor' do
@@ -103,155 +104,120 @@ describe ElectricSheep::Transports::SCP do
       end
     end
 
-    describe ElectricSheep::Transports::SCP::Operation do
+    describe "executing operations" do
 
-      before do
-        @from = operation_opts.new(local_file, 'finteractor')
-        @to = operation_opts.new(remote_file, 'tinteractor')
-        @operation = subject.new(from: @from, to: @to)
-      end
-
-      it 'returns "from" attribute' do
-        @operation.from.must_equal @from
-      end
-
-      it 'returns "to" attribute' do
-        @operation.to.must_equal @to
-      end
-
-      describe 'on building result' do
-        it 'returns "to" if delete_source option' do
-          @operation.result(remote_file, local_file, true).must_equal [
-            @to.resource.host, remote_file
-          ]
-        end
-        it 'returns "from" unless delete_source option' do
-          @operation.result(remote_file, local_file, false).must_equal [
-            @from.resource.host, local_file
-          ]
+      let :local_interactor do
+        mock.tap do |interactor|
+          interactor.stubs(:scp).returns(scp)
+          interactor.stubs(:expand_path).with(local_file.path).
+            returns("/local/path")
         end
       end
 
-      it 'calls the right scp method' do
-        target, scp, interactor = mock, mock, mock
-        target.expects(:interactor).returns(interactor)
-        interactor.expects(:scp).returns(scp)
-
-        @from.interactor.expects(:expand_path).with("remote/path").returns('from_path')
-        @to.interactor.expects(:expand_path).with("local/path").returns('to_path')
-
-        scp.expects(:send).with('cmd!', "from_path", "to_path", {:recursive => false})
-        @operation.copy(target, :cmd)
+      let :remote_interactor do
+        mock.tap do |interactor|
+          interactor.stubs(:scp).returns(scp)
+          interactor.stubs(:expand_path).with(remote_file.path).
+            returns("/remote/path")
+        end
       end
 
+      let :scp do
+        mock
+      end
+
+      let :script do
+        sequence(:script)
+      end
+
+      def self.ensure_laziness(from, to)
+        # TODO it should raise an exception...
+        it 'does nothing with inconsistent resources (#{from}/#{to})' do
+          subject.new(
+            from: operation_opts.new(send(from), local_interactor),
+            to: operation_opts.new(send(to), remote_interactor)
+          ).perform(true).must_equal nil
+        end
+      end
+
+      def self.spec_comment(delete_source)
+        delete_source ?
+          "removes the original resource" :
+          "lets the original resource unchanged"
+      end
 
       describe ElectricSheep::Transports::SCP::UploadOperation do
+        ensure_laziness :local_file, :local_file
+        ensure_laziness :remote_file, :remote_file
 
-        class ElectricSheep::Interactors::SshInteractor
-          def in_session(&block)
-            block.call
-          end
-        end
+        def self.ensure_upload(delete_source, expected_host, expected_path)
 
-        before do
-          @interactor = ElectricSheep::Interactors::SshInteractor.new(nil, nil, nil)
-        end
-
-        describe 'with inconsistent resources' do
-
-          before do
-            @from = operation_opts.new(local_file, 'finteractor' )
-            @to = operation_opts.new(local_file, 'tinteractor' )
-            @operation = subject.new(from: @from, to: @to)
-          end
-
-          it 'does nothing' do
-            @operation.perform(true).must_equal nil
-          end
-
-        end
-
-        describe 'with consistent resources' do
-
-          before do
-            @from = operation_opts.new(local_file, @interactor)
-            @to   = operation_opts.new(remote_file, @interactor)
-            @operation = subject.new(from: @from, to: @to)
-          end
-
-          it 'uploads the file' do
-            @operation.expects(:copy).with(@to, :upload)
-            @operation.perform(false) do |host, path|
-              host.must_equal localhost
-              path.must_equal nil
+          it "uploads the file and #{spec_comment(delete_source)}" do
+            expected_host=send(expected_host)
+            result = nil
+            remote_interactor.expects(:in_session).in_sequence(script).yields
+            scp.expects(:upload!).in_sequence(script).with(
+              "/local/path",
+              "/remote/path",
+              recursive: false
+            )
+            local_interactor.expects(:in_session).in_sequence(script).yields
+            if delete_source
+              local_interactor.expects(:exec).in_sequence(script).
+                with("rm -rf /local/path")
             end
-          end
-
-          it 'uploads the file and deletes the original one' do
-            @operation.expects(:copy).with(@to,:upload)
-            @from.interactor.expects(:exec).with("rm -rf ")
-            @operation.perform(true) do |host, path|
-              host.must_equal remote_host
-              path.must_equal nil
+            subject.new(
+              from: operation_opts.new(local_file, local_interactor),
+              to: operation_opts.new(remote_file, remote_interactor)
+            ).perform(delete_source) do |host, path|
+              result={host: host, path: path}
             end
+            result.wont_equal nil
+            result[:host].must_equal expected_host
+            result[:path].must_equal expected_path
           end
 
         end
+
+        ensure_upload false, :localhost, "/local/path"
+        ensure_upload true, :remote_host, "/remote/path"
 
       end
 
       describe ElectricSheep::Transports::SCP::DownloadOperation do
+        ensure_laziness :remote_file, :remote_file
+        ensure_laziness :local_file, :local_file
 
-        class ElectricSheep::Interactors::SshInteractor
-          def in_session(&block)
-            block.call
-          end
-        end
+        def self.ensure_download(delete_source, expected_host, expected_path)
 
-        before do
-          @interactor = ElectricSheep::Interactors::SshInteractor.new(nil, nil, nil)
-        end
-
-        describe 'with inconsistent resources' do
-
-          before do
-            @from = operation_opts.new(local_file, @interactor)
-            @to = operation_opts.new(local_file, @interactor)
-            @operation = subject.new(from: @from, to: @to)
-          end
-
-          it 'does nothing' do
-            @operation.perform(true).must_equal nil
-          end
-
-        end
-
-        describe 'with consistent resources' do
-
-          before do
-            @from = operation_opts.new(remote_file, @interactor)
-            @to   = operation_opts.new(local_file, @interactor)
-            @operation = subject.new( from: @from, to: @to)
-          end
-
-          it 'downloads the file' do
-            @operation.expects(:copy).with(@from,:download)
-            @operation.perform(false) do |host, path|
-              host.must_equal remote_host
-              path.must_equal nil
+          it "downloads the file and #{spec_comment(delete_source)}" do
+            expected_host=send(expected_host)
+            result = nil
+            remote_interactor.expects(:in_session).in_sequence(script).yields
+            scp.expects(:download!).in_sequence(script).with(
+              "/remote/path",
+              "/local/path",
+              recursive: false
+            )
+            if delete_source
+              remote_interactor.expects(:exec).in_sequence(script).
+                with("rm -rf /remote/path")
             end
-          end
-
-          it 'upload file and remove origin file' do
-            @operation.expects(:copy).with(@from, :download)
-            @from.interactor.expects(:exec).with("rm -rf ")
-            @operation.perform(true) do |host, path|
-              host.must_equal localhost
-              path.must_equal nil
+            subject.new(
+              from: operation_opts.new(remote_file, remote_interactor),
+              to: operation_opts.new(local_file, local_interactor)
+            ).perform(delete_source) do |host, path|
+              result={host: host, path: path}
             end
+            result.wont_equal nil
+            result[:host].must_equal expected_host
+            result[:path].must_equal expected_path
           end
 
         end
+
+        ensure_download false, :remote_host, "/remote/path"
+        ensure_download true, :localhost, "/local/path"
 
       end
 
