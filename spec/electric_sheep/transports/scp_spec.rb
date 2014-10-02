@@ -3,6 +3,12 @@ require 'net/ssh/test'
 
 describe ElectricSheep::Transports::SCP do
 
+    before do
+      @local_host = ElectricSheep::Metadata::Localhost.new
+      @remote_host = ElectricSheep::Metadata::Host.new
+      @remote_resource = ElectricSheep::Resources::File.new(host:@remote_host,path:"local_file_path")
+      @local_resource  = ElectricSheep::Resources::File.new(host:@local_host,path:"remote_file_path")
+    end
 
     describe 'with a scp transport' do
       before do
@@ -36,9 +42,7 @@ describe ElectricSheep::Transports::SCP do
 
       describe 'operate' do
         before do
-          @subject.stubs(:resource).returns(@resource=mock)
-          @resource.stubs(:host).returns(@to_host=mock)
-          @resource.stubs(:basename).returns("basename")
+          @subject.stubs(:resource).returns(@local_resource)
         end
         it 'try to perform all operations type' do
           retrieve_hosts
@@ -55,21 +59,21 @@ describe ElectricSheep::Transports::SCP do
 
         def retrieve_hosts
           @subject.expects(:option).with(:to).returns("from")
-          @subject.expects(:host).with("from").returns(@from_host=mock)
+          @subject.expects(:host).with("from").returns(@remote_host)
         end
 
         def retrieve_interactors
-          @subject.expects(:interactor_for).with(@from_host).returns(@from_interactor = mock )
-          @subject.expects(:interactor_for).with(@to_host).returns(@to_interactor = mock )
+          @subject.expects(:interactor_for).with(@remote_host).returns(@from_interactor = mock )
+          @subject.expects(:interactor_for).with(@local_host).returns(@to_interactor = mock )
         end
       end
 
       describe 'class Operation' do
 
         before do
-          oo = Struct.new(:host, :interactor, :file)
-          @from = oo.new('fost','finteractor','file')
-          @to   = oo.new('tost','tinteractor','tile')
+          oo = Struct.new(:resource, :interactor)
+          @from = oo.new(@local_resource,'finteractor')
+          @to   = oo.new(@remote_resource,'tinteractor')
           @operation = ElectricSheep::Transports::SCP::Operation.new({from:@from,to:@to})
         end
 
@@ -83,26 +87,23 @@ describe ElectricSheep::Transports::SCP do
 
         describe 'on result function' do
           it 'return "to" on deleted source' do
-            @operation.result('target','source',true).must_equal [@to.host,'target']
+            @operation.result(@remote_resource, @local_resource,true).must_equal [@to.resource.host,@remote_resource]
           end
           it 'return "from" on undeleted source' do
-            @operation.result('target','source',false).must_equal [@from.host,'source']
+            @operation.result(@remote_resource, @local_resource,false).must_equal [@from.resource.host,@local_resource]
           end
         end
 
-        it 'call good scp command on scp_cmd' do
+        it 'call good scp command on copy' do
           target, scp, interactor = mock, mock, mock
           target.expects(:interactor).returns(interactor)
           interactor.expects(:scp).returns(scp)
 
-          @from.file.expects(:path).returns('from_path')
-          @to.file.expects(:path).returns('to_path')
+          @from.interactor.expects(:expand_path).with("remote_file_path").returns('from_path/')
+          @to.interactor.expects(:expand_path).with("local_file_path").returns('to_path/')
 
-          @from.interactor.expects(:expand_path).with("from_path").returns('from_path/')
-          @to.interactor.expects(:expand_path).with("to_path").returns('to_path/')
-
-          scp.expects(:send).with(:cmd,"from_path/","to_path/")
-          @operation.scp_cmd(target,:cmd)
+          scp.expects(:send).with('cmd!',"from_path/","to_path/", {:recursive => false})
+          @operation.copy(target,:cmd)
         end
 
 
@@ -116,39 +117,40 @@ describe ElectricSheep::Transports::SCP do
 
         before do
           @interactor = ElectricSheep::Interactors::SshInteractor.new(nil,nil,nil)
-          @local_host = ElectricSheep::Metadata::Localhost.new
-          @remote_host = ElectricSheep::Metadata::Host.new
         end
 
         describe 'on invalid data' do
           before do
-            oo = Struct.new(:host, :interactor, :file)
-            @from = oo.new(@local_host,'finteractor','file')
-            @to   = oo.new(@local_host,'tinteractor','tile')
+            oo = Struct.new(:resource, :interactor)
+            @from = oo.new(@local_resource,'finteractor')
+            @to   = oo.new(@local_resource,'tinteractor')
             @operation = ElectricSheep::Transports::SCP::UploadOperation.new({from:@from,to:@to})
           end
           it 'do nothing' do
-            @operation.perform(true).must_equal false
+            @operation.perform(true).must_equal nil
           end
         end
 
         describe 'on valid data' do
+
           before do
-            oo = Struct.new(:host, :interactor, :file)
-            @from = oo.new(@local_host, @interactor,'file')
-            @to   = oo.new(@remote_host, @interactor,'tile')
+            oo = Struct.new(:resource, :interactor)
+            @from = oo.new(@local_resource, @interactor)
+            @to   = oo.new(@remote_resource, @interactor)
             @operation = ElectricSheep::Transports::SCP::UploadOperation.new({from:@from,to:@to})
           end
+
           it 'upload file' do
-            @operation.expects(:scp_cmd).with(@to,:upload!)
+            @operation.expects(:copy).with(@to,:upload)
             @operation.perform(false) do |host,path|
               host.must_equal @local_host
               path.must_equal nil
             end
           end
+
           it 'upload file and remove origin file' do
-            @operation.expects(:scp_cmd).with(@to,:upload!)
-            @from.interactor.expects(:exec).with("rm -f ")
+            @operation.expects(:copy).with(@to,:upload)
+            @from.interactor.expects(:exec).with("rm -rf ")
             @operation.perform(true) do |host,path|
               host.must_equal @remote_host
               path.must_equal nil
@@ -167,39 +169,37 @@ describe ElectricSheep::Transports::SCP do
 
         before do
           @interactor = ElectricSheep::Interactors::SshInteractor.new(nil,nil,nil)
-          @local_host = ElectricSheep::Metadata::Localhost.new
-          @remote_host = ElectricSheep::Metadata::Host.new
         end
 
         describe 'on invalid data' do
           before do
-            oo = Struct.new(:host, :interactor, :file)
-            @from = oo.new(@local_host,'finteractor','file')
-            @to   = oo.new(@local_host,'tinteractor','tile')
+            oo = Struct.new(:resource, :interactor)
+            @from = oo.new(@local_resource, @interactor)
+            @to   = oo.new(@local_resource, @interactor)
             @operation = ElectricSheep::Transports::SCP::DownloadOperation.new({from:@from,to:@to})
           end
           it 'do nothing' do
-            @operation.perform(true).must_equal false
+            @operation.perform(true).must_equal nil
           end
         end
 
         describe 'on valid data' do
           before do
-            oo = Struct.new(:host, :interactor, :file)
-            @from = oo.new(@remote_host, @interactor,'file')
-            @to   = oo.new(@local_host, @interactor,'tile')
+            oo = Struct.new(:resource, :interactor)
+            @from = oo.new(@remote_resource, @interactor)
+            @to   = oo.new(@local_resource, @interactor)
             @operation = ElectricSheep::Transports::SCP::DownloadOperation.new({from:@from,to:@to})
           end
           it 'upload file' do
-            @operation.expects(:scp_cmd).with(@from,:download!)
+            @operation.expects(:copy).with(@from,:download)
             @operation.perform(false) do |host,path|
               host.must_equal @remote_host
               path.must_equal nil
             end
           end
           it 'upload file and remove origin file' do
-            @operation.expects(:scp_cmd).with(@from,:download!)
-            @from.interactor.expects(:exec).with("rm -f ")
+            @operation.expects(:copy).with(@from,:download)
+            @from.interactor.expects(:exec).with("rm -rf ")
             @operation.perform(true) do |host,path|
               host.must_equal @local_host
               path.must_equal nil
