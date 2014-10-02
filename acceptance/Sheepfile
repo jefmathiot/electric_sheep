@@ -65,6 +65,16 @@ project "s3-copy-local-to-remote" do
   copy to: "my-bucket/my-project", using: "s3"
 end
 
+project "s3-move-remote-to-local" do
+  resource "s3_object", bucket: "my-bucket", key: "my-project/dummy.file"
+  move to: "localhost", using: "s3"
+end
+
+project "s3-copy-remote-to-local" do
+  resource "s3_object", bucket: "my-bucket", key: "my-projectdummy.file"
+  copy to: "localhost", using: "s3"
+end
+
 ###############################################################################
 ## TarGz
 project "tar-gz-file" do

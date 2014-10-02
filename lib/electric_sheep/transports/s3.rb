@@ -4,6 +4,7 @@ module ElectricSheep
   module Transports
     class S3
       include Transport
+      include Helpers::Resourceful
 
       register as: "s3"
 
@@ -22,25 +23,39 @@ module ElectricSheep
       def operate(delete_source=false)
         logger.info "#{delete_source ? 'Moving' : 'Copying'} " +
           "#{resource.basename} to #{option(:to)} using S3"
-        with_object_key do |bucket, key|
-          operation.create(resource, bucket, key)
-          operation.destroy(resource, bucket, key) if delete_source
+        operation(delete_source).perform! do |options|
+          exec_done(options)
         end
       end
 
-      def operation
-        if option(:to) == 'localhost'
-          DownloadOperation.new(connection)
-        else
-          UploadOperation.new(connection)
+      def operation(delete_source)
+        with_object_key do |bucket, key|
+          operation_options = {
+            connection: connection,
+            bucket: bucket,
+            key: key,
+            resource: resource,
+            delete_source: delete_source,
+            to: option(:to),
+            host: host(option(:to))
+          }
+          if option(:to) == 'localhost'
+            return DownloadOperation.new(operation_options)
+          else
+            return UploadOperation.new(operation_options)
+          end
         end
       end
 
       def with_object_key(&block)
-        option(:to).split('/').tap do |paths|
-          bucket = paths.shift
-          paths << resource.basename
-          yield bucket, paths.join('/')
+        if option(:to) == 'localhost'
+          yield resource.bucket, resource.key
+        else
+          option(:to).split('/').tap do |paths|
+            bucket = paths.shift
+            paths << resource.basename
+            yield bucket, paths.join('/')
+          end
         end
       end
 
@@ -65,41 +80,61 @@ module ElectricSheep
         end
       end
 
+      def exec_done(args={})
+        if args[:delete_source]
+          if option(:to) == 'localhost'
+            new_resource = file_resource(args[:host], args[:path])
+          else
+            new_resource = s3_resource(args[:bucket], args[:key])
+          end
+        else
+          new_resource = resource
+        end
+        done! new_resource
+      end
+
       class Operation
-        def initialize(connection)
-          @connection = connection
+        def initialize(options)
+          @options = options
         end
 
-        def remote_directory(bucket)
-          @connection.directories.get(bucket)
+        %i{connection bucket key resource delete_source to host}.each do |method|
+          define_method method do
+            @options[method]
+          end
         end
 
+        def remote_directory
+          connection.directories.get(bucket)
+        end
       end
 
       class UploadOperation < Operation
 
-        def create(resource, bucket, key)
-          remote_directory(bucket).files.create(
+        def perform!(&block)
+          remote_directory.files.create(
             key: key,
             body: File.open( resource.path ),
             multipart_chunk_size: 100.megabytes
           )
-        end
-
-        def destroy(resource, bucket, key)
-          FileUtils.rm_f resource.path
+          FileUtils.rm_f resource.path if delete_source
+          yield @options
         end
 
       end
 
       class DownloadOperation < Operation
 
-        def create(resource, bucket, key)
-          raise "Not implemented"
-        end
-
-        def destroy(resource, bucket, key)
-          raise "Not implemented"
+        def perform!(&block)
+          dir = host.working_directory
+          path = File.join(dir, resource.basename)
+          @options[:path] = path
+          file = remote_directory.files.get key
+          File.open(path, "w") do |f|
+            f.write(file.body)
+          end
+          file.destroy if delete_source
+          yield @options
         end
 
       end
