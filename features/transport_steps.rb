@@ -1,10 +1,10 @@
 Given(/^a local file$/) do
-  @resource_name="dummy.file"
+  @resource_name = "dummy.file"
   step "a 102400 byte file named \"#{@resource_name}\""
 end
 
 Given(/^a local file for "(.*?)"$/) do |folder|
-  @resource_name='../'+folder+"/dummy.file"
+  @resource_name = folder + "/dummy.file"
   step "a 102400 byte file named \"#{@resource_name}\""
 end
 
@@ -19,22 +19,22 @@ Given(/^a remote file in the project "(.*?)"$/) do |project|
 end
 
 Then(/^the file should have been moved to the remote host$/) do
-  assert_remote_file_exists? "/tmp/acceptance/#{@project}/#{@resource_name}"
+  assert_remote_file_exists? "/tmp/acceptance/#{@resource_name}"
   refute_local_file_exists? @resource_name
 end
 
 Then(/^the file should have been copied to the remote host$/) do
-  assert_remote_file_exists? "/tmp/acceptance/#{@project}/#{@resource_name}"
+  assert_remote_file_exists? "/tmp/acceptance/#{@resource_name}"
   assert_local_file_exists? @resource_name
 end
 
 Then(/^the file should have been moved to the localhost$/) do
-  assert_local_file_exists? '../../tmp/'+@project+"/dummy.file"
+  assert_local_file_exists? @project + "/dummy.file"
   refute_remote_file_exists? @resource_name
 end
 
 Then(/^the file should have been copied to the localhost$/) do
-  assert_local_file_exists? "../../tmp/"+@project+"/dummy.file"
+  assert_local_file_exists? @project + "/dummy.file"
   assert_remote_file_exists? @resource_name
 end
 
