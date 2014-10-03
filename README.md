@@ -1,6 +1,9 @@
 # ElectricSheep
 
-An (hopefully) simple tool to execute backup tasks over SSH and copy archives offsite.
+An (hopefully) simple tool to execute backup tasks and copy archives offsite.
+It's designed to operate from an utility machine over the network using SSH
+connections and eliminate the need for configuration and scripting on the target
+hosts.
 
 Not ready yet, **do not use in production**.
 
@@ -11,7 +14,8 @@ Not ready yet, **do not use in production**.
 
 ## Installation
 
-Installation packages for Linux, Mac OS X and Windows are not available yet, the software requires Ruby >= 1.9.3.
+Installation packages for Linux, Mac OS X and Windows are not available yet,
+the software requires Ruby >= 1.9.3.
 
 Install it yourself as:
 
@@ -93,9 +97,9 @@ The public SSH (RSA) key.
 
 ### Hosts
 
-The `host` method allows you to declare remote hosts. Each host should have a unique identifier
-and define an hostname or IP address. You can declare as many hosts as needed and use the default
-`~/.ssh/id_rsa` SSH key or specify one.
+The `host` method allows you to declare remote hosts. Each host should have a
+unique identifier and define an hostname or IP address. You can declare as many
+hosts as needed and use the default `~/.ssh/id_rsa` SSH key or specify one.
 
 ```ruby
 host "production-mysql-master", hostname: "mysql1.domain.tld",
@@ -110,10 +114,11 @@ Note that you don't have to declare the localhost.
 
 ### Projects
 
-Projects allow you to logically group commands and transports to manipulate a resource locally or
-on remote hosts. Each project should have a unique identifier and **declare a single resource** in
-is initial state (such as a directory, a database, a file, etc.). You can declare as many projects
-as needed but each of them aims to manipulate a single resource.
+Projects allow you to logically group commands and transports to manipulate a
+resource locally or on remote hosts. Each project should have a unique
+identifier and **declare a single resource** in is initial state (such as a
+directory, a database, a file, etc.). You can declare as many projects as you
+need but each of them aims to manipulate a single resource.
 
 ```ruby
 project "myapp-database-backup", description: "Database Full Backup" do
@@ -125,19 +130,20 @@ project "www-media-backup", description: "Acme uploads" do
 end
 ```
 
-If you omit to mention the `host` property of the resource, Electric Sheep will assume it is on
-the localhost.
+If you omit to mention the `host` property of the resource, the program will
+assume the resource is based on the localhost.
 
 ### Shells & Commands
 
-Shells allow you to execute sequences of commands locally or on remote hosts. Commands are unaware
-of whether they execute on a remote host or on the local host. Their role is to consume the
-provided resource in its last known state (e.g. a database) and manipulate it. Each command will
-provide the resource in its new state (e.g. a database dump file) so that subsequent commands or
-transport can transform it again.
+Shells allow you to execute sequences of commands locally or on remote hosts.
+Commands are unaware of whether they execute on a remote host or on the
+localhost. Their role is to consume the provided resource in its last known
+state (e.g. a database) and transform it. Each command will output the resource
+in its new state (e.g. a database dump file) so that subsequent commands or
+transports can transform it again.
 
-The `remotely` method wraps commands inside an SSH session whereas the `locally` method
-executes them on the localhost.
+The `remotely` method wraps commands inside an SSH session whereas the
+`locally` method executes them on the localhost.
 
 ```ruby
 project "myapp-database-backup", description: "Database Full Backup" do
@@ -152,8 +158,8 @@ end
 
 ### Transports
 
-Transports allow you to move or copy resources from an host to another. Like shells, transports
-should be nested inside a project.
+Transports allow you to move or copy resources from an host to another. Like
+shells, transports should be nested inside a project.
 
 ```ruby
 project "myapp-database-backup", description: "Database Full Backup" do
@@ -171,8 +177,8 @@ project "myapp-database-backup", description: "Database Full Backup" do
 end
 ```
 
-The `move` method deletes the previous resource and replace it with a new one, whereas the `copy`
-command let the previous resource unchanged.
+The `move` method deletes the previous resource and replace it with a new one,
+whereas the `copy` command let the previous resource unchanged.
 
 ## Scheduling projects
 
@@ -197,7 +203,8 @@ TODO
 
 ## Roadmap
 
-Neither the API, DSL or runner are ready so far. Roadmap of features for upcoming version :
+Neither the API, DSL or runner are ready so far. Features of the upcoming
+version :
 
 * :white_check_mark: Execute commands over local and remote shells
 * :clock11: Metadata API
