@@ -43,11 +43,11 @@ Just launch ElectricSheep inside your project with:
 electric_sheep work
 ```
 
-ElectricSheep will look for a Sheepfile in the current directory.
+The program will look for a Sheepfile in the current directory and execute all projects.
 
 #### `-c`, `--config` option
 
-ElectricSheep can use any file as the configuration:
+You can use any file as the configuration:
 
 ```
 electric_sheep work -c ~/Somefile
@@ -55,7 +55,7 @@ electric_sheep work -c ~/Somefile
 
 #### `-p`, `--project` option
 
-You can run a single project to execute:
+You can run a single project:
 
 ```
 electric_sheep work -p my-project
@@ -174,7 +174,7 @@ end
 The `move` method deletes the previous resource and replace it with a new one, whereas the `copy`
 command let the previous resource unchanged.
 
-## Scheduling tasks
+## Scheduling projects
 
 TODO
 
