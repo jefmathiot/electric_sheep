@@ -1,7 +1,6 @@
 module ElectricSheep
   module Shell
     class Base
-      include Helpers::Resourceful
 
       delegate :expand_path, :exec, to: :interactor
 

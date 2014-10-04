@@ -4,7 +4,6 @@ module ElectricSheep
   module Transports
     class S3
       include Transport
-      include Helpers::Resourceful
 
       register as: "s3"
 

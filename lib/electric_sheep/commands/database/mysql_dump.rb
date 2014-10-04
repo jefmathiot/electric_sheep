@@ -3,7 +3,6 @@ module ElectricSheep
     module Database
       class MySQLDump
         include Command
-        include Helpers::Timestamps
         include Helpers::ShellSafe
 
         register as: "mysql_dump"
@@ -12,17 +11,19 @@ module ElectricSheep
         option :password
 
         def perform
-          logger.info "Creating a dump of the \"#{resource.name}\" MySQL database"
-          dump=shell.expand_path("#{resource.name}-#{timestamp}")
-          shell.exec "#{cmd(resource.name, option(:user), option(:password), dump)}"
-          done! shell.file_resource(shell.host, dump)
+          logger.info "Creating a dump of the \"#{input.basename}\" MySQL database"
+          done!(
+            file_resource(extension: '.sql').tap do |dump|
+              shell.exec cmd(input.name, option(:user), option(:password), dump)
+            end
+          )
         end
 
         private
-        def cmd(db, user, password, output)
+        def cmd(db, user, password, dump)
           cmd = "mysqldump"
           cmd << " --user=#{shell_safe(user)} --password=#{shell_safe(password)}" unless user.nil?
-          cmd << " #{shell_safe(db)} > #{output}"
+          cmd << " #{shell_safe(db)} > #{shell.expand_path(dump.path)}"
         end
       end
     end

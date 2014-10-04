@@ -5,7 +5,6 @@ module ElectricSheep
   module Transports
     class SCP
       include Transport
-      include Helpers::Resourceful
 
       register as: "scp"
 
@@ -29,24 +28,23 @@ module ElectricSheep
       def operate(operation)
         operation_opts=Struct.new(:resource, :interactor)
         from=operation_opts.new(
-          resource,
-          interactor_for(resource.host)
+          input,
+          interactor_for(input.host)
         )
         target_host=host(option(:to))
         to=operation_opts.new(
-          build_resource(resource.directory?, target_host, resource.basename),
+          build_resource(target_host),
           interactor_for(target_host)
         )
+        delete_source=operation==:move
         [DownloadOperation, UploadOperation].each do |op_klazz|
-          delete_source=operation==:move
-          op_klazz.new(from: from, to: to).perform(delete_source) do |host, path|
-            done! build_resource(resource.directory?, option(:to), path)
-          end
+          op_klazz.new(from: from, to: to).perform(delete_source)
         end
+        done! delete_source ? to.resource : from.resource
       end
 
-      def build_resource(directory, host, path)
-        send("#{directory ? :directory : :file}_resource", host, path)
+      def build_resource(target_host)
+        send("#{input.directory? ? :directory : :file}_resource", target_host)
       end
 
       class Operation
@@ -61,14 +59,6 @@ module ElectricSheep
 
         def to
           @options[:to]
-        end
-
-        def result(target, source, delete_source)
-          if delete_source
-            return to.resource.host, target
-          else
-            return from.resource.host, source
-          end
         end
 
         def copy(target, action)
@@ -103,7 +93,6 @@ module ElectricSheep
           from.interactor.in_session do
             from.interactor.exec(delete_cmd) if delete_source
           end
-          yield result(@target_path, @source_path, delete_source)
         end
 
       end
@@ -116,7 +105,6 @@ module ElectricSheep
             copy(from, :download)
             from.interactor.exec(delete_cmd) if delete_source
           end
-          yield result(@target_path, @source_path, delete_source)
         end
 
       end

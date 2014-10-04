@@ -28,7 +28,7 @@ describe ElectricSheep::Transports::SCP do
   end
 
   describe 'with an scp transport' do
-    
+
     let :logger do
       mock
     end

@@ -10,13 +10,16 @@ module ElectricSheep
         option :delete_source
 
         def perform
-          logger.info "Compressing #{resource.path} to #{resource.basename}.tar.gz"
-          archive=shell.expand_path(shell_safe("#{resource.basename}.tar.gz"))
-          safe_resource=shell.expand_path(shell_safe(resource.path))
-          shell.exec "cd #{File.dirname(safe_resource)}; " +
-            "tar -cvzf #{archive} #{File.basename(safe_resource)} &> /dev/null"
-          shell.exec "rm -f #{safe_resource}" if option(:delete_source)
-          done! shell.file_resource(shell.host, archive)
+          logger.info "Compressing #{input.path} to #{input.basename}.tar.gz"
+          input_path=shell.expand_path(input.path)
+          done!(
+            file_resource(extension: '.tar.gz').tap do |archive|
+              shell.exec "cd #{File.dirname(input_path)}; " +
+                "tar -cvzf #{shell.expand_path(archive.path)} "+
+                "#{File.basename(input_path)} &> /dev/null"
+              shell.exec "rm -f #{input_path}" if option(:delete_source)
+            end
+          )
         end
 
       end

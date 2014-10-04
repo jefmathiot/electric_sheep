@@ -3,7 +3,6 @@ module ElectricSheep
     module Database
       class MongoDBDump
         include Command
-        include Helpers::Timestamps
         include Helpers::ShellSafe
 
         register as: "mongodb_dump"
@@ -12,16 +11,19 @@ module ElectricSheep
         option :password
 
         def perform
-          logger.info "Creating a dump of the \"#{resource.name}\" MongoDB database"
-          dump=shell.expand_path("#{resource.name}-#{timestamp}")
-          shell.exec "#{cmd(resource.name, option(:user), option(:password), dump)} &> /dev/null"
-          done! shell.directory_resource(shell.host, dump)
+          logger.info "Creating a dump of the \"#{input.basename}\" MongoDB database"
+          done!(
+            directory_resource.tap do |dump|
+              shell.exec cmd(input.name, option(:user), option(:password), dump)
+            end
+          )
         end
 
         private
-        def cmd(db, user, password, output)
-          cmd = "mongodump -d #{shell_safe(db)} -o #{output}"
+        def cmd(db, user, password, dump)
+          cmd = "mongodump -d #{shell_safe(db)} -o #{shell.expand_path(dump.path)}"
           cmd << " -u #{shell_safe(user)} -p #{shell_safe(password)}" unless user.nil?
+          cmd << " &> /dev/null"
           cmd
         end
 
