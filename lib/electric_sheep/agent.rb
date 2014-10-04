@@ -10,7 +10,7 @@ module ElectricSheep
       @project.store_product!(resource)
     end
 
-    def resource
+    def input
       @project.last_product
     end
 

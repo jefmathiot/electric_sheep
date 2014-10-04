@@ -1,5 +1,3 @@
-require 'electric_sheep/helpers/resourceful'
-
 module ElectricSheep
   module Transport
     extend ActiveSupport::Concern
@@ -19,6 +17,27 @@ module ElectricSheep
     end
 
     protected
+    def file_resource(host, opts={})
+      file_system_resource(:file, host, opts)
+    end
+
+    def directory_resource(host, opts={})
+      file_system_resource(:directory, host, opts)
+    end
+
+    def file_system_resource(type, host, opts={})
+
+      Resources.const_get(type.to_s.camelize).new(
+        opts.merge(
+          extension: input.respond_to?(:extension) && input.extension || nil,
+          basename: input.basename,
+          host: host
+        )
+      ).tap do |resource|
+        resource.timestamp!(input)
+      end
+    end
+
     def local_interactor
       @local_interactor ||= Interactors::ShellInteractor.new(@hosts.localhost, @project)
     end
