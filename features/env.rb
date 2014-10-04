@@ -1,5 +1,6 @@
 require 'aruba/cucumber'
-require_relative 'aruba/aruba_helper' 
+require 'pathname'
+require_relative 'aruba/aruba_helper'
 
 ENV['ELECTRIC_SHEEP_ENV']='test'
 
@@ -20,13 +21,20 @@ module ElectricSheep
       File.join(electric_dir, 'acceptance')
     end
 
+    def timestamped_resource(resource)
+      extension=File.extname(resource)
+      path_items=[File.basename(resource, extension)]
+      path_items.unshift File.dirname(basename) if Pathname.new(resource).absolute?
+      "#{File.join(path_items.compact)}-*-*#{extension}"
+    end
+
     def assert_remote_file_exists?(path)
-      ssh_run_simple("test -s #{path}", 10)
+      ssh_run_simple("ls #{path}", 10)
     end
 
     def refute_remote_file_exists?(path)
       begin
-        ssh_run_simple("test -s #{path}", 10)
+        ssh_run_simple("ls #{path}", 10)
         false
       rescue RSpec::Expectations::ExpectationNotMetError
         true

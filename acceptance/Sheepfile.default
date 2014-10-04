@@ -4,9 +4,11 @@
 if File.basename(Dir.pwd)=='tmp'
   # Cucumber features
   private_key=File.join('../', 'acceptance', 'id_rsa')
+  file=File.expand_path("dummy.file")
 else
   # Manual run
   private_key='./acceptance/id_rsa'
+  file=File.expand_path("tmp/dummy.file")
 end
 
 host "main-host", hostname: "127.0.0.1",
@@ -14,7 +16,7 @@ host "main-host", hostname: "127.0.0.1",
 
 project "working-directories" do
     private_key private_key
-    resource "file", path: "dummy.file"
+    resource "file", path: file
     move to: "main-host", as: "vagrant", using: "scp"
     copy to: "localhost", as: "vagrant", using: "scp"
 end

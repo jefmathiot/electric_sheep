@@ -29,33 +29,33 @@ Given(/^a remote file$/) do
 end
 
 Then(/^the file should have been moved to the remote host$/) do
-  assert_remote_file_exists? "/tmp/acceptance/#{@resource_name}"
+  assert_remote_file_exists? "/tmp/acceptance/#{@project}/#{timestamped_resource(@resource_name)}"
   refute_local_file_exists? @resource_name
 end
 
 Then(/^the file should have been copied to the remote host$/) do
-  assert_remote_file_exists? "/tmp/acceptance/#{@resource_name}"
+  assert_remote_file_exists? "/tmp/acceptance/#{@project}/#{timestamped_resource(@resource_name)}"
   assert_local_file_exists? @resource_name
 end
 
 Then(/^the file should have been moved to the localhost$/) do
-  assert_local_file_exists? @project + "/dummy.file"
+  step "a file matching %r<#{@project}/dummy-\\d{8}-\\d{6}.file> should exist"
   refute_remote_file_exists? @resource_name
 end
 
 Then(/^the file should have been copied to the localhost$/) do
-  assert_local_file_exists? @project + "/dummy.file"
+  step "a file matching %r<#{@project}/dummy-\\d{8}-\\d{6}.file> should exist"
   assert_remote_file_exists? @resource_name
 end
 
 Then(/^the file should have been moved to the remote host in default directory$/) do
-  assert_remote_file_exists? "~/.electric_sheep/#{@project}/#{@resource_name}"
+  assert_remote_file_exists? "~/.electric_sheep/#{@project}/#{timestamped_resource(@resource_name)}"
   refute_local_file_exists? @resource_name
 end
 
-Then(/^the file should have been copy and moved to the remote hosts$/) do
-  assert_remote_file_exists? "/tmp/acceptance/#{@project}/#{@resource_name}"
-  assert_remote_file_exists? "/tmp/acceptance_backup/#{@project}/#{@resource_name}"
+Then(/^the file should have been copied and moved to the two remote hosts$/) do
+  assert_remote_file_exists? "/tmp/acceptance/#{@project}/#{timestamped_resource(@resource_name)}"
+  assert_remote_file_exists? "/tmp/acceptance_backup/#{@project}/#{timestamped_resource(@resource_name)}"
   refute_local_file_exists? @resource_name
 end
 

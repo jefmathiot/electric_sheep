@@ -26,4 +26,4 @@ Feature: SCP transport
   Scenario: Copy and move a file using SCP
     Given a local file for "scp-copy-and-move"
     When I tell the sheep to work on project "scp-copy-and-move"
-    Then the file should have been copy and moved to the remotes host
+    Then the file should have been copied and moved to the two remote hosts
