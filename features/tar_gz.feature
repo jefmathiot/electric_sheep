@@ -7,7 +7,7 @@ Feature: Tarball Compression
     Given a remote file in the project "tar-gz-file"
     When I tell the sheep to work on the project
     Then an archive containing the file should have been created on the remote host
-
+@current
   Scenario: Compress a directory
     Given a remote directory containing multiple files in the project "tar-gz-directory"
     When I tell the sheep to work on the project

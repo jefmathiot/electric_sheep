@@ -1,8 +1,7 @@
 module ElectricSheep
   module Resources
     class File < FileSystem
-
-      option :extension
+      include Extended
 
       def file?
         true
@@ -10,11 +9,6 @@ module ElectricSheep
 
       def directory?
         false
-      end
-
-      protected
-      def name_items
-        (super << extension)
       end
 
     end

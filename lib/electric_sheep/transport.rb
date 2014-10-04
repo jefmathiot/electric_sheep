@@ -26,7 +26,6 @@ module ElectricSheep
     end
 
     def file_system_resource(type, host, opts={})
-
       Resources.const_get(type.to_s.camelize).new(
         opts.merge(
           extension: input.respond_to?(:extension) && input.extension || nil,

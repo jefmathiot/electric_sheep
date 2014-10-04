@@ -3,9 +3,8 @@ Given(/^a local file$/) do
   step "a 102400 byte file named \"#{@resource_name}\""
 end
 
-Given(/^a local file for "(.*?)"$/) do |folder|
-  @resource_name = folder + "/dummy.file"
-  step "a 102400 byte file named \"#{@resource_name}\""
+Given(/^a local file for "(.*?)"$/) do |project|
+  step "a remote file in the project \"#{project}\""
 end
 
 Given(/^a remote file in the project "(.*?)"$/) do |project|
@@ -60,7 +59,7 @@ Then(/^the file should have been copied and moved to the two remote hosts$/) do
 end
 
 Then(/^the file should have been (copied|moved) to the remote bucket$/) do |op|
-  step "a file named \"#{@bucket_path}/my-project/#{@resource_name}\" should exist"
+  step "a file matching %r<#{@bucket_path}/my-project/dummy-\\d{8}-\\d{6}.file> should exist"
   if op=='moved'
     refute_local_file_exists? @resource_name
   else
@@ -69,11 +68,11 @@ Then(/^the file should have been (copied|moved) to the remote bucket$/) do |op|
 end
 
 Then(/^the S3 object should have been moved to the localhost$/) do
-  assert_local_file_exists? @project + "/dummy.file"
-  refute_local_file_exists? "#{@bucket_path}/my-project/dummy.file"
+  step "a file matching %r<#{@project}/dummy-\\d{8}-\\d{6}.file> should exist"
+  refute_local_file_exists? "#{@bucket_path}/#{@project}/dummy.file"
 end
 
 Then(/^the S3 object should have been copied to the localhost$/) do
-  assert_local_file_exists? @project + "/dummy.file"
+  step "a file matching %r<#{@project}/dummy-\\d{8}-\\d{6}.file> should exist"
   assert_local_file_exists? "#{@bucket_path}/my-project/dummy.file"
 end
