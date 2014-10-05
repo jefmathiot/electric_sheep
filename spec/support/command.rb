@@ -8,7 +8,6 @@ module Support
       end
     end
 
-
     def file(path)
       ElectricSheep::Resources::File.new(path: path)
     end

@@ -26,8 +26,9 @@ module ElectricSheep
       def normalize_path(path)
         basename, extension = ::File.basename(path), nil
         while (part=::File.extname(basename)) != ""
-          extension ||= "" << part
-          basename=::File.basename(basename, extension)
+          extension ||= ""
+          extension="#{part}#{extension}"
+          basename=::File.basename(basename, part)
         end
         parent=::File.dirname(path) if Pathname.new(path).absolute?
         {parent: parent, basename: basename, extension: extension}
