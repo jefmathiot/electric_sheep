@@ -26,9 +26,14 @@ describe ElectricSheep::Transports::S3 do
     @hosts = ElectricSheep::Metadata::Hosts.new
     @hosts.localhost.working_directory = working_directory
     FileUtils.rm_f working_directory
+    FileUtils.mkdir_p working_directory
     FileUtils.rm_rf bucket_path
     FileUtils.mkdir_p directory_path
-    FileUtils.mkdir_p working_directory
+    Timecop.travel(Time.utc(2014, 1, 1, 0, 0, 0))
+  end
+
+  after do
+    Timecop.return
   end
 
   def expects_log(operation, direction, to)
@@ -56,55 +61,55 @@ describe ElectricSheep::Transports::S3 do
     end
   end
 
-  describe 'transporting a file from localhost to remote bucket' do
+  describe 'transporting a file from the localhost to a remote bucket' do
     before do
       metadata=ElectricSheep::Metadata::Transport.new(
         to: 'my-bucket/key-prefix', transport: 's3', access_key_id: 'XXXX', secret_key: 'SECRET'
       )
       @transport = subject.new(@project, @logger, metadata, @hosts)
-      @project.start_with! ElectricSheep::Resources::File.new(
-        path: './tmp/dummy.file'
+      @project.start_with! resource=ElectricSheep::Resources::File.new(
+        path: File.expand_path('./tmp/dummy.file')
       )
+      @transport.send(:local_interactor).in_session
       FileUtils.touch './tmp/dummy.file'
     end
 
-    def expects_bucket_object
-      File.exists?("#{directory_path}/dummy.file").must_equal true,
+    def expects_bucket_object(type)
+      File.exists?("#{directory_path}/dummy-20140101-000000.file").must_equal true,
         "Expected the remote file to be present"
-      @project.last_product.must_be_instance_of ElectricSheep::Resources::S3Object
+      @project.last_product.must_be_instance_of type
     end
 
     it 'makes a copy' do
       expects_log("Copying", "to", "my-bucket/key-prefix")
       @transport.copy
+      expects_bucket_object(ElectricSheep::Resources::File)
       # Local file
       File.exists?('./tmp/dummy.file').must_equal true,
         "Expected the source file to be present"
-      @project.last_product.must_be_instance_of ElectricSheep::Resources::File
     end
 
     it 'moves the file' do
       expects_log("Moving", "to", "my-bucket/key-prefix")
       @transport.move
-      expects_bucket_object
+      expects_bucket_object(ElectricSheep::Resources::S3Object)
       # Local file
       File.exists?('./tmp/dummy.file').must_equal false,
         "Expected the source file to be absent"
     end
   end
 
-  describe 'transporting a file from remote bucket to localhost' do
+  describe 'transporting a file from a remote bucket to the localhost' do
     before do
       metadata=ElectricSheep::Metadata::Transport.new(
         to: 'localhost', transport: 's3'
       )
       @transport = subject.new(@project, @logger, metadata, @hosts)
-      @project.start_with! ElectricSheep::Resources::S3Object.new(
+      @project.start_with! resource=ElectricSheep::Resources::S3Object.new(
         bucket: 'my-bucket',
-        key: 'key-prefix/dummy.file'
+        path: 'key-prefix/dummy.file'
       )
-      directories = ElectricSheep::Helpers::Directories.new(@hosts.localhost, @project, @transport.send(:local_interactor))
-      directories.mk_project_directory!
+      @transport.send(:local_interactor).in_session
       FileUtils.touch "#{directory_path}/dummy.file"
     end
 
@@ -112,7 +117,7 @@ describe ElectricSheep::Transports::S3 do
       expects_log("Copying", "to", "localhost")
       @transport.copy
       # Local file
-      File.exists?("#{working_directory}/#{@project.id}/dummy.file").must_equal true,
+      File.exists?("#{working_directory}/#{@project.id}/dummy-20140101-000000.file").must_equal true,
         "Expected the target file to be present"
       @project.last_product.must_be_instance_of ElectricSheep::Resources::S3Object
     end
@@ -121,7 +126,7 @@ describe ElectricSheep::Transports::S3 do
       expects_log("Moving", "to", "localhost")
       @transport.move
       # Local file
-      File.exists?("#{working_directory}/#{@project.id}/dummy.file").must_equal true,
+      File.exists?("#{working_directory}/#{@project.id}/dummy-20140101-000000.file").must_equal true,
         "Expected the target file to be present"
       File.exists?("#{directory_path}/dummy.file").must_equal false,
         "Expected the source file to be absent"

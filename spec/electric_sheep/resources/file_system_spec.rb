@@ -2,11 +2,7 @@ require 'spec_helper'
 
 describe ElectricSheep::Resources::FileSystem do
   include Support::Options
-
-  it{
-    defines_options :path, :host
-    requires :path
-  }
+  include Support::Files::Named
 
   it 'defaults to local' do
     subject.new.remote?.must_equal false
@@ -21,8 +17,5 @@ describe ElectricSheep::Resources::FileSystem do
     subject.new(host: ElectricSheep::Metadata::Host.new).remote?.must_equal true
   end
 
-  it 'extracts the basename' do
-    subject.new(path: '/tmp/some-file.txt').basename.must_equal 'some-file.txt'
-  end
 
 end

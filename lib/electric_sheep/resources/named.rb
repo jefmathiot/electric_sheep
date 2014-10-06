@@ -30,7 +30,8 @@ module ElectricSheep
           extension="#{part}#{extension}"
           basename=::File.basename(basename, part)
         end
-        parent=::File.dirname(path) if Pathname.new(path).absolute?
+        names=Pathname.new(path).split
+        parent=names.first.to_s
         {parent: parent, basename: basename, extension: extension}
       end
 

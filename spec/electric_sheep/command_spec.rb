@@ -45,7 +45,7 @@ describe ElectricSheep::Command do
     it 'uses the previous product as the resource' do
       command = subject.new(project = mock, mock, @shell, mock)
       project.expects(:last_product).returns(resource = mock)
-      command.send(:resource).must_equal resource
+      command.send(:input).must_equal resource
     end
 
     # TODO Move to an agent spec

@@ -3,7 +3,7 @@ require 'net/ssh/test'
 
 describe ElectricSheep::Transports::SCP do
 
-  let:localhost do
+  let :localhost do
     ElectricSheep::Metadata::Localhost.new
   end
 
@@ -75,7 +75,7 @@ describe ElectricSheep::Transports::SCP do
     describe 'operating' do
 
       before do
-        transport.stubs(:resource).returns(local_file)
+        transport.stubs(:input).returns(local_file)
       end
 
       it 'tries to visit available operations' do
@@ -88,7 +88,7 @@ describe ElectricSheep::Transports::SCP do
           instance = klazz.any_instance
           instance.expects(:perform).with(false)
         end
-        transport.send(:operate, :toto)
+        transport.send(:operate, :copy)
       end
 
       def retrieve_hosts
@@ -169,12 +169,7 @@ describe ElectricSheep::Transports::SCP do
             subject.new(
               from: operation_opts.new(local_file, local_interactor),
               to: operation_opts.new(remote_file, remote_interactor)
-            ).perform(delete_source) do |host, path|
-              result={host: host, path: path}
-            end
-            result.wont_equal nil
-            result[:host].must_equal expected_host
-            result[:path].must_equal expected_path
+            ).perform(delete_source)
           end
 
         end
@@ -206,12 +201,7 @@ describe ElectricSheep::Transports::SCP do
             subject.new(
               from: operation_opts.new(remote_file, remote_interactor),
               to: operation_opts.new(local_file, local_interactor)
-            ).perform(delete_source) do |host, path|
-              result={host: host, path: path}
-            end
-            result.wont_equal nil
-            result[:host].must_equal expected_host
-            result[:path].must_equal expected_path
+            ).perform(delete_source)
           end
 
         end

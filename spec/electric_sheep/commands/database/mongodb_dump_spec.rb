@@ -32,17 +32,10 @@ describe ElectricSheep::Commands::Database::MongoDBDump do
     def assert_product
       product = @project.last_product
       product.wont_be_nil
-      product.path.must_equal "/project/dir/#{@resource_path}"
-    end
-
-    def expects_directory_resource
-      @shell.expects(:directory_resource).
-        with(@host, "/project/dir/#{@resource_path}").
-        returns(directory("/project/dir/#{@resource_path}"))
+      product.path.must_equal "$MyDatabase-20140605-040302"
     end
 
     def assert_command
-      expects_directory_resource
       @command.perform
       assert_product
     end

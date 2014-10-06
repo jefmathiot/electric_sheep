@@ -1,6 +1,5 @@
 require 'net/scp'
 
-
 module ElectricSheep
   module Transports
     class SCP

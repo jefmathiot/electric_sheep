@@ -25,5 +25,6 @@ require 'support/shell_metadata'
 require 'support/options'
 require 'support/command'
 require 'support/queue'
+require 'support/files'
 
 ENV['ELECTRIC_SHEEPS_HOME'] = Dir.mktmpdir

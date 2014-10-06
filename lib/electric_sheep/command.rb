@@ -31,7 +31,6 @@ module ElectricSheep
     def file_system_resource(type, opts={})
       Resources.const_get(type.to_s.camelize).new(
         opts.merge(
-          parent: input.respond_to?(:parent) && input.parent || nil,
           basename: input.basename,
           host: shell.host
         )

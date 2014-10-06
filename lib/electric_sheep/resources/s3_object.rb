@@ -6,7 +6,7 @@ module ElectricSheep
       option :directory
       option :bucket, required: true
 
-      def initialize(opts)
+      def initialize(opts={})
         if path=opts.delete(:path)
           opts.merge!(normalize_path(path))
         end

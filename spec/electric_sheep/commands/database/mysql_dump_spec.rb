@@ -17,8 +17,8 @@ describe ElectricSheep::Commands::Database::MySQLDump do
     before do
       @project, @logger, @shell, @host = ElectricSheep::Metadata::Project.new,
         mock, mock, mock
-      @resource_path="\\$MyDatabase-20140605-040302"
-      @shell.expects(:expand_path).with("$MyDatabase-20140605-040302").returns("/project/dir/#{@resource_path}")
+      @resource_path="$MyDatabase-20140605-040302"
+      @shell.expects(:expand_path).with("$MyDatabase-20140605-040302.sql").returns("/project/dir/#{@resource_path}")
       @shell.expects(:host).returns(@host)
       database = ElectricSheep::Resources::Database.new name: '$MyDatabase'
       @project.start_with! database
@@ -32,19 +32,12 @@ describe ElectricSheep::Commands::Database::MySQLDump do
     def assert_product
       product = @project.last_product
       product.wont_be_nil
-      product.path.must_equal "/project/dir/#{@resource_path}"
+      product.path.must_equal "#{@resource_path}.sql"
     end
 
     def assert_command
-        expects_file_resource
-        @command.perform
-        assert_product
-    end
-
-    def expects_file_resource
-      @shell.expects(:file_resource).
-        with(@host, "/project/dir/#{@resource_path}").
-        returns(file("/project/dir/#{@resource_path}"))
+      @command.perform
+      assert_product
     end
 
     it 'executes the backup command' do

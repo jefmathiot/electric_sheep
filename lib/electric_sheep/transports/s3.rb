@@ -21,9 +21,9 @@ module ElectricSheep
       protected
       def operate(delete_source=false)
         logger.info "#{delete_source ? 'Moving' : 'Copying'} " +
-          "#{input.basename} to #{option(:to)} using S3"
+          "#{input.name} to #{option(:to)} using S3"
         operation(delete_source).perform! do |resource|
-          done! resource
+          done! delete_source ? resource : input
         end
       end
 
@@ -56,7 +56,7 @@ module ElectricSheep
         Resources::S3Object.new(
           options.merge(
             bucket: bucket,
-            directory: prefix,
+            parent: prefix,
             basename: input.basename,
             extension: input.extension
           )
@@ -109,11 +109,7 @@ module ElectricSheep
 
         protected
         def key(resource)
-          if resource.directory
-            "#{resource.directory}/#{resource.name}"
-          else
-            resource.name
-          end
+          resource.path
         end
       end
 
@@ -121,7 +117,7 @@ module ElectricSheep
 
         def perform!(&block)
           remote_directory(output.bucket).files.create(
-            key: key(output),
+            key: output.path,
             body: File.open( interactor.expand_path(input.path) ),
             multipart_chunk_size: 100.megabytes
           )
@@ -135,12 +131,13 @@ module ElectricSheep
 
         def perform!(&block)
           path = interactor.expand_path(output.path)
-          file = remote_directory(input.bucket).files.get key(input)
+          # TODO Handle large files ?
+          file = remote_directory(input.bucket).files.get input.path
           File.open(path, "w") do |f|
             f.write(file.body)
           end
           file.destroy if delete_source
-          yield @options
+          yield output
         end
 
       end

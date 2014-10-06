@@ -19,7 +19,7 @@ module ElectricSheep
 
       def expand_path(path)
         raise "Project directory has not been created, please" +
-          "call mk_project_directory!" unless @project_directory
+          " call mk_project_directory!" unless @project_directory
         return path if Pathname.new(path).absolute?
         File.join(project_directory, shell_safe(path))
       end
