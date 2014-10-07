@@ -68,12 +68,12 @@ project "s3-copy-local-to-remote" do
 end
 
 project "s3-move-remote-to-local" do
-  resource "s3_object", bucket: "my-bucket", directory: "my-project", path: "dummy.file"
+  resource "s3_object", bucket: "my-bucket", path: "my-project/dummy.file"
   move to: "localhost", using: "s3"
 end
 
 project "s3-copy-remote-to-local" do
-  resource "s3_object", bucket: "my-bucket", directory: "my-project", path: "dummy.file"
+  resource "s3_object", bucket: "my-bucket", path: "my-project/dummy.file"
   copy to: "localhost", using: "s3"
 end
 

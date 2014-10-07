@@ -19,7 +19,7 @@ describe ElectricSheep::Commands::Compression::TarGz do
       @shell.expects(:host).returns(@host)
       @command = subject.new(@project, @logger, @shell, @metadata=mock)
       @seq = sequence('command')
-      Timecop.travel Time.utc(2014, 6, 5, 4, 3, 2) 
+      Timecop.travel Time.utc(2014, 6, 5, 4, 3, 2)
     end
 
     after do
