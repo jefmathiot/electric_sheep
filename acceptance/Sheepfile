@@ -143,3 +143,13 @@ project "mysql-dump" do
   end
   move to: "localhost", using: "scp", as: "vagrant"
 end
+
+project "mysql-dump-fail" do
+  private_key private_key
+  resource "database", name: "controldb", host: "main-host"
+  remotely as: "vagrant" do
+    mysql_dump user: "fail_user", password: "pseudorandom"
+    tar_gz
+  end
+  move to: "localhost", using: "scp", as: "vagrant"
+end

@@ -12,6 +12,12 @@ module ElectricSheep
         @directories=Helpers::Directories.new(host, project, self)
       end
 
+      def after_exec(&block)
+        block.call.tap do |result|
+          raise "command failed" if result[:exit_status] == 2
+        end
+      end
+
       def session
         unless @session
           @session=build_session

@@ -81,8 +81,7 @@ describe ElectricSheep::Transports::SCP do
       end
 
       # TODO We should verify the output resources
-
-      it 'tries to visit available operations' do
+      it 'tries to visit available operations and log info' do
         retrieve_hosts
         retrieve_interactors
         [
@@ -92,6 +91,7 @@ describe ElectricSheep::Transports::SCP do
           instance = klazz.any_instance
           instance.expects(:perform).with(false)
         end
+        transport.expects(:log).with(:copy)
         transport.send(:operate, :copy)
       end
 

@@ -165,12 +165,9 @@ describe ElectricSheep::Interactors::SshInteractor do
         logger.expects(:info).never
         logger.expects(:error).with('An error')
         assert_scripted do
-          result=nil
           @interactor.in_session do
-            result = @interactor.exec('ls --wtf')
+            proc{ @interactor.exec('ls --wtf') }.must_raise RuntimeError
           end
-          result[:exit_status].must_equal 2
-          result[:err].must_equal 'An error'
         end
       end
     end
