@@ -36,11 +36,6 @@ describe ElectricSheep::Transports::S3 do
     Timecop.return
   end
 
-  def expects_log(operation, direction, to)
-    @logger.expects(:info).
-      with("#{operation} dummy.file #{direction} #{to} using S3")
-  end
-
   describe 'overriding environment' do
     before do
       @env=ENV['ELECTRIC_SHEEP_ENV']
@@ -81,7 +76,7 @@ describe ElectricSheep::Transports::S3 do
     end
 
     it 'makes a copy' do
-      expects_log("Copying", "to", "my-bucket/key-prefix")
+      @transport.expects(:log).with(:copy)
       @transport.copy
       expects_bucket_object(ElectricSheep::Resources::File)
       # Local file
@@ -90,7 +85,7 @@ describe ElectricSheep::Transports::S3 do
     end
 
     it 'moves the file' do
-      expects_log("Moving", "to", "my-bucket/key-prefix")
+      @transport.expects(:log).with(:move)
       @transport.move
       expects_bucket_object(ElectricSheep::Resources::S3Object)
       # Local file
@@ -114,7 +109,7 @@ describe ElectricSheep::Transports::S3 do
     end
 
     it 'makes a copy' do
-      expects_log("Copying", "to", "localhost")
+      @transport.expects(:log).with(:copy)
       @transport.copy
       # Local file
       File.exists?("#{working_directory}/#{@project.id}/dummy-20140101-000000.file").must_equal true,
@@ -123,7 +118,7 @@ describe ElectricSheep::Transports::S3 do
     end
 
     it 'moves the file' do
-      expects_log("Moving", "to", "localhost")
+      @transport.expects(:log).with(:move)
       @transport.move
       # Local file
       File.exists?("#{working_directory}/#{@project.id}/dummy-20140101-000000.file").must_equal true,

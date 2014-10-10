@@ -25,6 +25,7 @@ module ElectricSheep
       end
 
       def operate(operation)
+        log(operation)
         operation_opts=Struct.new(:resource, :interactor)
         from=operation_opts.new(
           input,

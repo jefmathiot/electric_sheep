@@ -11,23 +11,23 @@ module ElectricSheep
       option :secret_key, required: true
 
       def copy
-        operate
+        operate :copy
       end
 
       def move
-        operate true
+        operate :move
       end
 
       protected
-      def operate(delete_source=false)
-        logger.info "#{delete_source ? 'Moving' : 'Copying'} " +
-          "#{input.name} to #{option(:to)} using S3"
-        operation(delete_source).perform! do |resource|
+      def operate(operation)
+        log(operation)
+        delete_source = operation == :move
+        perform(delete_source).perform! do |resource|
           done! delete_source ? resource : input
         end
       end
 
-      def operation(delete_source)
+      def perform(delete_source)
         if option(:to)=='localhost'
           output=file_resource host(option(:to))
           return DownloadOperation.new(

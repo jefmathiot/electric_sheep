@@ -17,6 +17,12 @@ module ElectricSheep
     end
 
     protected
+
+    def log(operation)
+      logger.info "#{operation == :move ? 'Moving' : 'Copying'} " +
+                  "#{input.name} to #{option(:to)} using #{option(:as)}"
+    end
+
     def file_resource(host, opts={})
       file_system_resource(:file, host, opts)
     end
