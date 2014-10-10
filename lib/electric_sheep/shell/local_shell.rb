@@ -12,12 +12,12 @@ module ElectricSheep
         @logger.info "Starting a local shell session"
         super
       end
-      
+
       protected
       def interactor
         @interactor ||= Interactors::ShellInteractor.new(
-          @host, 
-          @project, 
+          @host,
+          @project,
           @logger
         )
       end

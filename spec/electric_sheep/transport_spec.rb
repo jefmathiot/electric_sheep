@@ -12,17 +12,39 @@ describe ElectricSheep::Transport do
   end
 
   describe TransportKlazz do
-    it 'performs using transport type from metadata' do
-      transport=subject.new(
-        project=ElectricSheep::Metadata::Project.new(id: 'some-project'),
-        logger=mock,
-        metadata=mock,
-        hosts=ElectricSheep::Metadata::Hosts.new
+    before do
+      @transport = subject.new(
+        @project=ElectricSheep::Metadata::Project.new(id: 'some-project'),
+        @logger=mock,
+        @metadata=mock,
+        @hosts=ElectricSheep::Metadata::Hosts.new
       )
+    end
+
+    it 'performs using transport type from metadata' do
       ElectricSheep::Helpers::Directories.any_instance.expects(:mk_project_directory!)
-      metadata.expects(:type).returns(:do)
-      transport.perform!
-      transport.done.must_equal true
+      @metadata.expects(:type).returns(:do)
+      @transport.perform!
+      @transport.done.must_equal true
+    end
+
+    describe 'log' do
+      before do
+        @transport.expects(:input).returns(@input=mock)
+        @input.expects(:name).returns('file.name')
+        @transport.expects(:option).with(:to).returns('destination')
+        @transport.expects(:option).with(:as).returns('scp')
+      end
+      it 'log copy operation' do
+        @logger.expects(:info).with("Copying file.name to destination using scp")
+        @transport.send(:log,:copy)
+      end
+
+      it 'log move operation' do
+        @logger.expects(:info).with("Moving file.name to destination using scp")
+        @transport.send(:log,:move)
+      end
     end
   end
+
 end
