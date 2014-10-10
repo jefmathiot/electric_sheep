@@ -79,18 +79,21 @@ module ElectricSheep
         end
 
         def copy_directory(action, interactor)
-          tmp_path=File.join(File.dirname(paths[:target]), tmpdir)
-          # net-scp copy a new "source" directory inside the target one
-          scp_path=File.join(tmp_path, File.basename(paths[:source]))
-          to.interactor.exec "mkdir #{tmp_path}"
-          interactor.scp.send(
-            "#{action}!",
-            paths[:source],
-            tmp_path,
-            recursive: true
-          )
-          to.interactor.exec "mv #{scp_path} #{paths[:target]}"
-          to.interactor.exec "rm -rf #{tmp_path}"
+          wrap_directory_copy do
+            interactor.scp.send(
+              "#{action}!",
+              paths[:source],
+              tmpdir,
+              recursive: true
+            )
+          end
+        end
+
+        def wrap_directory_copy(&block)
+          to.interactor.exec "mkdir #{tmpdir}"
+          yield
+          to.interactor.exec "mv #{scp_target_dir} #{paths[:target]}"
+          to.interactor.exec "rm -rf #{tmpdir}"
         end
 
         def paths
@@ -100,9 +103,17 @@ module ElectricSheep
           }
         end
 
+        def scp_target_dir
+          # net-scp copy a new "source" directory inside the target one
+          File.join(tmpdir, File.basename(paths[:source]))
+        end
+
         def tmpdir
           t = Time.now.strftime("%Y%m%d")
-          "tmp#{t}-#{$$}-#{rand(0x100000000).to_s(36)}"
+          @tmpdir||=File.join(
+            File.dirname(paths[:target]),
+            "tmp#{t}-#{$$}-#{rand(0x100000000).to_s(36)}"
+          )
         end
 
         def delete_cmd
