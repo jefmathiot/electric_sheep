@@ -6,7 +6,7 @@ require 'electric_sheep/version'
 Gem::Specification.new do |spec|
   spec.name          = "electric_sheep"
   spec.version       = ElectricSheep::VERSION
-  spec.authors       = ["Benoît Anselme", "Patrice Izzo", "Jef Mathiot", "Fabrice Nourisson",
+  spec.authors       = ["Benoit Anselme", "Patrice Izzo", "Jef Mathiot", "Fabrice Nourisson",
                         "Eric Hartmann", "Benjamin Severac"]
   spec.email         = ["foss@servebox.com"]
   spec.description   = %q{A simple task system for file manipulation (i.e. backup).}
