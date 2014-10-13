@@ -53,6 +53,7 @@ module ElectricSheep
           @options=options
         end
 
+        protected
         def from
           @options[:from]
         end
@@ -62,23 +63,61 @@ module ElectricSheep
         end
 
         def copy(target, action)
-          @source_path=from.interactor.expand_path(from.resource.path)
-          @target_path=to.interactor.expand_path(to.resource.path)
-          # TODO Allow the target directory name to be changed
-          # Recursive creates a target directory then copies the source directory in it.
-          # We end up with two nested directories of the same name.
-          # See http://net-ssh.github.io/net-scp/classes/Net/SCP.html#method-i-download-21
-          @target_path=File.dirname(@target_path) if from.resource.directory?
-          target.interactor.scp.send(
+          send(
+            from.resource.directory? ? :copy_directory : :copy_file,
+            action,
+            target.interactor
+          )
+        end
+
+        def copy_file(action, interactor)
+          interactor.scp.send(
             "#{action}!",
-            @source_path,
-            @target_path,
-            recursive: from.resource.directory?
+            paths[:source],
+            paths[:target]
+          )
+        end
+
+        def copy_directory(action, interactor)
+          wrap_directory_copy do
+            interactor.scp.send(
+              "#{action}!",
+              paths[:source],
+              tmpdir,
+              recursive: true
+            )
+          end
+        end
+
+        def wrap_directory_copy(&block)
+          to.interactor.exec "mkdir #{tmpdir}"
+          yield
+          to.interactor.exec "mv #{scp_target_dir} #{paths[:target]}"
+          to.interactor.exec "rm -rf #{tmpdir}"
+        end
+
+        def paths
+          @paths ||= {
+            source: from.interactor.expand_path(from.resource.path),
+            target: to.interactor.expand_path(to.resource.path)
+          }
+        end
+
+        def scp_target_dir
+          # net-scp copy a new "source" directory inside the target one
+          File.join(tmpdir, File.basename(paths[:source]))
+        end
+
+        def tmpdir
+          t = Time.now.strftime("%Y%m%d")
+          @tmpdir||=File.join(
+            File.dirname(paths[:target]),
+            "tmp#{t}-#{$$}-#{rand(0x100000000).to_s(36)}"
           )
         end
 
         def delete_cmd
-          "rm -rf #{@source_path}"
+          "rm -rf #{paths[:source]}"
         end
 
       end

@@ -10,17 +10,19 @@ describe ElectricSheep::Transports::SCP do
   let :remote_host do
     ElectricSheep::Metadata::Host.new
   end
+  
+  [:file, :directory].each do |type|
+    let "remote_#{type}" do
+      ElectricSheep::Resources.const_get(type.capitalize).new(
+        host: remote_host, path: "local/path"
+      )
+    end
 
-  let :remote_file do
-    ElectricSheep::Resources::File.new(
-      host: remote_host, path: "local/path"
-    )
-  end
-
-  let :local_file do
-    ElectricSheep::Resources::File.new(
-      host: localhost, path: "remote/path"
-    )
+    let "local_#{type}" do
+      ElectricSheep::Resources::const_get(type.capitalize).new(
+        host: localhost, path: "remote/path"
+      )
+    end
   end
 
   let :operation_opts do
@@ -78,6 +80,7 @@ describe ElectricSheep::Transports::SCP do
         transport.stubs(:input).returns(local_file)
       end
 
+      # TODO We should verify the output resources
       it 'tries to visit available operations and log info' do
         retrieve_hosts
         retrieve_interactors
@@ -147,20 +150,34 @@ describe ElectricSheep::Transports::SCP do
           "lets the original resource unchanged"
       end
 
+      def expects_directory_wrapper(env, &block)
+        tmp_regex=/\/#{env}\/tmp\d{8}-/
+        interactor=send("#{env}_interactor")
+        interactor.expects(:exec).in_sequence(script).
+            with(regexp_matches(/^mkdir #{tmp_regex}/))
+        yield tmp_regex
+        interactor.expects(:exec).in_sequence(script).
+          with(regexp_matches(/^mv #{tmp_regex}.* \/#{env}\/path/))
+        interactor.expects(:exec).in_sequence(script).
+          with(regexp_matches(/^rm -rf #{tmp_regex}.*/))
+      end
+
       describe ElectricSheep::Transports::SCP::UploadOperation do
         ensure_laziness :local_file, :local_file
         ensure_laziness :remote_file, :remote_file
 
         def self.ensure_upload(delete_source, expected_host, expected_path)
 
+          let :expected_host do
+            expected_host=send(expected_hostname)
+          end
+
           it "uploads the file and #{spec_comment(delete_source)}" do
-            expected_host=send(expected_host)
             result = nil
             remote_interactor.expects(:in_session).in_sequence(script).yields
             scp.expects(:upload!).in_sequence(script).with(
               "/local/path",
-              "/remote/path",
-              recursive: false
+              "/remote/path"
             )
             local_interactor.expects(:in_session).in_sequence(script).yields
             if delete_source
@@ -170,6 +187,27 @@ describe ElectricSheep::Transports::SCP do
             subject.new(
               from: operation_opts.new(local_file, local_interactor),
               to: operation_opts.new(remote_file, remote_interactor)
+            ).perform(delete_source)
+          end
+
+          it "uploads the directory and #{spec_comment(delete_source)}" do
+            result = nil
+            remote_interactor.expects(:in_session).in_sequence(script).yields
+            expects_directory_wrapper(:remote) do |target_regex|
+              scp.expects(:upload!).in_sequence(script).with(
+                "/local/path",
+                regexp_matches(target_regex),
+                recursive: true
+              )
+            end
+            local_interactor.expects(:in_session).in_sequence(script).yields
+            if delete_source
+              local_interactor.expects(:exec).in_sequence(script).
+                with("rm -rf /local/path")
+            end
+            subject.new(
+              from: operation_opts.new(local_directory, local_interactor),
+              to: operation_opts.new(remote_directory, remote_interactor)
             ).perform(delete_source)
           end
 
@@ -184,16 +222,18 @@ describe ElectricSheep::Transports::SCP do
         ensure_laziness :remote_file, :remote_file
         ensure_laziness :local_file, :local_file
 
-        def self.ensure_download(delete_source, expected_host, expected_path)
+        def self.ensure_download(delete_source, expected_hostname, expected_path)
+
+          let :expected_host do
+            expected_host=send(expected_hostname)
+          end
 
           it "downloads the file and #{spec_comment(delete_source)}" do
-            expected_host=send(expected_host)
             result = nil
             remote_interactor.expects(:in_session).in_sequence(script).yields
             scp.expects(:download!).in_sequence(script).with(
               "/remote/path",
-              "/local/path",
-              recursive: false
+              "/local/path"
             )
             if delete_source
               remote_interactor.expects(:exec).in_sequence(script).
@@ -205,6 +245,25 @@ describe ElectricSheep::Transports::SCP do
             ).perform(delete_source)
           end
 
+          it "downloads the directory and #{spec_comment(delete_source)}" do
+            result = nil
+            remote_interactor.expects(:in_session).in_sequence(script).yields
+            expects_directory_wrapper(:local) do |target_regex|
+              scp.expects(:download!).in_sequence(script).with(
+                "/remote/path",
+                regexp_matches(target_regex),
+                recursive: true
+              )
+            end
+            if delete_source
+              remote_interactor.expects(:exec).in_sequence(script).
+                with("rm -rf /remote/path")
+            end
+            subject.new(
+              from: operation_opts.new(remote_directory, remote_interactor),
+              to: operation_opts.new(local_directory, local_interactor)
+            ).perform(delete_source)
+          end
         end
 
         ensure_download false, :remote_host, "/remote/path"

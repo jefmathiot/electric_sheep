@@ -66,6 +66,14 @@ module ElectricSheep
       run_simple "ssh #{options.join(' ')} vagrant@127.0.0.1 \"#{cmd}\"", true, timeout
     end
 
+    def with_multiple_files(directory, &block)
+      @files=[1, 2].map do |index|
+        "dummy.file.#{index}".tap do |file|
+          yield directory, file
+        end
+      end
+    end
+
   end
 end
 

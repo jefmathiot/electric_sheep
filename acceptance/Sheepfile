@@ -7,11 +7,13 @@ if File.basename(Dir.pwd)=='tmp'
   working_directory File.expand_path('./')
   private_key=File.join('../', 'acceptance', 'id_rsa')
   dummy= File.expand_path('dummy.file')
+  dummy_directory= File.expand_path('dummy-directory')
 else
   # Manual run
   working_directory File.expand_path("tmp")
   private_key='./acceptance/id_rsa'
   dummy= File.expand_path('tmp/dummy.file')
+  dummy_directory= File.expand_path('tmp/dummy-directory')
 end
 
 host "main-host", hostname: "127.0.0.1",
@@ -53,6 +55,30 @@ project "scp-copy-and-move" do
   resource "file", path: dummy
   copy to: "main-host", using: "scp", as: "vagrant"
   move to: "backup-store", using: "scp", as: "vagrant"
+end
+
+project "scp-move-directory-local-to-remote" do
+  private_key private_key
+  resource "directory", path: dummy_directory
+  move to: "main-host", using: "scp", as: "vagrant"
+end
+
+project "scp-copy-directory-local-to-remote" do
+  private_key private_key
+  resource "directory", path: dummy_directory
+  copy to: "main-host", using: "scp", as: "vagrant"
+end
+
+project "scp-move-directory-remote-to-local" do
+  private_key private_key
+  resource "directory", path: "dummy-directory", host: "main-host"
+  move to: "localhost", using: "scp", as: "vagrant"
+end
+
+project "scp-copy-directory-remote-to-local" do
+  private_key private_key
+  resource "directory", path: "dummy-directory", host: "main-host"
+  copy to: "localhost", using: "scp", as: "vagrant"
 end
 
 ###############################################################################
