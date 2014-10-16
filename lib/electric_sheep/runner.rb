@@ -9,11 +9,21 @@ module ElectricSheep
     end
 
     def run!
+      have_run = false
       @config.each_item do |project|
         if @project.nil? || @project == project.id
+          have_run = true
           execute_project(project)
         end
       end
+      unless have_run
+        if @project.nil?
+          @logger.info "#{"[WARNING] ".blue} No project available"
+        else
+          @logger.info "#{"[WARNING] ".blue} Project \"#{@project}\" not present in sheepfile"
+        end
+      end
+
     end
 
     protected

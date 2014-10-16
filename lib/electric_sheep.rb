@@ -1,4 +1,5 @@
 require 'active_support'
+require 'colorize'
 require 'electric_sheep/version'
 
 require 'electric_sheep/queue'

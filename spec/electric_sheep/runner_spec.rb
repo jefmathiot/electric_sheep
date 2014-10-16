@@ -21,6 +21,28 @@ describe ElectricSheep::Runner do
     sequence('script')
   end
 
+  describe 'executing projects warning' do
+    it 'warns on unknown project' do
+      @logger.expects(:info).never.with("Executing unknow")
+      @logger.expects(:info).with("\e[0;34;49m[WARNING] \e[0m Project \"unknow\" not present in sheepfile")
+      @runner = subject.new(config: @config, project: 'unknow',
+        logger: @logger)
+      @runner.run!
+      @config.remaining.must_equal 0
+    end
+
+    it 'warns when there is no project' do
+      @config = ElectricSheep::Config.new
+      @logger.expects(:info).never.with("Executing unknow")
+      @logger.expects(:info).with("\e[0;34;49m[WARNING] \e[0m No project available")
+      @runner = subject.new(config: @config,
+        logger: @logger)
+      @runner.run!
+      @config.remaining.must_equal 0
+    end
+
+  end
+
   describe 'executing projects' do
 
     before do
