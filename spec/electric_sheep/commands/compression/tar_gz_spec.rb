@@ -46,7 +46,7 @@ describe ElectricSheep::Commands::Compression::TarGz do
           with "Compressing #{input} to some-#{input_type}.tar.gz"
         @shell.expects(:exec).in_sequence(@seq).
           with("cd #{File.dirname(input)}; " +
-            "tar -cvzf #{output} #{File.basename(input)} &> /dev/null")
+            "tar -cvzf #{output} #{File.basename(input)} 1>&2")
         if delete_source
           @shell.expects(:exec).in_sequence(@seq).
             with("rm -f #{input}")
