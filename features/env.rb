@@ -14,7 +14,7 @@ module ElectricSheep
     end
 
     def sheepfile
-      File.join(acceptance_dir, 'Sheepfile')
+      @sheepfile || File.join(acceptance_dir, 'Sheepfile')
     end
 
     def acceptance_dir
