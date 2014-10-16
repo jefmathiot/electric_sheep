@@ -24,7 +24,6 @@ module ElectricSheep
           cmd = "mongodump -d #{shell_safe(db)} -o #{shell.expand_path(dump.path)}"
           cmd << " -u #{shell_safe(user)} -p #{shell_safe(password)}" unless user.nil?
           cmd << " &> /dev/null"
-          cmd
         end
 
       end
