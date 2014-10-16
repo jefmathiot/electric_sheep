@@ -103,44 +103,40 @@ describe ElectricSheep::Interactors::SshInteractor do
         channel.gets_close
         channel.sends_close
       end
-      logger.expects(:error).with("Could not execute command whatever")
       assert_scripted do
         @interactor.in_session do
-          @interactor.exec 'whatever'
+          proc{ @interactor.exec 'whatever' }.must_raise RuntimeError
         end
       end
     end
 
-    it 'should output stdout to logger' do
+    it 'should return stdout output' do
       build_ssh_story 'echo "Hello World"', {data: 'Hello World'}
-      logger.expects(:info).with('Hello World')
-      logger.expects(:error).never
       assert_scripted do
         @interactor.in_session do
-          @interactor.exec 'echo "Hello World"'
+          result = @interactor.exec 'echo "Hello World"'
+          result.must_equal({:out=>"Hello World", :err=>"", :exit_status=>0})
         end
       end
     end
 
-    it 'should output stderr to logger' do
+    it 'should return stderr output' do
       build_ssh_story 'echo "Goodbye Cruel World" >&2', {extended_data: 'Goodbye Cruel World'}
-      logger.expects(:error).with('Goodbye Cruel World')
-      logger.expects(:info).never
       assert_scripted do
         @interactor.in_session do
-          @interactor.exec 'echo "Goodbye Cruel World" >&2'
+          result = @interactor.exec 'echo "Goodbye Cruel World" >&2'
+          result.must_equal({:out=>"", :err=>"Goodbye Cruel World", :exit_status=>0})
         end
       end
     end
 
-    it 'should output both stdout and stderr to logger' do
+    it 'should return both stdout and stderr' do
       build_ssh_story 'echo "Hello World" ; echo "Goodbye Cruel World" >&2',
       {data: 'Hello World', extended_data: 'Goodbye Cruel World'}
-      logger.expects(:info).with('Hello World')
-      logger.expects(:error).with('Goodbye Cruel World')
       assert_scripted do
         @interactor.in_session do
-          @interactor.exec 'echo "Hello World" ; echo "Goodbye Cruel World" >&2'
+          result = @interactor.exec 'echo "Hello World" ; echo "Goodbye Cruel World" >&2'
+          result.must_equal({:out=>"Hello World", :err=>"Goodbye Cruel World", :exit_status=>0})
         end
       end
     end
@@ -148,8 +144,6 @@ describe ElectricSheep::Interactors::SshInteractor do
     describe 'on returning status' do
       it 'should succeed' do
         build_ssh_story 'echo "Hello World"', {data: 'Hello World'}
-        logger.expects(:info).with('Hello World')
-        logger.expects(:error).never
         assert_scripted do
           result=nil
           @interactor.in_session do
@@ -162,8 +156,6 @@ describe ElectricSheep::Interactors::SshInteractor do
 
       it 'should fail gracefully' do
         build_ssh_story 'ls --wtf', {extended_data: 'An error'}, 2
-        logger.expects(:info).never
-        logger.expects(:error).with('An error')
         assert_scripted do
           @interactor.in_session do
             proc{ @interactor.exec('ls --wtf') }.must_raise RuntimeError
