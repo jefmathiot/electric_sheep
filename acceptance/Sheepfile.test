@@ -1,0 +1,48 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Local working directory
+if File.basename(Dir.pwd)=='tmp'
+  # Cucumber features
+  working_directory File.expand_path('./')
+  private_key=File.join('../', 'acceptance', 'id_rsa')
+  dummy= File.expand_path('dummy.file')
+  dummy_directory= File.expand_path('dummy-directory')
+else
+  # Manual run
+  working_directory File.expand_path("tmp")
+  private_key='./acceptance/id_rsa'
+  dummy= File.expand_path('tmp/dummy.file')
+  dummy_directory= File.expand_path('tmp/dummy-directory')
+end
+
+host "main-host", hostname: "127.0.0.1",
+  ssh_port: 2222,
+  working_directory: "/tmp/acceptance"
+
+host "backup-store", hostname: "127.0.0.1",
+  ssh_port: 2222,
+  working_directory: "/tmp/acceptance_backup" #optional
+
+###############################################################################
+##
+
+project "failling-project" do
+  private_key private_key
+  resource "database", name: "controldb", host: "main-host"
+  remotely as: "vagrant" do
+    mysql_dump user: "fail_user", password: "corrupt"
+    tar_gz
+  end
+  move to: "localhost", using: "scp", as: "vagrant"
+end
+
+project "working-project" do
+  private_key private_key
+  resource "database", name: "controldb", host: "main-host"
+
+  remotely as: "vagrant" do
+    mongodb_dump
+  end
+  move to: "localhost", using: "scp", as: "vagrant"
+end
