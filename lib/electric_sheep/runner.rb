@@ -33,9 +33,17 @@ module ElectricSheep
         @logger.info project.description ?
           "Executing \"#{project.description}\" (#{project.id})" :
           "Executing #{project.id}"
-          project.each_item do |step|
+        project.each_item do |step|
+          begin
             send("execute_#{executable_type(step)}", project, step)
+          rescue Exception => e
+            @logger.error "The last command failed :"
+            @logger.error e.message
+            @logger.error "#{"[FAIL]".red} Aborting project \"#{project.id}\""
+            return
           end
+        end
+        @logger.info "#{"[SUCCESS]".green} Project \"#{project.id}\""
       end
     end
 

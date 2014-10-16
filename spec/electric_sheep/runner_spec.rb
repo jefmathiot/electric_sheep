@@ -48,6 +48,8 @@ describe ElectricSheep::Runner do
     before do
       @logger.expects(:info).in_sequence(script).
         with("Executing \"First project description\" (first-project)")
+      @logger.expects(:info).
+        with("\e[0;32;49m[SUCCESS]\e[0m Project \"first-project\"")
     end
 
     describe 'with multiple projects' do
@@ -61,6 +63,8 @@ describe ElectricSheep::Runner do
       it 'should not have remaining projects' do
         @logger.expects(:info).in_sequence(script).
           with("Executing second-project")
+        @logger.expects(:info).in_sequence(script).
+          with("\e[0;32;49m[SUCCESS]\e[0m Project \"second-project\"")
         @runner.run!
         @config.remaining.must_equal 0
       end

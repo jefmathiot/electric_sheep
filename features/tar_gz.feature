@@ -12,3 +12,7 @@ Feature: Tarball Compression
     Given a remote directory containing multiple files in the project "tar-gz-directory"
     When I tell the sheep to work on the project
     Then an archive containing the files should have been created on the remote host
+
+  Scenario: Compress an unknown file
+    Given I tell the sheep to work on failing project "tar-gz-unknown-file"
+    Then I am notified that the command failed

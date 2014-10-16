@@ -48,3 +48,6 @@ Feature: SCP transport
     When I tell the sheep to work on project "scp-copy-directory-remote-to-local"
     Then the directory should have been copied to the localhost
 
+  Scenario: fail using SCP
+    Given I tell the sheep to work on failing project "scp-fail"
+    Then I am notified that the command failed

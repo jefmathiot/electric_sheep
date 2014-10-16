@@ -27,3 +27,6 @@ Feature: S3 transport
     When I tell the sheep to work on project "s3-copy-remote-to-local"
     Then the S3 object should have been copied to the localhost
 
+  Scenario: fail using S3
+    Given I tell the sheep to work on failing project "s3-fail"
+    Then I am notified that the command failed

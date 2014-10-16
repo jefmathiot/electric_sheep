@@ -32,6 +32,12 @@ project "scp-move-local-to-remote" do
   move to: "main-host", using: "scp", as: "vagrant"
 end
 
+project "scp-fail" do
+  private_key private_key
+  resource "file", path: 'tmp/fail.file'
+  move to: "main-host", using: "scp", as: "vagrant"
+end
+
 project "scp-copy-local-to-remote" do
   private_key private_key
   resource "file", path: dummy
@@ -103,6 +109,11 @@ project "s3-copy-remote-to-local" do
   copy to: "localhost", using: "s3"
 end
 
+project "s3-fail" do
+  resource "file", path: dummy
+  move to: "my-bucket/my-project", using: "s3"
+end
+
 ###############################################################################
 ## TarGz
 project "tar-gz-file" do
@@ -121,6 +132,14 @@ project "tar-gz-directory" do
   end
 end
 
+project "tar-gz-unknown-file" do
+  private_key private_key
+  resource "file", path: "unknown-file", host: "main-host"
+  remotely as: "vagrant" do
+    tar_gz
+  end
+end
+
 ###############################################################################
 ## MongoDB Dump
 project "mongodb-dump" do
@@ -131,6 +150,22 @@ project "mongodb-dump" do
     mongodb_dump
   end
   move to: "localhost", using: "scp", as: "vagrant"
+end
+
+project "mongodb-dump-auth-fail" do
+  private_key private_key
+  resource "database", name: "controldb", host: "main-host"
+  remotely as: "vagrant" do
+    mongodb_dump user: "fail_user", password: "corrupt"
+  end
+end
+
+project "mongodb-dump-unknown-db-fail" do
+  private_key private_key
+  resource "database", name: "unknown", host: "main-host"
+  remotely as: "vagrant" do
+    mongodb_dump
+  end
 end
 
 ###############################################################################
@@ -144,12 +179,18 @@ project "mysql-dump" do
   move to: "localhost", using: "scp", as: "vagrant"
 end
 
-project "mysql-dump-fail" do
+project "mysql-dump-unknown-db-fail" do
+  private_key private_key
+  resource "database", name: "unknown", host: "main-host"
+  remotely as: "vagrant" do
+    mysql_dump user: "operator", password: "pseudorandom"
+  end
+end
+
+project "mysql-dump-auth-fail" do
   private_key private_key
   resource "database", name: "controldb", host: "main-host"
   remotely as: "vagrant" do
-    mysql_dump user: "fail_user", password: "pseudorandom"
-    tar_gz
+    mysql_dump user: "fail_user", password: "corrupt"
   end
-  move to: "localhost", using: "scp", as: "vagrant"
 end
