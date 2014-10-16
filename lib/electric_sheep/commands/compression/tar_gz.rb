@@ -22,9 +22,9 @@ module ElectricSheep
 
         private
         def cmd(input_path, archive)
-          "cd #{File.dirname(input_path)}; " +
-            "tar -cvzf #{shell.expand_path(archive.path)} "+
-            "#{File.basename(input_path)} &> /dev/null"
+          cmd = "cd #{File.dirname(input_path)}; "
+          cmd << "tar -cvzf #{shell.expand_path(archive.path)} "
+          cmd << "#{File.basename(input_path)} 1>&2"
         end
       end
     end
