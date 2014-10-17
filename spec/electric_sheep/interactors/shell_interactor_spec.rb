@@ -22,6 +22,8 @@ describe ElectricSheep::Interactors::ShellInteractor do
       session.expects(:execute).with('ls').
         yields(out && "#{out}\n", err && "#{err}\n")
       session.expects(:exit_status).returns(err ? 2:0)
+      logger.expects(:debug).with(out) unless out.nil?
+      logger.expects(:debug).with('ls')
       if err
         proc{interactor.exec('ls')}.must_raise RuntimeError
       else

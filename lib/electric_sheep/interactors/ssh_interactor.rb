@@ -8,6 +8,7 @@ module ElectricSheep
       end
 
       def exec(cmd)
+        @logger.debug cmd if @logger
         after_exec do
           result = {out: '', err: '', exit_status: 0}
           session.open_channel do |channel|
@@ -18,6 +19,7 @@ module ElectricSheep
               end
               channel.on_data do |ch, data|
                 result[:out] << data
+                @logger.debug result[:out] if @logger
               end
               channel.on_extended_data do |ch, type, data|
                 result[:err] << data

@@ -65,6 +65,7 @@ describe ElectricSheep::Transports::S3 do
       @project.start_with! resource=ElectricSheep::Resources::File.new(
         path: File.expand_path('./tmp/dummy.file')
       )
+      @logger.stubs(:debug)
       @transport.send(:local_interactor).in_session
       FileUtils.touch './tmp/dummy.file'
     end
@@ -104,6 +105,7 @@ describe ElectricSheep::Transports::S3 do
         bucket: 'my-bucket',
         path: 'key-prefix/dummy.file'
       )
+      @logger.stubs(:debug)
       @transport.send(:local_interactor).in_session
       FileUtils.touch "#{directory_path}/dummy.file"
     end
