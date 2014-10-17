@@ -39,3 +39,7 @@ end
 Then(/^the sheep tell me the project is unknown$/) do
   expect(all_output.include? "Project \"unknown\" not present in sheepfile").to be(true)
 end
+
+Then(/^the sheep tell me the error "(.*?)" occurs$/) do |error|
+  expect(all_output.include? "#{"[ERROR]".red} #{error}").to be(true)
+end

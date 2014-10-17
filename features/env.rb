@@ -1,5 +1,6 @@
 require 'aruba/cucumber'
 require 'pathname'
+require 'colorize'
 require_relative 'aruba/aruba_helper'
 
 ENV['ELECTRIC_SHEEP_ENV']='test'

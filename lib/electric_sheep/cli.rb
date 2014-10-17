@@ -11,11 +11,14 @@ module ElectricSheep
       desc: 'Name of a single project to execute'
     def work
       begin
+        logger = Log::ConsoleLogger.new(STDOUT, STDERR)
         Runner.new(
           config: configuration,
           project: options[:project],
-          logger: Log::ConsoleLogger.new(STDOUT, STDERR)
+          logger: logger
         ).run!
+      rescue SheepException => ex
+        logger.error "#{"[ERROR]".red} #{ex}"
       rescue => ex
         raise Thor::Error, ex.message + "\n" + ex.backtrace.join("\n")
       end

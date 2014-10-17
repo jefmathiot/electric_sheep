@@ -45,6 +45,15 @@ describe ElectricSheep::CLI do
       -> { subject.new.work }.must_raise Thor::Error
     end
 
+    it 'logs error if SheepException occurs' do
+      ElectricSheep::Log::ConsoleLogger.expects(:new).with(kind_of(IO), kind_of(IO)).
+          returns(@logger=mock)
+      ElectricSheep::Sheepfile::Evaluator.expects(:new).
+        raises(ElectricSheep::SheepException.new('fail'))
+      @logger.expects(:error).with("\e[0;31;49m[ERROR]\e[0m fail")
+      subject.new.work
+    end
+
   end
 
 end

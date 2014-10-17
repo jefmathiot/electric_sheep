@@ -1,5 +1,14 @@
 module ElectricSheep
   class Dsl
+
+    module RaiseOnMethodMissing
+      def method_missing(method, *args, &block)
+        raise SheepException, "Unknown command '#{method}' in Sheepfile"
+      end
+    end
+
+    include RaiseOnMethodMissing
+
     attr_reader :config
 
     def initialize(config)
@@ -19,6 +28,8 @@ module ElectricSheep
     end
 
     class AbstractDsl
+
+      include RaiseOnMethodMissing
 
       class << self
         def returning(property)

@@ -13,6 +13,16 @@ describe ElectricSheep::Dsl do
     end
   end
 
+  it "raise an error on method missing" do
+    -> { @dsl.orphan_method }.must_raise ElectricSheep::SheepException
+  end
+
+  describe ElectricSheep::Dsl::AbstractDsl do
+      it "raise an error on method missing" do
+        -> { ElectricSheep::Dsl::AbstractDsl.new.orphan_method }.must_raise ElectricSheep::SheepException
+      end
+  end
+
   it "makes hosts available" do
     (host = @config.hosts.get('some-host')).wont_be_nil
     check_properties host, id: "some-host", hostname: "some-host.tld", description: "Some host"
@@ -139,7 +149,7 @@ describe ElectricSheep::Dsl do
         end
       end
     end
-    
+
     describe_transport :move
     describe_transport :copy
 

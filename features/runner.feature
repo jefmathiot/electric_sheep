@@ -21,3 +21,9 @@ Feature: Run projects
     Then the project "failling-project" hasn't been executed
       And the project "working-project" hasn't been executed
       And the sheep tell me the project is unknown
+
+  Scenario: Run a Sheepfile with unknown command
+    Given I'm working on configuration "Sheepfile.test_unknown_command"
+    When I tell the sheep to work on project "unknown"
+    Then the project "unknown" hasn't been executed
+      And the sheep tell me the error "Unknown command 'unknown' in Sheepfile" occurs
