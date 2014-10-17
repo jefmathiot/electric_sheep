@@ -44,7 +44,7 @@ module ElectricSheep
     end
 
     def local_interactor
-      @local_interactor ||= Interactors::ShellInteractor.new(@hosts.localhost, @project)
+      @local_interactor ||= Interactors::ShellInteractor.new(@hosts.localhost, @project, @logger)
     end
 
     def host(id)

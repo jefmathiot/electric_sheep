@@ -24,7 +24,7 @@ describe ElectricSheep::Runner do
   describe 'executing projects warning' do
     it 'warns on unknown project' do
       @logger.expects(:info).never.with("Executing unknow")
-      @logger.expects(:info).with("\e[0;34;49m[WARNING] \e[0m Project \"unknow\" not present in sheepfile")
+      @logger.expects(:warn).with("Project \"unknow\" not present in sheepfile")
       @runner = subject.new(config: @config, project: 'unknow',
         logger: @logger)
       @runner.run!
@@ -34,7 +34,7 @@ describe ElectricSheep::Runner do
     it 'warns when there is no project' do
       @config = ElectricSheep::Config.new
       @logger.expects(:info).never.with("Executing unknow")
-      @logger.expects(:info).with("\e[0;34;49m[WARNING] \e[0m No project available")
+      @logger.expects(:warn).with("No project available")
       @runner = subject.new(config: @config,
         logger: @logger)
       @runner.run!
@@ -48,8 +48,8 @@ describe ElectricSheep::Runner do
     before do
       @logger.expects(:info).in_sequence(script).
         with("Executing \"First project description\" (first-project)")
-      @logger.expects(:info).
-        with("\e[0;32;49m[SUCCESS]\e[0m Project \"first-project\"")
+      @logger.expects(:success).
+        with("Project \"first-project\"")
     end
 
     describe 'with multiple projects' do
@@ -63,8 +63,8 @@ describe ElectricSheep::Runner do
       it 'should not have remaining projects' do
         @logger.expects(:info).in_sequence(script).
           with("Executing second-project")
-        @logger.expects(:info).in_sequence(script).
-          with("\e[0;32;49m[SUCCESS]\e[0m Project \"second-project\"")
+        @logger.expects(:success).in_sequence(script).
+          with("Project \"second-project\"")
         @runner.run!
         @config.remaining.must_equal 0
       end

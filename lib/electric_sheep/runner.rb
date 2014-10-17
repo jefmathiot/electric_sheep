@@ -18,9 +18,9 @@ module ElectricSheep
       end
       unless have_run
         if @project.nil?
-          @logger.info "#{"[WARNING] ".blue} No project available"
+          @logger.warn "No project available"
         else
-          @logger.info "#{"[WARNING] ".blue} Project \"#{@project}\" not present in sheepfile"
+          @logger.warn "Project \"#{@project}\" not present in sheepfile"
         end
       end
 
@@ -37,13 +37,14 @@ module ElectricSheep
           begin
             send("execute_#{executable_type(step)}", project, step)
           rescue Exception => e
-            @logger.error "The last command failed :"
-            @logger.error e.message
-            @logger.error "#{"[FAIL]".red} Aborting project \"#{project.id}\""
+            @logger.info "The last command failed :"
+            @logger.info e.message
+            @logger.debug e.backtrace
+            @logger.error "Aborting project \"#{project.id}\""
             return
           end
         end
-        @logger.info "#{"[SUCCESS]".green} Project \"#{project.id}\""
+        @logger.success "Project \"#{project.id}\""
       end
     end
 

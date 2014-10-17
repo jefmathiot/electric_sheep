@@ -9,7 +9,7 @@ describe ElectricSheep::CLI do
 
       before do
         @config, @logger = mock, mock
-        ElectricSheep::Log::ConsoleLogger.expects(:new).with(kind_of(IO), kind_of(IO)).
+        ElectricSheep::Log::ConsoleLogger.expects(:new).with(kind_of(IO), kind_of(IO), true).
           returns(@logger)
         ElectricSheep::Runner.expects(:new).
           with(all_of(
@@ -22,38 +22,54 @@ describe ElectricSheep::CLI do
       it 'gets the job done' do
         ElectricSheep::Sheepfile::Evaluator.expects(:new).with('Sheepfile').
           returns(mock(evaluate: @config))
-        subject.new([], config: 'Sheepfile', project: 'some-project').work
+        subject.new([], config: 'Sheepfile', project: 'some-project', debug:true).work
       end
 
       it 'overrides the default config option' do
         ElectricSheep::Sheepfile::Evaluator.expects(:new).with('Lambfile').
           returns(mock(evaluate: @config))
-        subject.new([], config: 'Lambfile', project: 'some-project').work
+        subject.new([], config: 'Lambfile', project: 'some-project', debug:true).work
       end
 
     end
 
-    it 'encrypts secrets' do
-      ElectricSheep::Crypto.expects(:encrypt).with('SECRET', '/some/key').returns('CIPHER')
-      STDOUT.expects(:puts).with('CIPHER')
-      subject.new([], key: '/some/key').encrypt('SECRET')
-    end
-
-    it 'raises a Thor error if something went wrong' do
-      ElectricSheep::Sheepfile::Evaluator.expects(:new).
-        raises(RuntimeError.new)
-      -> { subject.new.work }.must_raise Thor::Error
-    end
-
-    it 'logs error if SheepException occurs' do
-      ElectricSheep::Log::ConsoleLogger.expects(:new).with(kind_of(IO), kind_of(IO)).
+    it 'logs error if Exception occurs' do
+      ElectricSheep::Log::ConsoleLogger.expects(:new).with(kind_of(IO), kind_of(IO),nil).
           returns(@logger=mock)
       ElectricSheep::Sheepfile::Evaluator.expects(:new).
-        raises(ElectricSheep::SheepException.new('fail'))
-      @logger.expects(:error).with("\e[0;31;49m[ERROR]\e[0m fail")
+        raises(@ex = Exception.new('fail'))
+      @ex.stubs(:backtrace).returns('backtrace')
+      @logger.expects(:error).with("fail")
+      @logger.expects(:debug).with('backtrace')
       subject.new.work
     end
 
   end
+  describe 'encrypt' do
+
+    before do
+      @logger = mock
+      ElectricSheep::Log::ConsoleLogger.expects(:new).with(kind_of(IO), kind_of(IO), true).
+        returns(@logger)
+    end
+
+    it 'encrypts secrets' do
+      ElectricSheep::Crypto.expects(:encrypt).with('SECRET', '/some/key').returns('CIPHER')
+      @logger.expects(:info).with("CIPHER")
+      subject.new([], key: '/some/key', debug: true).encrypt('SECRET')
+    end
+
+    it 'logs error if Exception occurs' do
+      ElectricSheep::Crypto.expects(:encrypt).with('SECRET', '/some/key').
+        raises(@ex = Exception.new('fail'))
+      @ex.stubs(:backtrace).returns('backtrace')
+      @logger.expects(:error).with("fail")
+      @logger.expects(:debug).with('backtrace')
+      subject.new([], key: '/some/key', debug: true).encrypt('SECRET')
+    end
+
+  end
+
+
 
 end
