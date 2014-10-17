@@ -44,6 +44,10 @@ describe ElectricSheep::Metadata::Hosts do
     @hosts.get('some-host').must_equal host
   end
 
+  it ' raise error on finding unknown host' do
+    ->{ @hosts.get('some-host')}.must_raise ElectricSheep::SheepException
+  end
+
   it 'resolves localhost' do
     @hosts.get('localhost').must_equal @hosts.localhost
   end

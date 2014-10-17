@@ -53,12 +53,14 @@ module ElectricSheep
       end
 
       def add(id, options)
+        #TODO warn or error on existing host
         hosts[id] = Host.new(options.merge(id: id))
       end
 
       def get(id)
-        return localhost if id=='localhost'
-        hosts[id] || localhost
+        return localhost if id == 'localhost' || id == nil
+        raise SheepException, "The '#{id}' host is undefined" if hosts[id].nil?
+        hosts[id]
       end
 
       private
