@@ -15,15 +15,15 @@ When(/^I tell the sheep to work on failing project "(.*?)"$/) do |project|
 end
 
 Then(/^I am notified that the command failed$/) do
-  expect(all_output.include? "The last command failed").to be(true)
+  expect(all_output).to match(/The last command failed/)
 end
 
 Then(/^the project "(.*?)" has been executed$/) do |project|
-  expect(all_output.include? "Executing #{project}").to be(true)
+  expect(all_output).to match(/Executing #{project}/)
 end
 
 Then(/^the project "(.*?)" hasn't been executed$/) do |project|
-  expect(all_output.include? "Executing #{project}").to be(false)
+  expect(all_output).to_not match(/Executing #{project}/)
 end
 
 When(/^I tell the sheep to work on the project$/) do
@@ -37,9 +37,9 @@ When(/^I tell the sheep to work on configuration "(.*?)"$/) do |config|
 end
 
 Then(/^the sheep tell me the project is unknown$/) do
-  expect(all_output.include? "Project \"unknown\" not present in sheepfile").to be(true)
+  expect(all_output).to match(/Project \"unknown\" not present in sheepfile/)
 end
 
 Then(/^the sheep tell me the error "(.*?)" occurs$/) do |error|
-  expect(all_output.include? "#{"[ERROR]".red} #{error}").to be(true)
+  expect(all_output).to match(/#{error}/)
 end
