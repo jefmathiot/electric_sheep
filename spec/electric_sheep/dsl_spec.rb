@@ -23,6 +23,13 @@ describe ElectricSheep::Dsl do
       end
   end
 
+  describe ElectricSheep::Dsl::ProjectDsl do
+      it "raise an error on class unknown" do
+        err = -> { ElectricSheep::Dsl::ProjectDsl.new(@config,nil,{}).resource('Unknown') }.must_raise ElectricSheep::SheepException
+        err.message.must_equal "Resource 'Unknown' in Sheepfile is undefined"
+      end
+  end
+
   it "makes hosts available" do
     (host = @config.hosts.get('some-host')).wont_be_nil
     check_properties host, id: "some-host", hostname: "some-host.tld", description: "Some host"

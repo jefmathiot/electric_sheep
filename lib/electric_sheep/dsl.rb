@@ -77,7 +77,12 @@ module ElectricSheep
 
       def resource(type, options={})
         options[:host] = @config.hosts.get(options[:host])
-        @subject.start_with! ElectricSheep::Resources.const_get(type.to_s.camelize).new(options)
+        begin
+          resource_klass = Resources.const_get(type.to_s.camelize)
+        rescue
+          raise SheepException, "Resource '#{type.to_s}' in Sheepfile is undefined"
+        end
+        @subject.start_with! resource_klass.new(options)
       end
 
       def private_key(path)
