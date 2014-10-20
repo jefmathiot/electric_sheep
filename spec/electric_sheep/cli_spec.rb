@@ -22,13 +22,13 @@ describe ElectricSheep::CLI do
       it 'gets the job done' do
         ElectricSheep::Sheepfile::Evaluator.expects(:new).with('Sheepfile').
           returns(mock(evaluate: @config))
-        subject.new([], config: 'Sheepfile', project: 'some-project', debug:true).work
+        subject.new([], config: 'Sheepfile', project: 'some-project', verbose:true).work
       end
 
       it 'overrides the default config option' do
         ElectricSheep::Sheepfile::Evaluator.expects(:new).with('Lambfile').
           returns(mock(evaluate: @config))
-        subject.new([], config: 'Lambfile', project: 'some-project', debug:true).work
+        subject.new([], config: 'Lambfile', project: 'some-project', verbose:true).work
       end
 
     end
@@ -56,7 +56,7 @@ describe ElectricSheep::CLI do
     it 'encrypts secrets' do
       ElectricSheep::Crypto.expects(:encrypt).with('SECRET', '/some/key').returns('CIPHER')
       @logger.expects(:info).with("CIPHER")
-      subject.new([], key: '/some/key', debug: true).encrypt('SECRET')
+      subject.new([], key: '/some/key', verbose: true).encrypt('SECRET')
     end
 
     it 'logs error if Exception occurs' do
@@ -65,7 +65,7 @@ describe ElectricSheep::CLI do
       @ex.stubs(:backtrace).returns('backtrace')
       @logger.expects(:error).with("fail")
       @logger.expects(:debug).with('backtrace')
-      subject.new([], key: '/some/key', debug: true).encrypt('SECRET')
+      subject.new([], key: '/some/key', verbose: true).encrypt('SECRET')
     end
 
   end
