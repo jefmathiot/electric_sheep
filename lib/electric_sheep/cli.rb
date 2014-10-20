@@ -9,12 +9,12 @@ module ElectricSheep
       desc: 'Configuration file containing projects', default: 'Sheepfile'
     option :project, aliases: %w(-p), type: :string,
       desc: 'Name of a single project to execute'
-    option :debug, aliases:%w(-d), type: :boolean,
-      desc: 'Verbose mode for debugging purpose', default: false
+    option :verbose, aliases:%w(-v), type: :boolean,
+      desc: 'Show debug log', default: false
 
     def work
       begin
-        logger = Log::ConsoleLogger.new(STDOUT, STDERR, options[:debug])
+        logger = Log::ConsoleLogger.new(STDOUT, STDERR, options[:verbose])
         Runner.new(
           config: configuration,
           project: options[:project],
@@ -28,11 +28,11 @@ module ElectricSheep
 
     desc "encrypt SECRET", "Encrypt SECRET using the provided public key"
     option :key, aliases: %w(-k), required: true
-    option :debug, aliases:%w(-d), type: :boolean,
-      desc: 'Verbose mode for debugging purpose', default: false
+    option :verbose, aliases:%w(-v), type: :boolean,
+      desc: 'Show debug log', default: false
 
     def encrypt(secret)
-        logger = Log::ConsoleLogger.new(STDOUT, STDERR, options[:debug])
+        logger = Log::ConsoleLogger.new(STDOUT, STDERR, options[:verbose])
         logger.info Crypto.encrypt(secret, options[:key])
       rescue Exception => ex
         logger.error ex.message

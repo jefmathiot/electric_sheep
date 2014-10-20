@@ -70,6 +70,14 @@ Spawn a daemon in the background and activate scheduling:
 
 ```
 electric_sheep work -d
+
+```
+#### `-v`, `--verbose` option
+
+Show debug log in console
+
+```
+electric_sheep work -v
 ```
 
 ### Encrypted credentials
