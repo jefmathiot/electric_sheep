@@ -89,6 +89,10 @@ module ElectricSheep
         @subject.use_private_key! File.expand_path(path)
       end
 
+      def schedule(rate='daily',options={})
+        @subject.add_schedule Metadata::Schedule.new(options.merge(rate: rate))
+      end
+
       private
       def transport(type, options)
         options[:transport]=options.delete(:using)

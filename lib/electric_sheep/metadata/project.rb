@@ -45,6 +45,11 @@ module ElectricSheep
         super
       end
 
+      def add_schedule(schedule)
+        @schedules ||= []
+        @schedules.push schedule
+      end
+
     end
   end
 end
