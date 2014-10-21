@@ -15,7 +15,7 @@ module ElectricSheep
       def evaluate_file(config)
         config.tap do |config|
           begin
-            Dsl.new(config).instance_eval File.open(@path, 'rb').read
+            Dsl.new(config).instance_eval File.open(@path, 'rb').read, @path
           rescue SyntaxError => e
             line = e.message[/.*:(.*):/,1]
             raise SheepException, "Syntax error in #{@path} line: #{line}"
