@@ -43,6 +43,7 @@ describe ElectricSheep::Runner do
 
   end
 
+
   describe 'executing projects' do
 
     before do
@@ -50,6 +51,16 @@ describe ElectricSheep::Runner do
         with("Executing \"First project description\" (first-project)")
       @logger.expects(:success).
         with("Project \"first-project\"")
+    end
+
+    describe 'on daemon mode' do
+      it 'check project schedulers' do
+        begin_time = @runner.instance_variable_get("@last_run")
+        DateTime.expects(:new).returns(fake_time = mock)
+        @first_project.expects(:launchable?).with(begin_time, fake_time).returns(true)
+        @runner.run! true
+        @runner.instance_variable_get("@last_run").must_equal fake_time
+      end
     end
 
     describe 'with multiple projects' do

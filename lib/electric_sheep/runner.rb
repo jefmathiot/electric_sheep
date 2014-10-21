@@ -6,14 +6,18 @@ module ElectricSheep
       @config = options[:config]
       @logger = options[:logger]
       @project = options[:project]
+      @last_run = DateTime.new
     end
 
-    def run!
+    def run!(daemon=false)
+      run_time = DateTime.new
       have_run = false
       @config.each_item do |project|
         if @project.nil? || @project == project.id
           have_run = true
-          execute_project(project)
+          if !daemon or project.launchable? @last_run, run_time
+            execute_project(project)
+          end
         end
       end
       unless have_run
@@ -23,7 +27,7 @@ module ElectricSheep
           @logger.warn "Project \"#{@project}\" not present in sheepfile"
         end
       end
-
+      @last_run = run_time
     end
 
     protected

@@ -45,6 +45,14 @@ module ElectricSheep
         super
       end
 
+      def launchable?(prev_check_date, check_date)
+        return false unless @schedules
+        @schedules.each do |schedule|
+          return true if schedule.launchable? prev_check_date, check_date
+        end
+        false
+      end
+
       def add_schedule(schedule)
         @schedules ||= []
         @schedules.push schedule
