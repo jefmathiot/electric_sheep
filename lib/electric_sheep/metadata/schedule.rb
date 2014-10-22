@@ -4,6 +4,10 @@ module ElectricSheep
 
       class Base < Metadata::Base
         attr_reader :scheduled_at
+
+        def expired?
+          Time.now >= scheduled_at
+        end
       end
 
       class Hourly < Base

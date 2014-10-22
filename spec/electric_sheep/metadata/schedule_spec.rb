@@ -13,6 +13,15 @@ describe ElectricSheep::Metadata::Schedule do
     end
   end
 
+  describe ElectricSheep::Metadata::Schedule::Base do
+    it 'expires' do
+      subject.new.tap do |schedule|
+        schedule.instance_variable_set(:@scheduled_at, Time.now - 1.second)
+        assert_equal true, schedule.expired?
+      end
+    end
+  end
+
   describe ElectricSheep::Metadata::Schedule::Hourly do
     include Support::Options
 
