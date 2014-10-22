@@ -36,26 +36,12 @@ module ElectricSheep
       end
 
       def validate(config)
-        each_item do |step|
+        all.each do |step|
           unless step.validate(config)
             errors.add(:base, "Invalid step #{step.to_s}", step.errors)
           end
         end
-        reset!
         super
-      end
-
-      def launchable?(prev_check_date, check_date)
-        return false unless @schedules
-        @schedules.each do |schedule|
-          return true if schedule.launchable? prev_check_date, check_date
-        end
-        false
-      end
-
-      def add_schedule(schedule)
-        @schedules ||= []
-        @schedules.push schedule
       end
 
     end

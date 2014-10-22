@@ -6,31 +6,31 @@ module ElectricSheep
       @config = options[:config]
       @logger = options[:logger]
       @project = options[:project]
-      @last_run = DateTime.new
     end
 
-    def run!(daemon=false)
-      run_time = DateTime.new
-      have_run = false
-      @config.each_item do |project|
-        if @project.nil? || @project == project.id
-          have_run = true
-          if !daemon or project.launchable? @last_run, run_time
-            execute_project(project)
-          end
-        end
+    def run!
+      if @project.nil?
+        run_all!
+      else
+        run_single!
       end
-      unless have_run
-        if @project.nil?
-          @logger.warn "No project available"
-        else
-          @logger.warn "Project \"#{@project}\" not present in sheepfile"
-        end
-      end
-      @last_run = run_time
     end
 
     protected
+    def run_all!
+      @config.each_item do |project|
+        execute_project(project)
+      end
+    end
+
+    def run_single!
+      project=@config.all.find{|p|p.id==@project}
+      if project.nil?
+        @logger.warn "Project \"#{@project}\" does not exist"
+      else
+        execute_project(project)
+      end
+    end
 
     def execute_project(project)
       project.benchmarked do

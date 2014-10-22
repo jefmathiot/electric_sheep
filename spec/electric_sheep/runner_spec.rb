@@ -21,26 +21,12 @@ describe ElectricSheep::Runner do
     sequence('script')
   end
 
-  describe 'executing projects warning' do
-    it 'warns on unknown project' do
-      @logger.expects(:info).never.with("Executing unknow")
-      @logger.expects(:warn).with("Project \"unknow\" not present in sheepfile")
-      @runner = subject.new(config: @config, project: 'unknow',
-        logger: @logger)
-      @runner.run!
-      @config.remaining.must_equal 0
-    end
-
-    it 'warns when there is no project' do
-      @config = ElectricSheep::Config.new
-      @logger.expects(:info).never.with("Executing unknow")
-      @logger.expects(:warn).with("No project available")
-      @runner = subject.new(config: @config,
-        logger: @logger)
-      @runner.run!
-      @config.remaining.must_equal 0
-    end
-
+  it 'warns when told to run an unknown project' do
+    @logger.expects(:info).never.with("Executing unknow")
+    @logger.expects(:warn).with("Project \"unknow\" does not exist")
+    @runner = subject.new(config: @config, project: 'unknow',
+      logger: @logger)
+    @runner.run!
   end
 
 
@@ -51,16 +37,6 @@ describe ElectricSheep::Runner do
         with("Executing \"First project description\" (first-project)")
       @logger.expects(:success).
         with("Project \"first-project\"")
-    end
-
-    describe 'on daemon mode' do
-      it 'check project schedulers' do
-        begin_time = @runner.instance_variable_get("@last_run")
-        DateTime.expects(:new).returns(fake_time = mock)
-        @first_project.expects(:launchable?).with(begin_time, fake_time).returns(true)
-        @runner.run! true
-        @runner.instance_variable_get("@last_run").must_equal fake_time
-      end
     end
 
     describe 'with multiple projects' do
@@ -85,7 +61,6 @@ describe ElectricSheep::Runner do
         @runner = subject.new(config: @config, project: 'first-project',
           logger: @logger)
         @runner.run!
-        @config.remaining.must_equal 0
       end
 
     end
@@ -126,7 +101,6 @@ describe ElectricSheep::Runner do
     end
 
     it 'executes transport' do
-
       @first_project.add metadata = ElectricSheep::Metadata::Transport.new
       metadata.expects(:agent).in_sequence(script).at_least(1).returns(FakeTransport)
       FakeTransport.any_instance.expects(:perform!).in_sequence(script)

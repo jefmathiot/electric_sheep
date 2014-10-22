@@ -71,21 +71,4 @@ describe ElectricSheep::Metadata::Project do
     end
   end
 
-  it 'adds schedule' do
-    project = subject.new
-    project.instance_variable_get("@schedules").must_equal nil
-    project.add_schedule( mock )
-    project.instance_variable_get("@schedules").count.must_equal 1
-  end
-
-  it 'test all schedules validities' do
-    project = subject.new
-    schedule = mock
-    3.times do
-      project.add_schedule( schedule )
-    end
-    schedule.expects(:launchable?).with(0,1).returns( false ).times(3)
-    project.launchable?(0,1)
-  end
-
 end

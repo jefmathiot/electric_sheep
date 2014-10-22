@@ -13,7 +13,7 @@ describe ElectricSheep::Dsl do
     end
   end
 
-  it "raisez an error on method missing" do
+  it "raises an error on method missing" do
     -> { @dsl.orphan_method }.must_raise ElectricSheep::SheepException
   end
 
@@ -68,13 +68,6 @@ describe ElectricSheep::Dsl do
         private_key '/path/to/private/key'
       end
       project.private_key.must_equal '/path/to/private/key'
-    end
-
-    it 'adds schedule to project' do
-      project = build_project do
-        schedule 'daily'
-      end
-      project.instance_variable_get("@schedules").first.rate.must_equal 'daily'
     end
 
     it 'allows encrypted values' do

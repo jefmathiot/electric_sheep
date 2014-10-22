@@ -37,7 +37,7 @@ When(/^I tell the sheep to work on configuration "(.*?)"$/) do |config|
 end
 
 Then(/^the program warns me the project is unknown$/) do
-  expect(all_output).to match(/Project \"unknown\" not present in sheepfile/)
+  expect(all_output).to match(/Project \"unknown\" does not exist/)
 end
 
 Then(/^the program warns me an "(.*?)" error occured$/) do |error|

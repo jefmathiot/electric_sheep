@@ -29,5 +29,9 @@ module ElectricSheep
         yield item if block_given?
       end
     end
+
+    def all
+      @items
+    end
   end
 end
