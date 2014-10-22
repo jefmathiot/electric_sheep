@@ -36,10 +36,11 @@ When(/^I tell the sheep to work on configuration "(.*?)"$/) do |config|
   step "I successfully run `bundle exec #{electric_sheep} work #{options}`"
 end
 
-Then(/^the sheep tell me the project is unknown$/) do
+Then(/^the program warns me the project is unknown$/) do
   expect(all_output).to match(/Project \"unknown\" not present in sheepfile/)
 end
 
-Then(/^the sheep tell me the error "(.*?)" occurs$/) do |error|
+Then(/^the program warns me an "(.*?)" error occured$/) do |error|
   expect(all_output).to match(/#{error}/)
 end
+
