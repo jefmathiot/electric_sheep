@@ -194,9 +194,9 @@ TODO
 
 ```
   project "myapp-database-backup" do
-    # schedule "hourly"
+    # schedule "hourly", past: "30"
     schedule "daily", at: "00:00"
-    schedule "weekly", on: "monday", at: "00:00"
+    # schedule "weekly", on: "monday", at: "00:00"
     # schedule "monthly", every: "2", at: "00:00"
   end
 ```
