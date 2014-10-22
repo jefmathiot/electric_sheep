@@ -71,4 +71,36 @@ describe ElectricSheep::Metadata::Project do
     end
   end
 
+  describe 'on inspecting schedule' do
+
+    def scheduled(expired, updates, &block)
+      schedule=mock(expired?: expired).tap{|s| s.expects(:update!).send(updates)}
+      project, called=subject.new.tap{|p| p.schedule!(schedule) }, nil
+      project.on_schedule do
+        called=true
+      end
+      yield called
+    end
+
+    it 'yields on expiry' do
+      scheduled(true, :once) do |called|
+        called.must_equal true, "Block should have been called"
+      end
+    end
+
+    it 'does not yield if schedule has not expired' do
+      scheduled(false, :never) do |called|
+        called.must_be_nil "Block should not have been called"
+      end
+    end
+
+    it 'does not yield if it is not scheduled' do
+      project, called=subject.new, nil
+      project.on_schedule do
+        called=true
+      end
+      called.must_be_nil "Block should not have been called"
+    end
+  end
+
 end

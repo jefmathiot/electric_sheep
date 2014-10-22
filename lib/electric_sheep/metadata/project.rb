@@ -44,6 +44,17 @@ module ElectricSheep
         super
       end
 
+      def schedule!(schedule)
+        @schedule = schedule
+      end
+
+      def on_schedule(&block)
+        if @schedule && @schedule.expired?
+          @schedule.update!
+          yield self
+        end
+      end
+
     end
   end
 end
