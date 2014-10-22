@@ -8,7 +8,7 @@ describe ElectricSheep::Metadata::Schedule do
 
   def expects_scheduled_at(options, expected)
     subject.new(options).tap do |subject|
-      subject.next!
+      subject.update!
       assert_equal expected, subject.scheduled_at
     end
   end

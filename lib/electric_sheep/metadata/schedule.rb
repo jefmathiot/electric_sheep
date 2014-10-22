@@ -5,15 +5,22 @@ module ElectricSheep
       class Base < Metadata::Base
         attr_reader :scheduled_at
 
+        def initialize(*args)
+          super
+          update!
+        end
+
         def expired?
           Time.now >= scheduled_at
         end
+
+        def update! ; end
       end
 
       class Hourly < Base
         option :past
 
-        def next!
+        def update!
           @scheduled_at=Time.now.at_beginning_of_hour.in(1.hour)
           if option(:past)
             @scheduled_at=@scheduled_at.in(option(:past).to_i.minutes)
@@ -35,7 +42,7 @@ module ElectricSheep
       end
 
       class Daily < Timed
-        def next!
+        def update!
           @scheduled_at=at_time(Time.now)
           @scheduled_at=@scheduled_at.in(1.day) if @scheduled_at < Time.now
         end
@@ -47,7 +54,7 @@ module ElectricSheep
         DAYS=%w(sunday monday tuesday wednesday thursday friday saturday).
           freeze
 
-        def next!
+        def update!
           @scheduled_at=at_time(Time.now.at_beginning_of_week(:sunday)).
             in(DAYS.find_index(option(:on)).days)
           @scheduled_at=@scheduled_at.in(1.week) if @scheduled_at < Time.now
@@ -62,7 +69,7 @@ module ElectricSheep
           Time.days_in_month(time.month, time.year)
         end
 
-        def next!
+        def update!
           day=option(:every) || 1
           basetime=at_time(Time.now)
           @scheduled_at=adjust(basetime, day)
