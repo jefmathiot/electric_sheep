@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Benoit Anselme", "Patrice Izzo", "Jef Mathiot", "Fabrice Nourisson",
                         "Eric Hartmann", "Benjamin Severac"]
   spec.email         = ["foss@servebox.com"]
-  spec.description   = %q{A simple task system for file manipulation (i.e. backup).}
-  spec.summary       = %q{A simple task system for file manipulation (i.e. backup).}
+  spec.description   = %q{A backup system for Application Developers.}
+  spec.summary       = %q{A backup system for Application Developers and DevOps.}
   spec.homepage      = "https://github.com/servebox/electric_sheep"
   spec.license       = "MIT"
 

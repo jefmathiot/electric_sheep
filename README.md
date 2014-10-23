@@ -1,4 +1,4 @@
-# ElectricSheep
+# ElectricSheepIO
 
 An (hopefully) simple tool to execute backup tasks and copy archives offsite.
 It's designed to operate from an utility machine over the network using SSH
@@ -41,7 +41,7 @@ TODO
 
 ### Run
 
-Just launch ElectricSheep inside your project with:
+Just launch ElectricSheepIO inside your project with:
 
 ```
 electric_sheep work
@@ -222,12 +222,12 @@ version :
 * :clock11: SCP, RSYNC over SSH and Cloud Storage transports
 * :clock11: Commands for directories & files backups and compression
 * :clock11: Commands for popular RDBMS backups (MySQL, Postgres)
-* :heavy_minus_sign: Project scheduling
+* :clock11: Project scheduling
 * :heavy_minus_sign: Retention options and incremental backups
 * :heavy_minus_sign: Project templates
 * :heavy_minus_sign: Commands for archive encryption
 * :heavy_minus_sign: Commands for LVM copy-on-write snapshots
-* :heavy_minus_sign: Commands for Could servers snapshots (AWS, Digital Ocean, RackSpace, Google Compute Engine)
+* :heavy_minus_sign: Commands for Cloud servers snapshots (AWS, Digital Ocean, RackSpace, Google Compute Engine)
 * :clock11: Commands for popular key-value and document stores backups (Redis, Memcached, MongoDB, CouchDB)
 * :white_check_mark: Credentials encryption using public-key cryptography
 * :heavy_minus_sign: Reporting configuration
