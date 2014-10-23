@@ -4,9 +4,9 @@ require 'electric_sheep'
 module ElectricSheep
   class CLI < Thor
 
-    desc "work", "Start processing projects."
+    desc "work", "Process projects in a single sequence."
     option :config, aliases: %w(-c), type: :string,
-      desc: 'Configuration file containing projects', default: 'Sheepfile'
+      desc: 'Configuration file', default: 'Sheepfile'
     option :project, aliases: %w(-p), type: :string,
       desc: 'Name of a single project to execute'
     option :verbose, aliases:%w(-v), type: :boolean,
@@ -15,7 +15,7 @@ module ElectricSheep
     def work
       begin
         logger = Log::ConsoleLogger.new(STDOUT, STDERR, options[:verbose])
-        Runner.new(
+        Runner::Inline.new(
           config: configuration,
           project: options[:project],
           logger: logger
@@ -25,6 +25,8 @@ module ElectricSheep
         logger.debug ex.backtrace
       end
     end
+
+    default_task :work
 
     desc "encrypt SECRET", "Encrypt SECRET using the provided public key"
     option :key, aliases: %w(-k), required: true

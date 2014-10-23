@@ -41,20 +41,28 @@ TODO
 
 ### Run
 
-Just launch ElectricSheepIO inside your project with:
+To perform a single run, lust launch ElectricSheepIO from your project's
+directory using:
+
+```
+electric_sheep
+```
+
+or specify the task explicitely:
 
 ```
 electric_sheep work
 ```
 
-The program will look for a Sheepfile in the current directory and execute all projects.
+The program will look for a Sheepfile in the current directory and execute all
+projects.
 
 #### `-c`, `--config` option
 
 You can use any file as the configuration:
 
 ```
-electric_sheep work -c ~/Somefile
+electric_sheep -c ~/Somefile
 ```
 
 #### `-p`, `--project` option
@@ -62,14 +70,8 @@ electric_sheep work -c ~/Somefile
 You can run a single project:
 
 ```
-electric_sheep work -p my-project
+electric_sheep -p my-project
 ```
-#### `-d`, `--daemonize` option
-
-Spawn a daemon in the background and activate scheduling:
-
-```
-electric_sheep work -d
 
 ```
 #### `-v`, `--verbose` option
@@ -77,7 +79,7 @@ electric_sheep work -d
 Show debug log in console
 
 ```
-electric_sheep work -v
+electric_sheep -v
 ```
 
 ### Encrypted credentials

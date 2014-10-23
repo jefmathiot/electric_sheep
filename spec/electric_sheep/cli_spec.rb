@@ -11,7 +11,7 @@ describe ElectricSheep::CLI do
         @config, @logger = mock, mock
         ElectricSheep::Log::ConsoleLogger.expects(:new).with(kind_of(IO), kind_of(IO), true).
           returns(@logger)
-        ElectricSheep::Runner.expects(:new).
+        ElectricSheep::Runner::Inline.expects(:new).
           with(all_of(
             has_entry(config: @config),
             has_entry(project: 'some-project'),
