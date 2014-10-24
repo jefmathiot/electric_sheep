@@ -38,5 +38,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'net-ssh', '~> 2.9', '>= 2.9.0'
   spec.add_dependency 'net-scp', '~> 1.2', '>= 1.2.1'
   spec.add_dependency 'fog', '~> 1.23', '>= 1.23.0'
+  spec.add_dependency 'lumberjack', '~> 1.0', '>= 1.0.9'
 
 end

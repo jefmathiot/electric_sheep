@@ -1,12 +1,11 @@
 require 'active_support'
-require 'colorize'
 require 'electric_sheep/version'
 
 require 'electric_sheep/queue'
 require 'electric_sheep/config'
 require 'electric_sheep/crypto'
 require 'electric_sheep/dsl'
-require 'electric_sheep/log'
+require 'electric_sheep/logger'
 require 'electric_sheep/metadata'
 require 'electric_sheep/resources'
 require 'electric_sheep/runner'

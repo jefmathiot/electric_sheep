@@ -13,17 +13,15 @@ module ElectricSheep
       desc: 'Show debug log', default: false
 
     def work
-      begin
-        logger = Log::ConsoleLogger.new(STDOUT, STDERR, options[:verbose])
-        Runner::Inline.new(
-          config: configuration,
-          project: options[:project],
-          logger: logger
-        ).run!
+      logger=stdout_logger
+      Runner::Inline.new(
+        config: configuration,
+        project: options[:project],
+        logger: logger
+      ).run!
       rescue Exception => ex
         logger.error ex.message
         logger.debug ex.backtrace
-      end
     end
 
     default_task :work
@@ -34,8 +32,8 @@ module ElectricSheep
       desc: 'Show debug log', default: false
 
     def encrypt(secret)
-        logger = Log::ConsoleLogger.new(STDOUT, STDERR, options[:verbose])
-        logger.info Crypto.encrypt(secret, options[:key])
+      logger=stdout_logger
+      logger.info Crypto.encrypt(secret, options[:key])
       rescue Exception => ex
         logger.error ex.message
         logger.debug ex.backtrace
@@ -44,6 +42,14 @@ module ElectricSheep
     protected
     def configuration
       Sheepfile::Evaluator.new(options[:config]).evaluate
+    end
+
+    def log_level
+      options[:verbose] ? :debug : :info
+    end
+
+    def stdout_logger
+      Lumberjack::Logger.new(STDOUT, level: log_level)
     end
 
   end
