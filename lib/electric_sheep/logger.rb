@@ -6,9 +6,9 @@ module Lumberjack
     alias_method :boring_call, :call
 
     COLORS=[
-      :white,
+      :cyan,
       :green,
-      :orange,
+      :yellow,
       :red,
       :red,
       :white

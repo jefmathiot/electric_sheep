@@ -23,11 +23,11 @@ describe ElectricSheep::Runner do
       )
     end
 
-    it 'warns when told to run an unknown project' do
-      logger.expects(:info).never.with("Executing unknow")
-      logger.expects(:warn).with("Project \"unknow\" does not exist")
-      runner = subject.new(config: config, project: 'unknow', logger: logger)
-      runner.run!
+    it 'raises when told to run an unknown project' do
+      logger.expects(:info).never.with("Executing unknown")
+      runner = subject.new(config: config, project: 'unknown', logger: logger)
+      err = ->{ runner.run! }.must_raise RuntimeError
+      err.message.must_equal "Project \"unknown\" does not exist"
     end
 
     describe 'executing projects' do
@@ -35,8 +35,8 @@ describe ElectricSheep::Runner do
       before do
         logger.expects(:info).in_sequence(script).
           with("Executing \"First project description\" (first-project)")
-        logger.expects(:success).
-          with("Project \"first-project\"")
+        logger.expects(:info).
+          with("Project \"first-project\" completed")
       end
 
       describe 'with multiple projects' do
@@ -50,8 +50,8 @@ describe ElectricSheep::Runner do
         it 'should not have remaining projects' do
           logger.expects(:info).in_sequence(script).
             with("Executing second-project")
-          logger.expects(:success).in_sequence(script).
-            with("Project \"second-project\"")
+          logger.expects(:info).in_sequence(script).
+            with("Project \"second-project\" completed")
           runner.run!
           config.remaining.must_equal 0
         end
@@ -112,8 +112,8 @@ describe ElectricSheep::Runner do
         project.add(metadata = ElectricSheep::Metadata::Shell.new)
         shell = ElectricSheep::Shell::LocalShell.any_instance
         shell.expects(:perform!).in_sequence(script)
-        logger.expects(:success).in_sequence(script).
-          with("Project \"project\"")
+        logger.expects(:info).in_sequence(script).
+          with("Project \"project\" completed")
         runner.run!
         expects_execution_times(project, metadata)
       end
@@ -126,8 +126,8 @@ describe ElectricSheep::Runner do
         )
         shell = ElectricSheep::Shell::RemoteShell.any_instance
         shell.expects(:perform!).in_sequence(script).returns(shell)
-        logger.expects(:success).in_sequence(script).
-          with("Project \"project\"")
+        logger.expects(:info).in_sequence(script).
+          with("Project \"project\" completed")
         runner.run!
         expects_execution_times(project, metadata)
       end
@@ -142,8 +142,8 @@ describe ElectricSheep::Runner do
       project.add metadata = ElectricSheep::Metadata::Transport.new
       metadata.expects(:agent).in_sequence(script).at_least(1).returns(FakeTransport)
       FakeTransport.any_instance.expects(:perform!).in_sequence(script)
-      logger.expects(:success).in_sequence(script).
-        with("Project \"project\"")
+      logger.expects(:info).in_sequence(script).
+        with("Project \"project\" completed")
       runner.run!
       expects_execution_times(project, metadata)
     end

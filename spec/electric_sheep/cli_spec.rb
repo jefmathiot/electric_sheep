@@ -66,7 +66,7 @@ describe ElectricSheep::CLI do
         raises(@ex = Exception.new('fail'))
       @ex.stubs(:backtrace).returns('backtrace')
       logger.expects(:error).with("fail")
-      logger.expects(:debug).with('backtrace')
+      logger.expects(:debug).with(kind_of(Exception))
       subject.new.work
     end
 
@@ -85,9 +85,8 @@ describe ElectricSheep::CLI do
       expects_stdout_logger(:debug)
       ElectricSheep::Crypto.expects(:encrypt).with('SECRET', '/some/key').
         raises(@ex = Exception.new('fail'))
-      @ex.stubs(:backtrace).returns('backtrace')
       logger.expects(:error).with("fail")
-      logger.expects(:debug).with('backtrace')
+      logger.expects(:debug).with(kind_of(Exception))
       subject.new([], key: '/some/key', verbose: true).encrypt('SECRET')
     end
 

@@ -22,14 +22,12 @@ module ElectricSheep
             begin
               send("execute_#{executable_type(step)}", project, step)
             rescue Exception => e
-              @logger.info "The last command failed :"
-              @logger.info e.message
-              @logger.debug e.backtrace
-              @logger.error "Aborting project \"#{project.id}\""
+              @logger.error e.message
+              @logger.debug e
               return
             end
           end
-          @logger.success "Project \"#{project.id}\""
+          @logger.info "Project \"#{project.id}\" completed"
         end
       end
 
@@ -91,7 +89,7 @@ module ElectricSheep
       def run_single!
         project=@config.all.find{|p|p.id==@project}
         if project.nil?
-          @logger.warn "Project \"#{@project}\" does not exist"
+          raise "Project \"#{@project}\" does not exist"
         else
           run(project)
         end
