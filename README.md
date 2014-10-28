@@ -73,10 +73,9 @@ You can run a single project:
 electric_sheep -p my-project
 ```
 
-```
 #### `-v`, `--verbose` option
 
-Show debug log in console
+Show debug log in console:
 
 ```
 electric_sheep -v
@@ -194,7 +193,7 @@ whereas the `copy` command let the previous resource unchanged.
 
 TODO
 
-```
+```ruby
   project "myapp-database-backup" do
     # schedule "hourly", past: "30"
     schedule "daily", at: "00:00"
