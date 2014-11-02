@@ -9,7 +9,14 @@ Then(/^a MySQL dump of the database should have been created$/) do
   raise "Not a dump" unless File.read(file) =~ /-- Dump completed/
 end
 
-When(/^I am notified that the database backup failed$/) do
-  expect(all_output.include? "mysqldump: Got error: 1045: Access denied for user 'fail_user'@'localhost'").to be(true)
-  step "I am notified that the command failed"
+Then(/^I am notified the mysqldump failed due to an authentication failure$/) do
+  step "the output should contain \"mysqldump: Got error: 1045\""
+end
+
+Then(/^I am notified the mysqldump failed due to an unknown database$/) do
+  step "the output should contain \"mysqldump: Got error: 1044\""
+end
+
+Then(/^I am notified the mongodump command failed$/) do
+  step "the output should contain \"Command terminated with exit status : 255\""
 end

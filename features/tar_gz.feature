@@ -15,4 +15,4 @@ Feature: Tarball Compression
 
   Scenario: Compress an unknown file
     Given I tell the sheep to work on failing project "tar-gz-unknown-file"
-    Then I am notified that the command failed
+    Then I am notified the compression command failed

@@ -9,7 +9,8 @@ Feature: MongoDB Dump
 
   Scenario: Authentication error on a dump
     Given I tell the sheep to work on failing project "mongodb-dump-auth-fail"
-    Then I am notified that the command failed
+    Then I am notified the mongodump command failed
+
 # @pending
 #   Scenario: Error on an unknown database dump
 #     Given I tell the sheep to work on failing project "mongodb-dump-unknown-db-fail"

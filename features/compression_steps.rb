@@ -11,3 +11,7 @@ Then(/^an archive containing the files should have been created on the remote ho
     ssh_run_simple("tar -ztf #{archive} | grep #{file}", 10)
   end
 end
+
+Then(/^I am notified the compression command failed$/) do
+  step "the output should match /No such file or directory/"
+end

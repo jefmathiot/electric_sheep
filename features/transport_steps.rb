@@ -88,3 +88,7 @@ Then(/^the S3 object should have been copied to the localhost$/) do
   step "a file matching %r<#{@project}/dummy-\\d{8}-\\d{6}.file> should exist"
   assert_local_file_exists? "#{@bucket_path}/my-project/dummy.file"
 end
+
+Then(/^I am notified the (?:s3|scp) move failed$/) do
+  step "the output should match /No such file or directory/"
+end

@@ -14,10 +14,6 @@ When(/^I tell the sheep to work on failing project "(.*?)"$/) do |project|
   step "I run `bundle exec #{electric_sheep} work #{options}`"
 end
 
-Then(/^I am notified that the command failed$/) do
-  expect(all_output).to match(/The last command failed/)
-end
-
 Then(/^the project "(.*?)" has been executed$/) do |project|
   expect(all_output).to match(/Executing #{project}/)
 end
@@ -37,10 +33,9 @@ When(/^I tell the sheep to work on configuration "(.*?)"$/) do |config|
 end
 
 Then(/^the program warns me the project is unknown$/) do
-  expect(all_output).to match(/Project \"unknown\" does not exist/)
+  step "the output should match /Project \"unknown\" does not exist/"
 end
 
 Then(/^the program warns me an "(.*?)" error occured$/) do |error|
-  expect(all_output).to match(/#{error}/)
+  step "the output should match /#{error}/"
 end
-

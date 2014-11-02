@@ -6,7 +6,7 @@ Feature: Run projects
   Scenario: Run all projects from a Sheepfile even if one of them failed
     Given I tell the sheep to work on configuration "Sheepfile.runner"
     Then the project "failing-project" has been executed
-    And I am notified that the command failed
+    And I am notified the mysqldump failed due to an authentication failure
     And the project "successful-project" has been executed
 
   Scenario: Run a specific project from a Sheepfile
