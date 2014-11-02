@@ -1,0 +1,11 @@
+#!/bin/bash
+#
+# Perform necessary electric_sheep removal steps
+# after package is uninstalled.
+#
+
+sudo bash -c "rm /usr/bin/electric_sheep"
+
+echo "electric_sheep has been uninstalled!"
+
+exit 0
