@@ -10,7 +10,7 @@ module ElectricSheep
       def benchmarked
         start = Time.now
         yield if block_given?
-        @execution_time = (Time.now - start) / 1000
+        @execution_time = (Time.now - start)
         self
       end
     end

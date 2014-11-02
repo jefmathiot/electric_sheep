@@ -27,8 +27,9 @@ module ElectricSheep
               return
             end
           end
-          @logger.info "Project \"#{project.id}\" completed"
         end
+        @logger.info "Project \"#{project.id}\" completed in %.3f seconds" %
+          project.execution_time.round(3)
       end
 
       def executable_type(executable)
