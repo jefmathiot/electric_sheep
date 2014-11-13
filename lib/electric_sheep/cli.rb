@@ -4,20 +4,33 @@ require 'electric_sheep'
 module ElectricSheep
   class CLI < Thor
 
-    def self.common_options
+    def self.startup_options
+      run_options
+      process_options
+    end
+
+    def self.run_options
       option :config, aliases: %w(-c), type: :string,
         desc: 'Override path to configuration file', default: './Sheepfile'
+      logging_options
+    end
+
+    def self.logging_options
       option :verbose, aliases:%w(-v), type: :boolean,
         desc: 'Show debug log', default: false
     end
 
+    def self.process_options
+      option :pidfile, aliases: %w(-f), type: :string,
+        desc: 'Override path to pidfile', default: './electric_sheep.pid'
+    end
+
     desc "work", "Process all projects in sequence"
-    common_options
+    run_options
     option :project, aliases: %w(-p), type: :string,
       desc: 'Name of a single project to execute'
 
     def work
-      logger=stdout_logger
       Runner::Inline.new(
         config: configuration,
         logger: logger,
@@ -30,30 +43,42 @@ module ElectricSheep
 
     desc "encrypt SECRET", "Encrypt SECRET using the provided public key"
     option :key, aliases: %w(-k), required: true
-    option :verbose, aliases:%w(-v), type: :boolean,
-      desc: 'Show debug log', default: false
+    logging_options
 
     def encrypt(secret)
-      logger=stdout_logger
       logger.info Crypto.encrypt(secret, options[:key])
       rescue Exception => ex
         logger.error ex.message
         logger.debug ex
     end
 
-    desc "start", "Start a daemon which processes scheduled projects in the " +
+    desc "start", "Start a daemon to process scheduled projects in the " +
       "background"
-    common_options
-    option :pidfile, aliases: %w(-f), type: :string,
-      desc: 'Override path to pidfile', default: './electric_sheep.pid'
+    startup_options
 
     def start
-      logger=file_logger
-      Daemon.new(
-        config: configuration,
-        pidfile: options[:pidfile],
-        logger: logger
-      ).start!
+      master(config: configuration).start!
+      rescue Exception => ex
+        logger.error ex.message
+        logger.debug ex
+    end
+
+    desc "stop", "Stop the daemon"
+    process_options
+    logging_options
+
+    def stop
+      master.stop!
+      rescue Exception => ex
+        logger.error ex.message
+        logger.debug ex
+    end
+
+    desc "restart", "Restart the daemon"
+    startup_options
+
+    def restart
+      master(config: configuration).restart!
       rescue Exception => ex
         logger.error ex.message
         logger.debug ex
@@ -77,6 +102,18 @@ module ElectricSheep
     def file_logger
       # TODO Configure logger output
       Lumberjack::Logger.new("electric_sheep.log", level: log_level)
+    end
+
+    def logger
+      @logger ||= stdout_logger
+    end
+
+    def master(opts={})
+      @logger=file_logger
+      Master.new({
+        pidfile: options[:pidfile],
+        logger: logger
+      }.merge(opts))
     end
 
   end
