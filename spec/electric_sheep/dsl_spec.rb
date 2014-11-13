@@ -78,6 +78,13 @@ describe ElectricSheep::Dsl do
       value.must_be_instance_of ElectricSheep::Metadata::Encrypted
     end
 
+    it 'assigns a schedule' do
+      project = build_project do
+        schedule "hourly", past: "30"
+      end
+      project.schedule.must_be_instance_of ElectricSheep::Metadata::Schedule::Hourly
+    end
+
     module ShellSpecs
       extend ActiveSupport::Concern
 

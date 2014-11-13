@@ -89,9 +89,11 @@ module ElectricSheep
         @subject.use_private_key! File.expand_path(path)
       end
 
-      # def schedule(rate='daily',options={})
-      #   @subject.add_schedule Metadata::Schedule.new(options.merge(rate: rate))
-      # end
+      def schedule(type, options={})
+        Metadata::Schedule.const_get(type.capitalize).tap do |klazz|
+          @subject.schedule! klazz.new(options)
+        end
+      end
 
       private
       def transport(type, options)

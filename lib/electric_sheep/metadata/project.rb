@@ -8,6 +8,7 @@ module ElectricSheep
       option :description
 
       attr_accessor :products
+      attr_reader :schedule
 
       def initialize(options={})
         super

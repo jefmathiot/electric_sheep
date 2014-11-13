@@ -79,7 +79,12 @@ describe ElectricSheep::Metadata::Project do
       project.on_schedule do
         called=true
       end
-      yield called
+      yield called if block_given?
+      project
+    end
+
+    it 'expose its schedule' do
+      scheduled(true, :once).schedule.wont_be_nil
     end
 
     it 'yields on expiry' do
