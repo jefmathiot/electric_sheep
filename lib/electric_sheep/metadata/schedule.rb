@@ -55,8 +55,8 @@ module ElectricSheep
           freeze
 
         def update!
-          @scheduled_at=at_time(Time.now.at_beginning_of_week(:sunday)).
-            in(DAYS.find_index(option(:on)).days)
+          bow=Time.now.at_beginning_of_week(:sunday)
+          @scheduled_at=at_time(bow).in(DAYS.find_index(option(:on)).days)
           @scheduled_at=@scheduled_at.in(1.week) if @scheduled_at < Time.now
         end
 
