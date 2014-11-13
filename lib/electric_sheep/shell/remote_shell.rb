@@ -2,8 +2,6 @@ module ElectricSheep
   module Shell
     class RemoteShell < Base
 
-      attr_reader :host
-
       def initialize(host, project, logger, user)
         super(host, project, logger)
         @user = user

@@ -4,7 +4,7 @@ module ElectricSheep
 
       delegate :expand_path, :exec, to: :interactor
 
-      attr_reader :interactor
+      attr_reader :interactor, :host
 
       def initialize(host, project, logger)
         @host = host
