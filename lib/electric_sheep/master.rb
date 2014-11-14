@@ -11,7 +11,7 @@ module ElectricSheep
       raise "Another daemon seems to be running" if running?
       @logger.info "Daemon starting"
       pid=daemonize do
-        loop do
+        while !should_stop? do
           @logger.debug "Searching for scheduled projects"
           run_scheduled
           flush_workers
@@ -34,6 +34,11 @@ module ElectricSheep
     end
 
     protected
+
+    def should_stop?
+      !!@should_stop
+    end
+
     def write_pidfile(pid)
       @logger.info "Daemon started, pid: #{pid}"
       File.open(@pidfile, 'w') do |f|
