@@ -62,7 +62,7 @@ describe ElectricSheep::CLI do
 
   describe 'working' do
 
-    describe 'when everything goes well' do
+    describe 'on successful invocation' do
 
       before do
         ElectricSheep::Runner::Inline.expects(:new).
@@ -106,20 +106,19 @@ describe ElectricSheep::CLI do
 
   describe 'encrypting plain text' do
 
-    it 'encrypts secrets' do
-      expects_stdout_logger(:info)
-      ElectricSheep::Crypto.expects(:encrypt).with('SECRET', '/some/key').returns('CIPHER')
-      logger.expects(:info).with("CIPHER")
-      subject.new([], key: '/some/key').encrypt('SECRET')
-    end
+    concise do
 
-    it 'logs error if Exception occurs' do
-      expects_stdout_logger(:debug)
-      ElectricSheep::Crypto.expects(:encrypt).with('SECRET', '/some/key').
-        raises(@ex = Exception.new('fail'))
-      logger.expects(:error).with("fail")
-      logger.expects(:debug).with(kind_of(Exception))
-      subject.new([], key: '/some/key', verbose: true).encrypt('SECRET')
+      it 'encrypts secrets' do
+        ElectricSheep::Crypto.expects(:encrypt).with('SECRET', '/some/key').returns('CIPHER')
+        logger.expects(:info).with("CIPHER")
+        subject.new([], key: '/some/key').encrypt('SECRET')
+      end
+
+      ensure_exception_handling do
+        ElectricSheep::Crypto.expects(:encrypt).with('SECRET', '/some/key').
+          raises(Exception.new('fail'))
+        subject.new([], key: '/some/key').encrypt('SECRET')
+      end
     end
 
   end
@@ -167,7 +166,7 @@ describe ElectricSheep::CLI do
 
     end
 
-    describe 'when everything goes well' do
+    describe 'on successful invocation' do
 
       concise(:file) do
 
@@ -191,7 +190,6 @@ describe ElectricSheep::CLI do
       end
 
       [:start, :restart].each do |action|
-
         describe "#{action}ing" do
           ensure_verbosity(:file) do
             expects_startup("#{action}!", {})
@@ -209,6 +207,21 @@ describe ElectricSheep::CLI do
       end
     end
 
+    [:start, :stop, :restart].each do |action|
+
+      describe "on #{action}" do
+
+        concise(:file) do
+          ensure_exception_handling do
+            expects_evaluator if [:start, :restart].include?(action)
+            ElectricSheep::Master.expects(:new).raises(Exception.new('fail'))
+            subject.new([], config: 'Sheepfile').send(action)
+          end
+        end
+
+      end
+
+    end
 
   end
 

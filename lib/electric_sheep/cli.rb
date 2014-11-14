@@ -3,6 +3,7 @@ require 'electric_sheep'
 
 module ElectricSheep
   class CLI < Thor
+    include Rescueable
 
     def self.startup_options
       run_options
@@ -31,14 +32,13 @@ module ElectricSheep
       desc: 'Name of a single project to execute'
 
     def work
-      Runner::Inline.new(
-        config: configuration,
-        logger: logger,
-        project: options[:project]
-      ).run!
-      rescue Exception => ex
-        logger.error ex.message
-        logger.debug ex
+      rescued do
+        Runner::Inline.new(
+          config: configuration,
+          logger: logger,
+          project: options[:project]
+        ).run!
+      end
     end
 
     desc "encrypt SECRET", "Encrypt SECRET using the provided public key"
@@ -46,20 +46,18 @@ module ElectricSheep
     logging_options
 
     def encrypt(secret)
-      logger.info Crypto.encrypt(secret, options[:key])
-      rescue Exception => ex
-        logger.error ex.message
-        logger.debug ex
+      rescued do
+        logger.info Crypto.encrypt(secret, options[:key])
+      end
     end
 
     desc "start", "Start a master process in the background"
     startup_options
 
     def start
-      master(config: configuration).start!
-      rescue Exception => ex
-        logger.error ex.message
-        logger.debug ex
+      rescued do
+        master(config: configuration).start!
+      end
     end
 
     desc "stop", "Stop the master process"
@@ -67,20 +65,18 @@ module ElectricSheep
     logging_options
 
     def stop
-      master.stop!
-      rescue Exception => ex
-        logger.error ex.message
-        logger.debug ex
+      rescued do
+        master.stop!
+      end
     end
 
     desc "restart", "Restart the master process"
     startup_options
 
     def restart
-      master(config: configuration).restart!
-      rescue Exception => ex
-        logger.error ex.message
-        logger.debug ex
+      rescued do
+        master(config: configuration).restart!
+      end
     end
 
     default_task :work

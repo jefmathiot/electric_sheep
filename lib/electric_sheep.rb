@@ -2,6 +2,7 @@ require 'active_support'
 require 'electric_sheep/version'
 
 require 'electric_sheep/queue'
+require 'electric_sheep/rescueable'
 require 'electric_sheep/config'
 require 'electric_sheep/crypto'
 require 'electric_sheep/master'
