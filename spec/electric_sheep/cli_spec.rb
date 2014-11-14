@@ -11,17 +11,22 @@ describe ElectricSheep::CLI do
       returns(logger)
   end
 
+  def expects_file_logger(level)
+    Lumberjack::Logger.expects(:new).with("electric_sheep.log", {level: level}).
+      returns(logger)
+  end
+
   def expects_evaluator(f='Sheepfile')
     ElectricSheep::Sheepfile::Evaluator.expects(:new).with(f).
       returns(mock(evaluate: config))
   end
 
-  def self.ensure_verbosity(&block)
+  def self.ensure_verbosity(logger_type=:stdout, &block)
 
     describe 'with the verbose option' do
 
       before do
-        expects_stdout_logger(:debug)
+        send "expects_#{logger_type}_logger", :debug
       end
 
       it 'enables verbose logging' do
@@ -32,12 +37,12 @@ describe ElectricSheep::CLI do
 
   end
 
-  def self.concise(&block)
+  def self.concise(logger_type=:stdout, &block)
 
     describe 'without the verbose option' do
 
       before do
-        expects_stdout_logger(:info)
+        send "expects_#{logger_type}_logger", :info
       end
 
       self.instance_eval &block
@@ -80,7 +85,7 @@ describe ElectricSheep::CLI do
           subject.new([], config: 'Sheepfile', project: 'some-project').work
         end
 
-        it 'overrides the default config option' do
+        it 'overrides the path to configuration file' do
           expects_evaluator('Lambfile')
           subject.new([], config: 'Lambfile', project: 'some-project').work
         end
@@ -115,6 +120,47 @@ describe ElectricSheep::CLI do
       logger.expects(:error).with("fail")
       logger.expects(:debug).with(kind_of(Exception))
       subject.new([], key: '/some/key', verbose: true).encrypt('SECRET')
+    end
+
+  end
+
+  describe 'controlling the master process' do
+
+    def expects_master(options)
+      ElectricSheep::Master.expects(:new).with(options).returns(master)
+    end
+
+    def expects_control(method, master_options, config_file=nil)
+      expects_evaluator(config_file || 'Sheepfile')
+      expects_master({
+        pidfile: nil, logger: logger, config: config
+      }.merge(master_options))
+      master.expects(method)
+    end
+
+    describe 'when everything goes well' do
+
+      concise(:file) do
+
+        let(:master){ mock }
+
+        it 'starts a master' do
+          expects_control(:start!, {})
+          subject.new([], config: 'Sheepfile').start
+        end
+
+        it 'overrides the path to configuration file' do
+          expects_control(:start!, {}, 'Lambfile')
+          subject.new([], config: 'Lambfile').start
+        end
+
+        it 'overrides the path to pidfile' do
+          expects_control(:start!, {pidfile: '/tmp/es.lock'})
+          subject.new([], config: 'Sheepfile', pidfile: '/tmp/es.lock').start
+        end
+
+      end
+
     end
 
   end

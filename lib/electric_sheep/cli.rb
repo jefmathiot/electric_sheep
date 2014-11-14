@@ -52,8 +52,7 @@ module ElectricSheep
         logger.debug ex
     end
 
-    desc "start", "Start a daemon to process scheduled projects in the " +
-      "background"
+    desc "start", "Start a master process in the background"
     startup_options
 
     def start
@@ -63,7 +62,7 @@ module ElectricSheep
         logger.debug ex
     end
 
-    desc "stop", "Stop the daemon"
+    desc "stop", "Stop the master process"
     process_options
     logging_options
 
@@ -74,7 +73,7 @@ module ElectricSheep
         logger.debug ex
     end
 
-    desc "restart", "Restart the daemon"
+    desc "restart", "Restart the master process"
     startup_options
 
     def restart
