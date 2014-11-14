@@ -144,20 +144,30 @@ describe ElectricSheep::CLI do
 
         let(:master){ mock }
 
-        it 'starts a master' do
-          expects_control(:start!, {})
-          subject.new([], config: 'Sheepfile').start
+        def ensure_startup(action)
+
+          describe "#{action}ing" do
+
+            it '#{action}s a master' do
+              expects_control("#{action}!", {})
+              subject.new([], config: 'Sheepfile').send(action)
+            end
+
+            it 'overrides the path to configuration file' do
+              expects_control("#{action}!", {}, 'Lambfile')
+              subject.new([], config: 'Lambfile').send(action)
+            end
+
+            it 'overrides the path to pidfile' do
+              expects_control("#{action}!", {pidfile: '/tmp/es.lock'})
+              subject.new([], config: 'Sheepfile', pidfile: '/tmp/es.lock').send(action)
+            end
+
+          end
         end
 
-        it 'overrides the path to configuration file' do
-          expects_control(:start!, {}, 'Lambfile')
-          subject.new([], config: 'Lambfile').start
-        end
-
-        it 'overrides the path to pidfile' do
-          expects_control(:start!, {pidfile: '/tmp/es.lock'})
-          subject.new([], config: 'Sheepfile', pidfile: '/tmp/es.lock').start
-        end
+        ensure_startup(:start)
+        ensure_startup(:restart)
 
       end
 
