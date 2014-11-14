@@ -1,4 +1,4 @@
-# ElectricSheepIO
+# Electric Sheep IO
 
 An (hopefully) simple tool to execute backup tasks and copy archives offsite.
 It's designed to operate from an utility machine over the network using SSH
