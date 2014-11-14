@@ -4,17 +4,60 @@ require 'electric_sheep/cli'
 describe ElectricSheep::CLI do
 
   let(:logger){ mock }
+  let(:config){ mock }
 
   def expects_stdout_logger(level)
     Lumberjack::Logger.expects(:new).with(kind_of(IO), {level: level}).
       returns(logger)
   end
 
-  describe 'work' do
+  def expects_evaluator(f='Sheepfile')
+    ElectricSheep::Sheepfile::Evaluator.expects(:new).with(f).
+      returns(mock(evaluate: config))
+  end
+
+  def self.ensure_verbosity(&block)
+
+    describe 'with the verbose option' do
+
+      before do
+        expects_stdout_logger(:debug)
+      end
+
+      it 'enables verbose logging' do
+        self.instance_eval &block
+      end
+
+    end
+
+  end
+
+  def self.concise(&block)
+
+    describe 'without the verbose option' do
+
+      before do
+        expects_stdout_logger(:info)
+      end
+
+      self.instance_eval &block
+
+    end
+
+  end
+
+  def self.ensure_exception_handling(&block)
+    it 'logs the exception' do
+      logger.expects(:error).with("fail")
+      logger.expects(:debug).with(kind_of(Exception))
+      Exception.any_instance.stubs(:backtrace).returns('backtrace')
+      self.instance_eval &block
+    end
+  end
+
+  describe 'working' do
 
     describe 'when everything goes well' do
-
-      let(:config){ mock }
 
       before do
         ElectricSheep::Runner::Inline.expects(:new).
@@ -25,26 +68,12 @@ describe ElectricSheep::CLI do
           )).returns(mock(run!: true))
       end
 
-      def expects_evaluator(f='Sheepfile')
-        ElectricSheep::Sheepfile::Evaluator.expects(:new).with(f).
-          returns(mock(evaluate: config))
+      ensure_verbosity do
+        expects_evaluator
+        subject.new([], config: 'Sheepfile', project: 'some-project', verbose: true).work
       end
 
-      describe 'with the verbose option' do
-
-        it 'intializes the logger with the debug level' do
-          expects_stdout_logger(:debug)
-          expects_evaluator
-          subject.new([], config: 'Sheepfile', project: 'some-project', verbose: true).work
-        end
-
-      end
-
-      describe 'without the verbose option' do
-
-        before do
-          expects_stdout_logger(:info)
-        end
+      concise do
 
         it 'gets the job done' do
           expects_evaluator
@@ -60,14 +89,12 @@ describe ElectricSheep::CLI do
 
     end
 
-    it 'logs error if an exception occurs' do
-      expects_stdout_logger(:info)
-      ElectricSheep::Sheepfile::Evaluator.expects(:new).
-        raises(@ex = Exception.new('fail'))
-      @ex.stubs(:backtrace).returns('backtrace')
-      logger.expects(:error).with("fail")
-      logger.expects(:debug).with(kind_of(Exception))
-      subject.new.work
+    concise do
+      ensure_exception_handling do
+        ElectricSheep::Sheepfile::Evaluator.expects(:new).
+          raises(Exception.new('fail'))
+        subject.new.work
+      end
     end
 
   end
