@@ -4,6 +4,7 @@ module ElectricSheep
   module Runner
 
     class SingleRun
+      include Rescueable
 
       attr_reader :project
 
@@ -19,12 +20,8 @@ module ElectricSheep
             "Executing \"#{project.description}\" (#{project.id})" :
             "Executing #{project.id}"
           project.each_item do |step|
-            begin
+            return if rescued do
               send("execute_#{executable_type(step)}", project, step)
-            rescue Exception => e
-              @logger.error e.message
-              @logger.debug e
-              return
             end
           end
         end
