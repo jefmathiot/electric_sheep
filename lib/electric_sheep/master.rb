@@ -91,9 +91,9 @@ module ElectricSheep
       @config.all.each do |project|
         project.on_schedule do
           @logger.info "Forking a new worker to handle project #{project.id}"
-          # Turn children into daemons to let them run on master restart
+          # Turn children into daemons to let them run on master stop
           worker=daemonize do
-            worker::SingleRun.new(@config, @logger, project).run!
+            Runner::SingleRun.new(@config, @logger, project).run!
           end
           worker_pids[worker]=project.id
           @logger.debug "Forked worker for project #{project.id}"
