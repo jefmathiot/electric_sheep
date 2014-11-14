@@ -126,52 +126,89 @@ describe ElectricSheep::CLI do
 
   describe 'controlling the master process' do
 
+    let(:master){ mock }
+
     def expects_master(options)
       ElectricSheep::Master.expects(:new).with(options).returns(master)
     end
 
-    def expects_control(method, master_options, config_file=nil)
+    def expects_startup(method, master_options, config_file=nil)
       expects_evaluator(config_file || 'Sheepfile')
-      expects_master({
-        pidfile: nil, logger: logger, config: config
-      }.merge(master_options))
+      expects_control(method,
+        {config: config}.merge(master_options)
+      )
+    end
+
+    def expects_control(method, master_options={})
+      expects_master({pidfile: nil, logger: logger}.merge(master_options))
       master.expects(method)
+    end
+
+    def self.ensure_startup(action)
+
+      describe "#{action}ing" do
+
+        it '#{action}s a master' do
+          expects_startup("#{action}!", {})
+          subject.new([], config: 'Sheepfile').send(action)
+        end
+
+        it 'overrides the path to configuration file' do
+          expects_startup("#{action}!", {}, 'Lambfile')
+          subject.new([], config: 'Lambfile').send(action)
+        end
+
+        it 'overrides the path to pidfile' do
+          expects_startup("#{action}!", {pidfile: '/tmp/es.lock'})
+          subject.new([], config: 'Sheepfile', pidfile: '/tmp/es.lock').send(action)
+        end
+
+      end
+
     end
 
     describe 'when everything goes well' do
 
       concise(:file) do
 
-        let(:master){ mock }
-
-        def ensure_startup(action)
-
-          describe "#{action}ing" do
-
-            it '#{action}s a master' do
-              expects_control("#{action}!", {})
-              subject.new([], config: 'Sheepfile').send(action)
-            end
-
-            it 'overrides the path to configuration file' do
-              expects_control("#{action}!", {}, 'Lambfile')
-              subject.new([], config: 'Lambfile').send(action)
-            end
-
-            it 'overrides the path to pidfile' do
-              expects_control("#{action}!", {pidfile: '/tmp/es.lock'})
-              subject.new([], config: 'Sheepfile', pidfile: '/tmp/es.lock').send(action)
-            end
-
-          end
-        end
-
         ensure_startup(:start)
         ensure_startup(:restart)
 
+        describe "stopping" do
+
+          it 'stops the master' do
+            expects_control(:stop!)
+            subject.new([]).stop
+          end
+
+          it 'overrides the path to pidfile' do
+            expects_control(:stop!, {pidfile: '/tmp/es.lock'})
+            subject.new([], pidfile: '/tmp/es.lock').stop
+          end
+
+        end
+
       end
 
+      [:start, :restart].each do |action|
+
+        describe "#{action}ing" do
+          ensure_verbosity(:file) do
+            expects_startup("#{action}!", {})
+            subject.new([], config: 'Sheepfile', verbose: true).send(action)
+          end
+        end
+
+        describe 'stopping' do
+          ensure_verbosity(:file) do
+            expects_control(:stop!)
+            subject.new([], verbose: true).stop
+          end
+        end
+
+      end
     end
+
 
   end
 
