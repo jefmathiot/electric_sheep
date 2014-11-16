@@ -136,5 +136,18 @@ describe ElectricSheep::Master do
       File.exists?(@pidfile.path).must_equal false
     end
 
+    it 'removes stale pidfiles' do
+      pid = 2**22 + 1
+      @pidfile.tap do |f|
+        f.open
+        f.truncate(0)
+        f.write(pid) # Beyond max. PID value
+        f.close
+      end
+      logger.expects(:warn).with("Removing pid file #{@pidfile.path} as the " +
+        "process with pid #{pid} does not exist anymore")
+      master.running?
+    end
+
   end
 end

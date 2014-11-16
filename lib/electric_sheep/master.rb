@@ -33,6 +33,17 @@ module ElectricSheep
       start!
     end
 
+    def running?
+      if File.exists?(@pidfile)
+        pid = read_pidfile
+        return true if process?(pid)
+        @logger.warn "Removing pid file #{@pidfile} as the process with pid " +
+          "#{pid} does not exist anymore"
+        File.delete(@pidfile)
+      end
+      false
+    end
+
     protected
 
     def should_stop?
@@ -55,17 +66,6 @@ module ElectricSheep
         @logger.debug "Terminating process #{pid}"
         Process.kill(15, pid)
       end
-    end
-
-    def running?
-      if File.exists?(@pidfile)
-        pid = read_pidfile
-        return true if process?(pid)
-        @logger.warn "Removing pid file #{@pidfile} as the process with pid " +
-          "#{pid} does not exist anymore"
-        File.delete(@pidfile)
-      end
-      false
     end
 
     def process?(pid)
