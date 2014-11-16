@@ -126,5 +126,15 @@ describe ElectricSheep::Master do
       master.restart!
     end
 
+    it 'stops' do
+      logger.expects(:info).in_sequence(seq).with("Daemon stopping")
+      Process.expects(:kill).in_sequence(seq).with(0, 9999).returns(true)
+      logger.expects(:debug).in_sequence(seq).
+        with("Terminating process 9999")
+      Process.expects(:kill).in_sequence(seq).with(15, 9999).returns(true)
+      master.stop!
+      File.exists?(@pidfile.path).must_equal false
+    end
+
   end
 end
