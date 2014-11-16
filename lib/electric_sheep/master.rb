@@ -90,13 +90,14 @@ module ElectricSheep
     def run_scheduled
       @config.all.each do |project|
         project.on_schedule do
-          @logger.info "Forking a new worker to handle project #{project.id}"
+          @logger.info "Forking a new worker to handle project \"#{project.id}\""
           # Turn children into daemons to let them run on master stop
           worker=daemonize do
             Runner::SingleRun.new(@config, @logger, project).run!
           end
           worker_pids[worker]=project.id
-          @logger.debug "Forked worker for project #{project.id}"
+          @logger.debug "Forked a worker for project \"#{project.id}\", pid: " +
+            "#{worker}"
         end
       end
     end
@@ -105,7 +106,7 @@ module ElectricSheep
       worker_pids.each do |pid, project|
         unless process?(pid)
           worker_pids.delete(pid)
-          @logger.info "Worker for project \"#{project}\" completed (#{pid})"
+          @logger.info "Worker for project \"#{project}\" completed, pid: #{pid}"
         end
       end
       @logger.debug "Active workers: #{worker_pids.size}"
