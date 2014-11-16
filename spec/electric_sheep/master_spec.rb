@@ -11,6 +11,7 @@ describe ElectricSheep::Master do
       pidfile: @pidfile.path
     )
   }
+  let(:seq){ sequence(:fork) }
 
   before do
     @pidfile=Tempfile.new('pidfile.lock')
@@ -35,7 +36,6 @@ describe ElectricSheep::Master do
     end
 
     describe 'without a process running' do
-      let(:seq){ sequence(:fork) }
 
       before do
         @pidfile_path=@pidfile.path
@@ -119,12 +119,12 @@ describe ElectricSheep::Master do
 
     end
 
-    # it 'forks and loops' do
-    #   master.start!
-    # end
-
-    # it 'runs scheduled projects' do
-    # end
+    it 'restarts' do
+      # Definitely enjoyed writing this test
+      master.expects(:stop!).in_sequence(seq)
+      master.expects(:start!).in_sequence(seq)
+      master.restart!
+    end
 
   end
 end
