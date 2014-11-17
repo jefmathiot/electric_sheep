@@ -7,6 +7,7 @@ module ElectricSheep
       include Rescueable
 
       attr_reader :project
+      attr_reader :logger
 
       def initialize(config, logger, project)
         @config=config

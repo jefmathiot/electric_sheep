@@ -153,4 +153,10 @@ describe ElectricSheep::Runner do
       expects_execution_times(project, metadata)
     end
   end
+
+  it "define logger" do
+    single_run = ElectricSheep::Runner::SingleRun.new(nil,logger,nil)
+    assert_equal logger, single_run.logger
+  end
+
 end
