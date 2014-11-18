@@ -15,7 +15,7 @@ module ElectricSheep
           done!(
             file_resource(extension: '.tar.gz').tap do |archive|
               shell.exec cmd(input_path, archive)
-              shell.exec "rm -f #{input_path}" if option(:delete_source)
+              shell.exec "rm -rf #{input_path}" if option(:delete_source)
             end
           )
         end

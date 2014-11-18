@@ -1,5 +1,4 @@
 require 'spec_helper'
-
 describe ElectricSheep::Commands::Compression::TarGz do
   include Support::Command
 
@@ -49,7 +48,7 @@ describe ElectricSheep::Commands::Compression::TarGz do
             "tar -cvzf #{output} #{File.basename(input)} 1>&2")
         if delete_source
           @shell.expects(:exec).in_sequence(@seq).
-            with("rm -f #{input}")
+            with("rm -rf #{input}")
         end
         @command.perform
         assert_product("some-#{input_type}")
