@@ -1,0 +1,508 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <!-- /!\ Basic structure, reset styles, client-specific styles and media queries from MailChimp Email Blueprints  -->
+  <!-- https://github.com/mailchimp/Email-Blueprints                                                                -->
+  <!--                                                                                                              -->
+  <!-- Licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.                               -->
+  <!-- http://creativecommons.org/licenses/by-sa/3.0/                                                               -->
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>TITLE</title>
+    <style type="text/css">
+
+      /* Client-specific */
+      #outlook a{padding: 0;} /* Force Outlook to provide a "view in browser" message */
+      .ReadMsgBody{width: 100%;} .ExternalClass{width: 100%;} /* Force Hotmail to display emails at full width */
+      .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {line-height: 100%;} /* Force Hotmail to display normal line spacing */
+      body, table, td, p, a, li, blockquote{-webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;} /* Prevent WebKit and Windows mobile changing default text sizes */
+      table, td{mso-table-lspace: 0pt; mso-table-rspace: 0pt;} /* Remove spacing between tables in Outlook 2007 and up */
+      img{-ms-interpolation-mode: bicubic;} /* Allow smoother rendering of resized image in Internet Explorer */
+
+      /* Reset */
+      body{margin: 0; padding: 0;}
+      img{border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none;}
+      table{
+        border-collapse: collapse !important;
+        -premailer-cellpadding: 0;
+        -premailer-cellspacing: 0;
+        -premailer-width: 100%;
+        width: 100%;
+      }
+      body, #bodyTable, #bodyCell{height: 100% !important; margin: 0; padding: 0; width: 100% !important;}
+
+      h1{
+        color:#ffffff !important;
+        display:block;
+        font-size:26px;
+        font-style:normal;
+        font-weight:normal;
+        line-height:100%;
+        letter-spacing:normal;
+        margin: 0;
+        text-align:left;
+        padding: 15px 10px;
+      }
+
+      h2{
+        display:block;
+        font-size:40px;
+        font-style:normal;
+        font-weight:normal;
+        line-height:100%;
+        letter-spacing:normal;
+        margin: 0;
+        text-align:left;
+        padding: 5px 0;
+      }
+
+      h3{
+        display:block;
+        font-size:26px;
+        font-style:normal;
+        font-weight:bold;
+        line-height:100%;
+        letter-spacing:normal;
+        margin: 0;
+        text-align:left;
+        padding: 5px 0;
+        color: #404040;
+        margin: 20px 0;
+      }
+
+      /* Document and layout */
+      body, #bodyTable{
+        background-color: #dee0e2;
+      }
+
+      #bodyCell{
+        border-top: 4px solid #BBBBBB;
+        padding: 20px;
+      }
+
+      #templateContainer{
+        width:600px;
+        border: 1px solid #BBBBBB;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 14px;
+      }
+
+      #templateHeader, #templatePreheader, #templateBody{
+        background-color:#FFFFFF;
+      }
+
+      .preheaderContent, .headerContent, .bodyContent{
+        padding: 10px 20px;
+      }
+
+      .preheaderContent{
+        padding: 10px 20px;
+        color: #808080;
+        font-size: 10px;
+        text-align: justify;
+        line-height:125%;
+      }
+
+      .success.headerContent .title, .success.headerContent .resource{
+        border: 3px solid #05AD87;
+      }
+
+      .failure.headerContent .title, .failure.headerContent .resource{
+        border: 3px solid #B20000;
+      }
+
+      .headerContent .title {
+        border-radius: 5px 5px 0 0;
+        border-bottom: none;
+      }
+
+      .success.headerContent .title {
+        background: #05AD87;
+      }
+
+      .failure.headerContent .title {
+        background: #B20000;
+      }
+
+      .headerContent .summary {
+        padding: 5px;
+        color: #ffffff;
+        background: #000000 url(email/background.jpg);
+      }
+
+      .headerContent .summary span.time{
+        font-weight: bold;
+      }
+
+      .headerContent .summary .nutshell{
+        line-height:130%;
+      }
+
+      .headerContent .resource{
+        padding: 10px;
+        border-radius: 0 0 5px 5px;
+        border-top: none;
+      }
+
+      .success h2{
+        color:#05AD87 !important;
+      }
+
+      .failure h2{
+        color:#B20000 !important;
+      }
+
+      span.project {
+        font-weight: bold;
+      }
+
+      .stack .block{
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #000000;
+        border-radius: 5px;
+      }
+
+      .stack .block .name, .headerContent .block .name {
+        font-weight: bold;
+      }
+
+      .stack .block .name img, .headerContent .block .name img {
+        vertical-align: middle;
+        padding-right: 3px;
+      }
+
+      .stack .block .name .aside {
+        font-weight: normal;
+        font-style: italic;
+      }
+
+      .stack .host{
+        border-color: #CCCCCC;
+        background-color: #EEEEEE;
+        color: #444444;
+      }
+
+      .stack .initial.resource{
+        border-color: #ffffff;
+        background-color: #EB5387;
+        color: #ffffff;
+      }
+
+      .stack .resource, .headerContent .resource{
+        border-color: #05AD87;
+        background-color: #ffffff;
+        color: #05AD87;
+      }
+
+      .stack .info, .headerContent .info {
+        font-weight: bold;
+      }
+
+      .stack .agent {
+        border-color: #437998;
+        background-color: #437998;
+        color: #ffffff;
+      }
+
+      .stack .failed.agent {
+        border-color: #b20000;
+        background-color: #b20000;
+      }
+
+      .stack .options {
+        list-style-type: none;
+        padding: 10px;
+        background-color: #f7fcff;
+        margin: 10px -10px -10px -10px;
+        border-radius: 0 0 5px 5px;
+        color: #333333;
+      }
+
+      .stack .failed .options {
+        background-color: #ffffff;
+      }
+
+      .stack .failed .error {
+        padding-top: 15px;
+        color: #B20000;
+        font-weight: bold;
+      }
+
+      .stack .option.value {
+        font-weight: bold;
+        color: #EB5387;
+      }
+
+      .stack .info, .stack .options, .headerContent .info {
+        font-family: Monaco,Menlo,Consolas,"Courier New",monospace;
+      }
+
+      .stack .info {
+        text-align: right;
+      }
+
+      .stack .offset {
+        margin-left: 20px;
+      }
+
+      .failure.checks, .failure.causes {
+        padding-left: 20px;
+      }
+
+      /* Media queries */
+      @media only screen and (max-width: 480px){
+        /* Client-specific */
+        body, table, td, p, a, li, blockquote{-webkit-text-size-adjust: none !important;} /* Prevent Webkit platforms from changing default text sizes */
+        body{width: 100% !important; min-width: 100% !important;} /* Prevent iOS Mail from adding padding to the body */
+
+        /* Reset */
+        #bodyCell{padding: 10px !important;}
+
+        #templateContainer{
+          max-width: 600px !important;
+          width: 100% !important;
+        }
+      }
+    </style>
+  </head>
+  <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
+    <center>
+      <table align="center" border="0" cellpadding="0" cellspacing="0" height="100%" width="100%" id="bodyTable">
+        <tr>
+          <td align="center" valign="top" id="bodyCell">
+          <!-- BEGIN TEMPLATE // -->
+          <table border="0" cellpadding="0" cellspacing="0" id="templateContainer">
+            <tr>
+              <td align="center" valign="top">
+                <table id="templatePreheader">
+                  <tr>
+                    <td valign="top" class="preheaderContent">
+                      The project <span class="project">"<%= project_name %>"</span> completed successfuly. This notification has been sent on <span class="date"><%= date %></span> at <span class="time"><%= time%></span> <span class="timezone"><%= timezone %> by an <a href="http://electricsheep.io">Electric Sheep IO</a> worker running on <%= hostname %>.
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td align="center" valign="top">
+                <table id="templateHeader">
+                  <tr>
+                    <td valign="top" class="success headerContent">
+                      <div class="title">
+                        <h1><%= project_name %></h1>
+                      </div>
+                      <div class="summary">
+                        <table>
+                          <tr>
+                            <td>
+                              <img src="email/success.png" alt="Success">
+                            </td>
+                            <td>
+                              <h2>Success</h2>
+                              <div class="nutshell">The backup project <span class="project">"<%= project_name %>"</span> completed successfully on <span class="date"><%= date %></span> at <span class="time"><%= time%></span> <span class="timezone"><%= timezone %></span>.</div>
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
+                      <div class="resource block">
+                        <table>
+                          <tr>
+                            <td class="name"><img src="email/icons/resources/file.png" alt="File"><%= resource.name %></td>
+                            <td class="info"><%= resource.stat %></td>
+                          </tr>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td valign="top" class="failure headerContent">
+                      <div class="title">
+                        <h1><%= project_name %></h1>
+                      </div>
+                      <div class="summary">
+                        <table>
+                          <tr>
+                            <td>
+                              <img src="email/failure.png" alt="Failure">
+                            </td>
+                            <td>
+                              <h2>Failure</h2>
+                              <div class="nutshell">The backup project <span class="project">"<%= project_name %>"</span> failed to complete on <span class="date"><%= date %></span> at <span class="time"><%= time%></span> <span class="timezone"><%= timezone %></span>.</div>
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
+                      <div class="empty resource block">
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td align="center" valign="top">
+                <table id="templateBody">
+                  <tr>
+                    <td valign="top" class="bodyContent">
+                      <h3>Execution Stack</h3>
+                      <div class="stack">
+                        <div class="host block">
+                          <div class="name">
+                            <img src="email/icons/host.png" alt="Host"><%= host.id%> <span class="aside"><%= host.hostname %></span>
+                          </div>
+                          <div class="initial resource block">
+                            <table>
+                              <tr>
+                                <td class="name"><img src="email/icons/resources/initial/database.png" alt="Database"><%= resource.name %></td>
+                              </tr>
+                            </table>
+                          </div>
+                          <div class="agent block">
+                            <table>
+                              <tr>
+                                <td class="name"><img src="email/icons/command.png" alt="Command"><%= command.name %></td>
+                                <td class="info"><%= command.benchmark %></td>
+                              </tr>
+                            </table>
+                            <ul class="options">
+                              <li><span class="option key"><%= option.key %>:</span> <span class="option value"><%= option.value %></span></li>
+                            </ul>
+                          </div>
+                          <div class="transient resource block">
+                            <table>
+                              <tr>
+                                <td class="name"><img src="email/icons/resources/file.png" alt="File"><%= resource.name %></123402></td>
+                                <td class="info"><%= resource.stat %></td>
+                              </tr>
+                            </table>
+                          </div>
+                          <div class="agent block">
+                            <table>
+                              <tr>
+                                <td class="name"><img src="email/icons/command.png" alt="Command"><%= command.name %></td>
+                                <td class="info"><%= command.benchmark %></td>
+                              </tr>
+                            </table>
+                          </div>
+                          <div class="transient resource block">
+                            <table>
+                              <tr>
+                                <td class="name"><img src="email/icons/resources/file.png" alt="File"><%= resource.name %></123402></td>
+                                <td class="info"><%= resource.stat %></td>
+                              </tr>
+                            </table>
+                          </div>
+                        </div>
+                        <div class="agent block">
+                          <table>
+                            <tr>
+                              <td class="name"><img src="email/icons/transport.png" alt="Transport"><%= transport.type %></td>
+                              <td class="info"><%= transport.benchmark %></td>
+                            </tr>
+                          </table>
+                          <ul class="options">
+                            <li><span class="option key"><%= option.key %>:</span> <span class="option value"><%= option.value %></span></li>
+                          </ul>
+                        </div>
+                        <div class="local host block">
+                          <div class="name">
+                            <img src="email/icons/localhost.png" alt="Host"><%= host.id %> <span class="aside"><%= host.hostname %></span>
+                          </div>
+                          <div class="transient resource block">
+                            <table>
+                              <tr>
+                                <td class="name"><img src="email/icons/resources/file.png" alt="File"><%= resource.name %></td>
+                                <td class="info"><%= resource.stat %></td>
+                              </tr>
+                            </table>
+                          </div>
+                        </div>
+                        <div class="offset agent block">
+                          <table>
+                            <tr>
+                              <td class="name"><img src="email/icons/transport.png" alt="Transport"><%= transport.type %></td>
+                              <td class="info"><%= transport.benchmark %></td>
+                            </tr>
+                          </table>
+                          <ul class="options">
+                            <li><span class="option key"><%= option.key %>:</span> <span class="option value"><%= option.value %></span></li>
+                          </ul>
+                        </div>
+                        <div class="offset host block">
+                          <div class="name">
+                            <img src="email/icons/host.png" alt="Host"><%= host.id%> <span class="aside"><%= host.hostname %></span>
+                          </div>
+                          <div class="resource block">
+                            <table>
+                              <tr>
+                                <td class="name"><img src="email/icons/resources/file.png" alt="File"><%= resource.name %></td>
+                                <td class="info"><%= resource.stat %></td>
+                              </tr>
+                            </table>
+                          </div>
+                        </div>
+                        <div class="agent block">
+                          <table>
+                            <tr>
+                              <td class="name"><img src="email/icons/transport.png" alt="Transport"><%= transport.type %></td>
+                              <td class="info"><%= transport.benchmark %></td>
+                            </tr>
+                          </table>
+                          <ul class="options">
+                            <li><span class="option key"><%= option.key %>:</span> <span class="option value"><%= option.value %></span></li>
+                          </ul>
+                        </div>
+                        <div class="host block">
+                          <div class="name">
+                            <img src="email/icons/host.png" alt="Host"><%= bucket.name %></span>
+                          </div>
+                          <div class="resource block">
+                            <table>
+                              <tr>
+                                <td class="name"><img src="email/icons/resources/file.png" alt="File"><%= resource.name %></td>
+                                <td class="info"><%= resource.stat %></td>
+                              </tr>
+                            </table>
+                          </div>
+                        </div>
+                        <div class="failed agent block">
+                          <table>
+                            <tr>
+                              <td class="name"><img src="email/icons/transport.png" alt="Transport"><%= transport.type %></td>
+                              <td class="info"><%= transport.benchmark %></td>
+                            </tr>
+                          </table>
+                          <ul class="options">
+                            <li><span class="option key"><%= option.key %>:</span> <span class="option value"><%= option.value %></span></li>
+                            <li class="error">Connection timeout</li>
+                          </ul>
+                        </div>
+                      </div>
+                      <h3>Logs</h3>
+
+                        Check out the attached log file (log level was set to "<%= log_level %>").
+
+                      <h3>Troubleshooting</h3>
+
+                      To help you spot the issue, the worker conducted the following tests just after the failure occured: 
+                      <ul class="failure checks">
+                        <li><%= check.description %></li>
+                      </ul>
+
+                      Potential causes of failure the worker has identified so far (hope this helps):
+                      <ul class="failure causes">
+                        <li><%= cause.description %></li>
+                      </ul>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+          <!-- END TEMPLATE // -->
+          </td>
+        </tr>
+      </table>
+    </center>
+  </body>
+</html>
