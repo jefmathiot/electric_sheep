@@ -1,7 +1,7 @@
 module ElectricSheep
   module Transport
     extend ActiveSupport::Concern
-    include Agent
+    include Runnable
 
     def initialize(project, logger, metadata, hosts)
       @project = project

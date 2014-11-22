@@ -1,7 +1,7 @@
 module ElectricSheep
   module Command
     extend ActiveSupport::Concern
-    include Agent
+    include Runnable
 
     attr_reader :shell
 
