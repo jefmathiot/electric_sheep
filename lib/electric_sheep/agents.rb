@@ -1,44 +1,52 @@
 require 'electric_sheep/agent'
+require 'electric_sheep/runnable'
 require 'electric_sheep/command'
 require 'electric_sheep/transport'
 
 module ElectricSheep
   module Agents
     module Register
-      def self.register(options={})
-        type = options.has_key?(:command) ? :command : :transport
-        store.add type, options.delete(type), options
-      end
 
-      def self.command(id)
-        store.command(id)
-      end
+      AGENT_TYPES=[:command, :notifier, :transport].freeze
 
-      def self.transport(id)
-        store.transport(id)
-      end
+      class << self
 
-      private
-      def self.store
-        @store ||= Store.new
+        def register(options={})
+          store.add *registration_args(options)
+        end
+
+        AGENT_TYPES.each do |type|
+          define_method type do |id|
+            store.agent(type, id)
+          end
+        end
+
+        private
+        def registration_args(options)
+          AGENT_TYPES.each do |type|
+            if options.has_key?(type)
+              return type, options.delete(type), options
+            end
+          end
+        end
+
+        def store
+          @store ||= Store.new
+        end
       end
 
       class Store
 
         def initialize
-          @agents = {command: {}, transport: {}}
+          @agents = {command: {}, transport: {}, notifier: {}}
         end
 
         def add(type, klazz, options)
           @agents[type][options[:as].to_sym]=klazz
         end
 
-        def command(id)
-          @agents[:command][id.to_sym]
-        end
-
-        def transport(id)
-          @agents[:transport][id.to_sym]
+        def agent(type, id)
+          @agents[type][id.to_sym]
         end
 
       end
