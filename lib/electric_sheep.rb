@@ -18,3 +18,15 @@ require 'electric_sheep/agents'
 require 'electric_sheep/sheep_exception'
 require 'electric_sheep/commands'
 require 'electric_sheep/transports'
+
+module ElectricSheep
+  class << self
+    def template_path
+      @_template_path ||= File.join(gem_path, 'templates')
+    end
+
+    def gem_path
+      @_gem_path ||= File.expand_path(File.join(File.dirname(__FILE__), '..'))
+    end
+  end
+end
