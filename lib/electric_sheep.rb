@@ -14,10 +14,11 @@ require 'electric_sheep/runner'
 require 'electric_sheep/sheepfile'
 require 'electric_sheep/interactors'
 require 'electric_sheep/shell'
-require 'electric_sheep/agents'
 require 'electric_sheep/sheep_exception'
+require 'electric_sheep/agents'
 require 'electric_sheep/commands'
 require 'electric_sheep/transports'
+require 'electric_sheep/notifiers'
 
 module ElectricSheep
   class << self

@@ -8,5 +8,11 @@ module ElectricSheep
       @logger = logger
       @metadata = metadata
     end
+
+    module ClassMethods
+      def register(options={})
+        ElectricSheep::Agents::Register.register(options.merge(command: self))
+      end
+    end
   end
 end
