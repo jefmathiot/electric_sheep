@@ -10,7 +10,7 @@ module ElectricSheep
         option :user
         option :password
 
-        def run!
+        def perform!
           logger.info "Creating a dump of the \"#{input.basename}\" MongoDB database"
           done!(
             directory_resource.tap do |dump|

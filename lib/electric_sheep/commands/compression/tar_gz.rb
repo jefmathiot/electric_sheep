@@ -9,7 +9,7 @@ module ElectricSheep
 
         option :delete_source
 
-        def run!
+        def perform!
           logger.info "Compressing #{input.path} to #{input.basename}.tar.gz"
           input_path=shell.expand_path(input.path)
           done!(

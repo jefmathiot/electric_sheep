@@ -36,7 +36,7 @@ describe ElectricSheep::Commands::Database::MySQLDump do
     end
 
     def assert_command
-      @command.run!
+      @command.perform!
       assert_product
     end
 

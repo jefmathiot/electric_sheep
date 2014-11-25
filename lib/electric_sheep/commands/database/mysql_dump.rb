@@ -10,7 +10,7 @@ module ElectricSheep
         option :user
         option :password
 
-        def run!
+        def perform!
           logger.info "Creating a dump of the \"#{input.basename}\" MySQL database"
           done!(
             file_resource(extension: '.sql').tap do |dump|
