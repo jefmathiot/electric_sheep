@@ -29,4 +29,16 @@ describe ElectricSheep::Resources::Resource do
       end
     end
   end
+
+  it 'creates an empty stat' do
+    subject.new.stat.wont_be_nil
+  end
+
+  it 'creates a stat with the given size' do
+    subject.new.tap do |resource|
+      resource.stat!(1024)
+      resource.stat.size.must_equal 1024
+    end
+  end
+
 end

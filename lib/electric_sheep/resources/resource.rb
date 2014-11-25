@@ -17,6 +17,14 @@ module ElectricSheep
           @timestamp=Time.now.utc.strftime('%Y%m%d-%H%M%S')
         end
       end
+
+      def stat!(size)
+        @stat=Stat.new(size)
+      end
+
+      def stat
+        @stat ||= Stat.new
+      end
     end
   end
 end
