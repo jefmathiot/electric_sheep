@@ -36,7 +36,7 @@ describe ElectricSheep::Resources::Resource do
 
   it 'creates a stat with the given size' do
     subject.new.tap do |resource|
-      resource.stat!(1024)
+      resource.stat!(1024).must_equal resource
       resource.stat.size.must_equal 1024
     end
   end

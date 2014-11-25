@@ -20,6 +20,7 @@ module ElectricSheep
 
       def stat!(size)
         @stat=Stat.new(size)
+        self
       end
 
       def stat
