@@ -56,7 +56,7 @@ module ElectricSheep
       def execute_transport(project, metadata)
         transport = metadata.agent.new(project, @logger, metadata, @config.hosts)
         metadata.benchmarked do
-          transport.perform!
+          transport.run!
         end
       end
 

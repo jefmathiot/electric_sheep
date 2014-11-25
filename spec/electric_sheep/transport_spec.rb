@@ -24,7 +24,7 @@ describe ElectricSheep::Transport do
     it 'performs using transport type from metadata' do
       ElectricSheep::Helpers::Directories.any_instance.expects(:mk_project_directory!)
       @metadata.expects(:type).returns(:do)
-      @transport.perform!
+      @transport.run!
       @transport.done.must_equal true
     end
 

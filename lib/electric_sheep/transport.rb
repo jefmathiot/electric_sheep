@@ -10,7 +10,7 @@ module ElectricSheep
       @hosts = hosts
     end
 
-    def perform!
+    def run!
       # Create a session so that required directories are created
       local_interactor.in_session
       self.send(@metadata.type)

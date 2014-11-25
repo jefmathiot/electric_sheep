@@ -10,7 +10,7 @@ describe ElectricSheep::Transports::SCP do
   let :remote_host do
     ElectricSheep::Metadata::Host.new
   end
-  
+
   [:file, :directory].each do |type|
     let "remote_#{type}" do
       ElectricSheep::Resources.const_get(type.capitalize).new(

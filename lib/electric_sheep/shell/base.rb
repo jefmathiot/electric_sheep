@@ -18,7 +18,7 @@ module ElectricSheep
             command=cmd_metadata.agent.new(@project, @logger, self, cmd_metadata )
             cmd_metadata.benchmarked do
               command.check_prerequisites
-              command.perform
+              command.run!
             end
           end
         end

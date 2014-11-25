@@ -49,7 +49,7 @@ describe ElectricSheep::Shell::Base do
       twice.yields
     FakeCommand.any_instance.tap do |cmd|
       cmd.expects(:check_prerequisites).twice
-      cmd.expects(:perform).twice
+      cmd.expects(:run!).twice
     end
     shell.perform!(metadata)
   end

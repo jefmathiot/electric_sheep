@@ -146,7 +146,7 @@ describe ElectricSheep::Runner do
     it 'executes transport' do
       project.add metadata = ElectricSheep::Metadata::Transport.new
       metadata.expects(:agent).in_sequence(script).at_least(1).returns(FakeTransport)
-      FakeTransport.any_instance.expects(:perform!).in_sequence(script)
+      FakeTransport.any_instance.expects(:run!).in_sequence(script)
       logger.expects(:info).in_sequence(script).
         with("Project \"project\" completed in 10.112 seconds")
       runner.run!

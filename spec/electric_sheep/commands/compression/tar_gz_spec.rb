@@ -50,7 +50,7 @@ describe ElectricSheep::Commands::Compression::TarGz do
           @shell.expects(:exec).in_sequence(@seq).
             with("rm -rf #{input}")
         end
-        @command.perform
+        @command.run!
         assert_product("some-#{input_type}")
       end
     end
