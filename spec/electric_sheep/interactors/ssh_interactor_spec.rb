@@ -56,6 +56,24 @@ describe ElectricSheep::Interactors::SshInteractor do
     Net::SSH::Test.remove_io_aliases
   end
 
+  describe 'selecting the private key' do
+
+    let(:host){ mock }
+    let(:project){ mock }
+
+    it 'uses the host key if specified' do
+      host.expects(:private_key).returns('key_rsa')
+      subject.new(host, project, 'user').send(:private_key).must_equal 'key_rsa'
+    end
+
+    it 'falls back to the project key' do
+      host.expects(:private_key).returns(nil)
+      project.expects(:private_key).returns('key_rsa')
+      subject.new(host, project, 'user').send(:private_key).must_equal 'key_rsa'
+    end
+
+  end
+
   describe "with a session" do
 
     def build_ssh_story(cmd, replies={}, exit_status=0)

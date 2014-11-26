@@ -51,9 +51,13 @@ module ElectricSheep
           @host.hostname,
           @user,
           port: @host.ssh_port,
-          key_data: Crypto.get_key(@project.private_key, :private).export,
+          key_data: Crypto.get_key(private_key, :private).export,
           keys_only: true
         )
+      end
+
+      def private_key
+        @host.private_key || @project.private_key
       end
 
     end
