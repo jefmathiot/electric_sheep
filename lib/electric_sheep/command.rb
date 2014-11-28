@@ -14,21 +14,31 @@ module ElectricSheep
 
     def check_prerequisites
       self.class.prerequisites.each { |prerequisite|
-        raise "Missing #{prerequisite} in #{self.class}" unless self.respond_to?(prerequisite)
         self.send prerequisite
       }
     end
 
+    def run!
+      stat!(input)
+      perform!
+    end
+
     protected
+
+    def done!(output)
+      stat!(output)
+      super
+    end
+
     def file_resource(opts={})
-      file_system_resource(:file, opts)
+      filesystem_resource(:file, opts)
     end
 
     def directory_resource(opts={})
-      file_system_resource(:directory, opts)
+      filesystem_resource(:directory, opts)
     end
 
-    def file_system_resource(type, opts={})
+    def filesystem_resource(type, opts={})
       Resources.const_get(type.to_s.camelize).new(
         opts.merge(
           basename: input.basename,
@@ -37,6 +47,19 @@ module ElectricSheep
       ).tap do |resource|
         resource.timestamp!(input)
       end
+    end
+
+    def stat_filesystem(resource)
+      shell.exec("du -bs #{shell.expand_path(resource.path)} | cut -f1")[:out].chomp.to_i
+    end
+
+    alias :stat_file :stat_filesystem
+    alias :stat_directory :stat_filesystem
+
+    def stat!(resource)
+      resource.stat!(send("stat_#{resource.type}", resource)) if resource.stat.size.nil?
+      rescue Exception => e
+        logger.debug "Unable to stat resource of type #{resource.type}: #{e.message}"
     end
 
     module ClassMethods

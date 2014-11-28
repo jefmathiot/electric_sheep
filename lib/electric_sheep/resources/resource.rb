@@ -26,6 +26,10 @@ module ElectricSheep
       def stat
         @stat ||= Stat.new
       end
+
+      def type
+        self.class.name.demodulize.underscore
+      end
     end
   end
 end

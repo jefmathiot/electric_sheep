@@ -41,4 +41,7 @@ describe ElectricSheep::Resources::Resource do
     end
   end
 
+  it 'lets the world know its type' do
+    subject.new.type.must_equal 'resource'
+  end
 end

@@ -8,6 +8,12 @@ mysql --user=root --password=pseudorandom <<EOF
   CREATE DATABASE controldb;
   GRANT USAGE ON *.* TO 'operator'@'localhost' IDENTIFIED BY 'pseudorandom';
   GRANT ALL PRIVILEGES ON controldb.* to 'operator'@'localhost';
+  CREATE TABLE controldb.test(
+    id INT NOT NULL AUTO_INCREMENT,
+    value CHAR(1) NOT NULL,
+    PRIMARY KEY( id )
+  );
+  INSERT INTO controldb.test(value) VALUES ('A'),('A'),('A'),('A'),('A'),('A'),('A'),('A'),('A'),('A');
 EOF
 
 mongo <<EOF

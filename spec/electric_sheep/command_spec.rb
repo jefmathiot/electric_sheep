@@ -24,6 +24,7 @@ describe ElectricSheep::Command do
   end
 
   describe CommandKlazz do
+
     it 'makes initialization options available' do
       command = subject.new(mock, logger = mock, @shell, mock)
       command.logger.must_equal logger
@@ -32,13 +33,13 @@ describe ElectricSheep::Command do
 
     it 'raises an exceptions if a prerequisite is not defined' do
       command = subject.new(mock, mock, @shell, mock)
-      -> { command.check_prerequisites }.must_raise RuntimeError,
-        "Missing check in CommandKlazz"
+      -> { command.check_prerequisites }.must_raise NoMethodError
     end
 
     it 'stores the command product' do
       command = subject.new(project = mock, mock, @shell, mock)
       project.expects(:store_product!).with(resource = mock)
+      command.expects(:stat!).with(resource)
       command.send :done!, resource
     end
 
@@ -48,6 +49,14 @@ describe ElectricSheep::Command do
       command.send(:input).must_equal resource
     end
 
+    it 'stats the input and performs' do
+      command = subject.new(project = mock, mock, @shell, mock)
+      project.expects(:last_product).returns(resource = mock)
+      command.expects(:stat!).with(resource)
+      command.expects(:perform!)
+      command.run!
+    end
+
     # TODO Move to an agent spec
     it 'extracts options from metadata' do
       command = subject.new(mock, mock, @shell, metadata = mock)
@@ -55,6 +64,7 @@ describe ElectricSheep::Command do
       command.send(:option, :some_option).must_equal 'VALUE'
     end
 
+    # TODO Move to an agent spec
     it 'decrypts options' do
       command = subject.new(project = mock, mock, @shell, metadata = mock)
       metadata.expects(:some_option).returns(encrypted = mock)

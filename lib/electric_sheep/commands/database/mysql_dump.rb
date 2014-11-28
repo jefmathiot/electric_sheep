@@ -19,12 +19,34 @@ module ElectricSheep
           )
         end
 
+        def stat_database(input)
+          cmd=database_size_cmd(input.name, option(:user), option(:password))
+          shell.exec(cmd)[:out].chomp.to_i
+        end
+
         private
         def cmd(db, user, password, dump)
-          cmd = "mysqldump"
-          cmd << " --user=#{shell_safe(user)} --password=#{shell_safe(password)}" unless user.nil?
-          cmd << " #{shell_safe(db)} > #{shell.expand_path(dump.path)}"
+          "mysqldump" +
+           " #{credentials(user, password)}" +
+           " #{shell_safe(db)} > #{shell.expand_path(dump.path)}"
         end
+
+        def database_size_cmd(db, user, password)
+          "echo \"#{database_size_query(db)}\" | " +
+            "mysql --skip-column-names #{credentials(user, password)}"
+        end
+
+        def database_size_query(db)
+          "SELECT sum(data_length+index_length) FROM information_schema.tables" +
+            " WHERE table_schema='#{shell_safe(db)}'" +
+            " GROUP BY table_schema"
+        end
+
+        def credentials(user, password)
+          user.nil? && "" ||
+            "--user=#{shell_safe(user)} --password=#{shell_safe(password)}"
+        end
+
       end
     end
   end
