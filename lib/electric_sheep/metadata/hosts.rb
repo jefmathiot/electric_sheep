@@ -15,6 +15,7 @@ module ElectricSheep
       option :hostname, required: true
       option :ssh_port
       option :description
+      option :private_key
 
       def initialize(options={})
         options[:ssh_port] ||= 22

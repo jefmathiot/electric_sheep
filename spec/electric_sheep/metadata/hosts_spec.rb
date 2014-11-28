@@ -4,16 +4,18 @@ describe ElectricSheep::Metadata::Host do
   include Support::Options
 
   it{
-    defines_options :hostname, :id, :description, :ssh_port
+    defines_options :hostname, :id, :description, :ssh_port, :private_key
     requires :hostname
   }
+
   it 'is remote' do
     subject.new.local?.must_equal false
   end
 
-  it 'use its id when converting to string' do
+  it 'uses its id when converting to string' do
     subject.new(id: 'some-id').to_s.must_equal 'some-id'
   end
+
 end
 
 describe ElectricSheep::Metadata::Localhost do

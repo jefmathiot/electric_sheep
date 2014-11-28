@@ -1,3 +1,5 @@
+require 'pathname'
+
 module ElectricSheep
   module Resources
     module Named
