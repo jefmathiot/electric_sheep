@@ -73,6 +73,19 @@ describe ElectricSheep::Command do
       command.send(:option, :some_option).must_equal 'VALUE'
     end
 
+    it 'logs debug message on unknown stat method' do
+      resource=mock
+      resource.stubs(:type).returns('unknown')
+      resource.stubs(:stat).returns(mock(size: nil))
+      logger=mock
+      logger.expects(:debug).with(
+        regexp_matches(
+          /^Unable to stat resource of type unknown: undefined method/
+        )
+      )
+      subject.new(mock, logger, mock, mock).send :stat!, resource
+    end
+
   end
 
   describe CommandKlazz2 do
