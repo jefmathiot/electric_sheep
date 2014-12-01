@@ -10,14 +10,6 @@ module ElectricSheep
         super
       end
 
-      def remote?
-        !local?
-      end
-
-      def local?
-        host.nil? || host.local?
-      end
-
     end
   end
 end

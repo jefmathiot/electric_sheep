@@ -30,6 +30,15 @@ module ElectricSheep
       def type
         self.class.name.demodulize.underscore
       end
+
+      def remote?
+        !local?
+      end
+
+      def local?
+        host.nil? || host.local?
+      end
+
     end
   end
 end

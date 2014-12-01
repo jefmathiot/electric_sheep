@@ -33,16 +33,16 @@ describe ElectricSheep::Transport do
         @transport.expects(:input).returns(@input=mock)
         @input.expects(:name).returns('file.name')
         @transport.expects(:option).with(:to).returns('destination')
-        @transport.expects(:option).with(:as).returns('scp')
+        @transport.expects(:option).with(:transport).returns('scp')
       end
       it 'log copy operation' do
         @logger.expects(:info).with("Copying file.name to destination using scp")
-        @transport.send(:log,:copy)
+        @transport.send(:log, :copy)
       end
 
       it 'log move operation' do
         @logger.expects(:info).with("Moving file.name to destination using scp")
-        @transport.send(:log,:move)
+        @transport.send(:log, :move)
       end
     end
   end

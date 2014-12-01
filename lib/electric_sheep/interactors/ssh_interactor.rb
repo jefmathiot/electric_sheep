@@ -1,6 +1,7 @@
 module ElectricSheep
   module Interactors
     class SshInteractor < Base
+      include Helpers::ShellStat
 
       def initialize(host, project, user, logger=nil)
         super(host, project, logger)
@@ -45,7 +46,16 @@ module ElectricSheep
         session.scp
       end
 
+      def upload!(from, to, local)
+        scp.upload! local.expand_path(from.path), expand_path(to.path)
+      end
+
+      def download!(from, to, local)
+        scp.download! expand_path(from.path), local.expand_path(to.path)
+      end
+
       protected
+
       def build_session
         Net::SSH.start(
           @host.hostname,

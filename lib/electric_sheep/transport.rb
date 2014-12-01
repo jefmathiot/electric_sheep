@@ -11,16 +11,55 @@ module ElectricSheep
     end
 
     def run!
-      # Create a session so that required directories are created
-      local_interactor.in_session
-      self.send(@metadata.type)
+      local_interactor.in_session do
+        remote_interactor.in_session do
+          log_run
+          if input.local?
+            handling_input(local_interactor) do
+              remote_interactor.upload! input, output, local_interactor
+            end
+          else
+            handling_input(remote_interactor) do
+              remote_interactor.download! input, output, local_interactor
+            end
+          end
+          done! output
+        end
+      end
     end
 
     protected
 
-    def log(operation)
-      logger.info "#{operation == :move ? 'Moving' : 'Copying'} " +
+    def done!(output)
+      stat!(output, output.local? ? local_interactor : remote_interactor)
+      super move? ? output : input
+    end
+
+    def handling_input(from, &block)
+      stat!(input, from)
+      yield
+      from.delete!(input) if move?
+    end
+
+    def move?
+      @metadata.type == :move
+    end
+
+    def copy?
+      @metadata.type == :copy
+    end
+
+    def log_run
+      logger.info "#{move? ? 'Moving' : 'Copying'} " +
         "#{input.name} to #{option(:to)} using #{option(:transport)}"
+    end
+
+    def output
+      @output ||= if input.local?
+        remote_resource
+      else
+        local_resource
+      end
     end
 
     def file_resource(host, opts={})
@@ -44,7 +83,17 @@ module ElectricSheep
     end
 
     def local_interactor
-      @local_interactor ||= Interactors::ShellInteractor.new(@hosts.localhost, @project, @logger)
+      @local_interactor ||= Interactors::ShellInteractor.new(
+        @hosts.localhost, @project, @logger
+      )
+    end
+
+    def local_resource
+      file_resource(host('localhost'))
+    end
+
+    def remote_interactor
+      raise "Not implemented"
     end
 
     def host(id)

@@ -1,6 +1,7 @@
 module ElectricSheep
   module Interactors
     class ShellInteractor < Base
+      include Helpers::ShellStat
 
       def exec(cmd)
         @logger.debug cmd if @logger

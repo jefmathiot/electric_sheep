@@ -13,7 +13,10 @@ module ElectricSheep
         super
       end
 
+      def local?
+        false
+      end
+
     end
   end
 end
-

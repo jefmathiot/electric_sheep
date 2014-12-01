@@ -11,5 +11,12 @@ module ElectricSheep
     def input
       @project.last_product
     end
+
+    def stat!(resource, interactor)
+      resource.stat! interactor.stat(resource)
+    rescue Exception => e
+      logger.debug "Unable to stat resource of type #{resource.type}: #{e.message}"
+    end
+
   end
 end
