@@ -24,12 +24,13 @@ module ElectricSheep
             rescue Exception => e
               @logger.error e.message
               @logger.debug e
-              return
+              return false
             end
           end
         end
         @logger.info "Project \"#{project.id}\" completed in %.3f seconds" %
           project.execution_time.round(3)
+        true
       end
 
       def executable_type(executable)
@@ -82,9 +83,13 @@ module ElectricSheep
 
       protected
       def run_all!
+        failure = 0
         @config.each_item do |project|
-          run(project)
+          runner_state = run(project)
+          failure += 1 if !runner_state
         end
+        raise "One project fail" if failure == 1
+        raise "#{failure} projects fail" if failure > 1
       end
 
       def run_single!
@@ -92,7 +97,7 @@ module ElectricSheep
         if project.nil?
           raise "Project \"#{@project}\" does not exist"
         else
-          run(project)
+          raise "Poject fail" unless run(project)
         end
       end
 

@@ -4,17 +4,63 @@ require 'electric_sheep/cli'
 describe ElectricSheep::CLI do
 
   let(:logger){ mock }
+  let(:config){ mock }
 
   def expects_stdout_logger(level)
     Lumberjack::Logger.expects(:new).with(kind_of(IO), {level: level}).
       returns(logger)
   end
 
+  def expects_file_logger(level)
+    Lumberjack::Logger.expects(:new).with("electric_sheep.log", {level: level}).
+    returns(logger)
+  end
+
+  def expects_evaluator(f='Sheepfile')
+    ElectricSheep::Sheepfile::Evaluator.expects(:new).with(f).
+    returns(mock(evaluate: config))
+  end
+
+  describe 'start' do
+
+    it 'launch daemon successfully' do
+      daemon = daemon_new
+      expects_evaluator
+      daemon.expects(:start!).returns(true)
+      subject.new([], config: 'Sheepfile', pidfile: 'pidfile').tap do |instance|
+        expects_file_logger(:info)
+        instance.start
+      end
+    end
+
+    it 'failed to launch daemon' do
+      daemon = daemon_new
+      expects_evaluator
+      expects_file_logger(:info)
+      daemon.expects(:start!).raises(@ex = Exception.new('fail'))
+      @ex.stubs(:backtrace).returns('backtrace')
+      logger.expects(:error).with("fail")
+      logger.expects(:debug).with(kind_of(Exception))
+      subject.new([], config: 'Sheepfile', pidfile: 'pidfile').tap do |instance|
+        instance.expects(:exit_with).with(:daemon_start_fail)
+        instance.start
+      end
+    end
+
+    def daemon_new
+      ElectricSheep::Daemon.expects(:new).
+      with(all_of(
+      has_entry(config: config),
+      has_entry(pidfile: 'pidfile'),
+      has_entry(logger: logger)
+      )).returns(daemon = mock)
+      daemon
+    end
+  end
+
   describe 'work' do
 
     describe 'when everything goes well' do
-
-      let(:config){ mock }
 
       before do
         ElectricSheep::Runner::Inline.expects(:new).
@@ -23,11 +69,6 @@ describe ElectricSheep::CLI do
             has_entry(project: 'some-project'),
             has_entry(logger: logger)
           )).returns(mock(run!: true))
-      end
-
-      def expects_evaluator(f='Sheepfile')
-        ElectricSheep::Sheepfile::Evaluator.expects(:new).with(f).
-          returns(mock(evaluate: config))
       end
 
       describe 'with the verbose option' do
@@ -67,7 +108,10 @@ describe ElectricSheep::CLI do
       @ex.stubs(:backtrace).returns('backtrace')
       logger.expects(:error).with("fail")
       logger.expects(:debug).with(kind_of(Exception))
-      subject.new.work
+      subject.new.tap do |instance|
+        instance.expects(:exit_with).with(:work_fail)
+        instance.work
+      end
     end
 
   end
@@ -87,7 +131,10 @@ describe ElectricSheep::CLI do
         raises(@ex = Exception.new('fail'))
       logger.expects(:error).with("fail")
       logger.expects(:debug).with(kind_of(Exception))
-      subject.new([], key: '/some/key', verbose: true).encrypt('SECRET')
+      subject.new([], key: '/some/key', verbose: true).tap do |instance|
+        instance.expects(:exit_with).with(:encrypt_fail)
+        instance.encrypt('SECRET')
+      end
     end
 
   end

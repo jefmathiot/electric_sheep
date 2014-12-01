@@ -26,6 +26,7 @@ module ElectricSheep
       rescue Exception => ex
         logger.error ex.message
         logger.debug ex
+        exit_with(:work_fail)
     end
 
     desc "encrypt SECRET", "Encrypt SECRET using the provided public key"
@@ -39,6 +40,7 @@ module ElectricSheep
       rescue Exception => ex
         logger.error ex.message
         logger.debug ex
+        exit_with(:encrypt_fail)
     end
 
     desc "start", "Start a daemon which processes scheduled projects in the " +
@@ -57,11 +59,19 @@ module ElectricSheep
       rescue Exception => ex
         logger.error ex.message
         logger.debug ex
+        exit_with(:daemon_start_fail)
     end
 
     default_task :work
 
     protected
+
+    def exit_with(status)
+      exit_code = 0
+      exit_code = 1 if [:daemon_start_fail, :encrypt_fail, :work_fail].include? status
+      exit(exit_code)
+    end
+
     def configuration
       Sheepfile::Evaluator.new(options[:config]).evaluate
     end

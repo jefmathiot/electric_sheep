@@ -17,13 +17,13 @@ Feature: Run projects
 
   Scenario: Run an unknown project from a Sheepfile
     Given I'm working on configuration "Sheepfile.runner"
-    When I tell the sheep to work on project "unknown"
+    When I tell the sheep to work on failing project "unknown"
     Then the project "failing-project" hasn't been executed
     And the project "successful-project" hasn't been executed
     And the program warns me the project is unknown
 
   Scenario: Run a Sheepfile with an unknown command
     Given I'm working on configuration "Sheepfile.unknown_command"
-    When I tell the sheep to work on project "unknown-command"
+    When I tell the sheep to work on failing project "unknown-command"
     Then the project "unknown-command" hasn't been executed
     And the program warns me an "Unknown command 'unknown' in Sheepfile" error occured
