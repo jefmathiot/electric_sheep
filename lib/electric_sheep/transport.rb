@@ -14,13 +14,13 @@ module ElectricSheep
       local_interactor.in_session do
         remote_interactor.in_session do
           log_run
-          if input.local?
-            handling_input(local_interactor) do
-              remote_interactor.upload! input, output, local_interactor
-            end
-          else
+          if host(option(:to)).local?
             handling_input(remote_interactor) do
               remote_interactor.download! input, output, local_interactor
+            end
+          else
+            handling_input(local_interactor) do
+              remote_interactor.upload! input, output, local_interactor
             end
           end
           done! output
@@ -45,10 +45,6 @@ module ElectricSheep
       @metadata.type == :move
     end
 
-    def copy?
-      @metadata.type == :copy
-    end
-
     def log_run
       logger.info "#{move? ? 'Moving' : 'Copying'} " +
         "#{input.name} to #{option(:to)} using #{option(:transport)}"
@@ -59,26 +55,6 @@ module ElectricSheep
         remote_resource
       else
         local_resource
-      end
-    end
-
-    def file_resource(host, opts={})
-      file_system_resource(:file, host, opts)
-    end
-
-    def directory_resource(host, opts={})
-      file_system_resource(:directory, host, opts)
-    end
-
-    def file_system_resource(type, host, opts={})
-      Resources.const_get(type.to_s.camelize).new(
-        opts.merge(
-          extension: input.respond_to?(:extension) && input.extension || nil,
-          basename: input.basename,
-          host: host
-        )
-      ).tap do |resource|
-        resource.timestamp!(input)
       end
     end
 
@@ -93,7 +69,11 @@ module ElectricSheep
     end
 
     def remote_interactor
-      raise "Not implemented"
+      raise "Not implemented, please define #{self.class}#remote_interactor"
+    end
+
+    def remote_resource
+      raise "Not implemented, please define #{self.class}#remote_resource"
     end
 
     def host(id)

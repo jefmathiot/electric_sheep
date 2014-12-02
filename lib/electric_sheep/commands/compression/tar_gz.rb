@@ -13,7 +13,7 @@ module ElectricSheep
           logger.info "Compressing #{input.path} to #{input.basename}.tar.gz"
           input_path=shell.expand_path(input.path)
           done!(
-            file_resource(extension: '.tar.gz').tap do |archive|
+            file_resource(host, extension: '.tar.gz').tap do |archive|
               shell.exec cmd(input_path, archive)
               shell.exec "rm -rf #{input_path}" if option(:delete_source)
             end

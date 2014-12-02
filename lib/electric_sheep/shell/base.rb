@@ -3,6 +3,7 @@ module ElectricSheep
     class Base
 
       delegate :expand_path, :exec, to: :interactor
+      delegate :stat_file, :stat_directory, :stat_filesystem, to: :interactor
 
       attr_reader :interactor, :host
 

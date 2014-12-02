@@ -4,6 +4,7 @@ module ElectricSheep
     include Runnable
 
     attr_reader :shell
+    delegate :stat_file, :stat_directory, :stat_filesystem, to: :shell
 
     def initialize(project, logger, shell, metadata)
       @project = project
@@ -30,31 +31,9 @@ module ElectricSheep
       super
     end
 
-    def file_resource(opts={})
-      filesystem_resource(:file, opts)
+    def host
+      shell.host
     end
-
-    def directory_resource(opts={})
-      filesystem_resource(:directory, opts)
-    end
-
-    def filesystem_resource(type, opts={})
-      Resources.const_get(type.to_s.camelize).new(
-        opts.merge(
-          basename: input.basename,
-          host: shell.host
-        )
-      ).tap do |resource|
-        resource.timestamp!(input)
-      end
-    end
-
-    def stat_filesystem(resource)
-      shell.exec("du -bs #{shell.expand_path(resource.path)} | cut -f1")[:out].chomp.to_i
-    end
-
-    alias :stat_file :stat_filesystem
-    alias :stat_directory :stat_filesystem
 
     def stat!(resource)
       resource.stat!(send("stat_#{resource.type}", resource)) if resource.stat.size.nil?
@@ -78,4 +57,3 @@ module ElectricSheep
 
   end
 end
-

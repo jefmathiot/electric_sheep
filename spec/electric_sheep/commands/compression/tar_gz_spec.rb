@@ -21,6 +21,7 @@ describe ElectricSheep::Commands::Compression::TarGz do
       executing do
         let(:output_name){ "some-#{input_type}-20140605-040302" }
         let(:output_ext){ ".tar.gz" }
+        let(:output_type){:file}
         let(:input){ send(input_type, "/tmp/some-#{input_type}") }
 
         it "compresses the provided #{input_type}" do
@@ -31,7 +32,7 @@ describe ElectricSheep::Commands::Compression::TarGz do
           ]
           cmds << "rm -rf #{input.path}" if delete_source
           shell.expects(:expand_path).at_least(1).with(input.path).returns(input.path)
-          expects_filesystem_stat(input.path, 4096)
+          expects_stat(input_type, input, 4096)
           ensure_execution(*cmds)
         end
       end

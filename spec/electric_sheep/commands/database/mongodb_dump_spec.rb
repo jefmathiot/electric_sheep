@@ -24,6 +24,7 @@ describe ElectricSheep::Commands::Database::MongoDBDump do
 
   executing do
     let(:output_name){ "$MyDatabase-20140605-040302" }
+    let(:output_type){:directory}
     let(:database){
       ElectricSheep::Resources::Database.new name: '$MyDatabase'
     }

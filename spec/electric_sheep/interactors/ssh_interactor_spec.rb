@@ -48,8 +48,20 @@ describe ElectricSheep::Interactors::SshInteractor do
     Net::SSH::Test.create_io_aliases
   end
 
-  let(:logger) do
-    mock
+  let(:logger){ mock }
+
+  let(:interactor) do
+    subject.new( host, project, 'johndoe', logger )
+  end
+
+  let(:host) do
+    ElectricSheep::Metadata::Host.new(hostname: 'host.tld')
+  end
+
+  let(:project) do
+    mock.tap do |project|
+      project.stubs(:id).returns('my-project')
+    end
   end
 
   after do
@@ -90,16 +102,6 @@ describe ElectricSheep::Interactors::SshInteractor do
       end
     end
 
-    let(:host) do
-      ElectricSheep::Metadata::Host.new(hostname: 'host.tld')
-    end
-
-    let(:project) do
-      mock.tap do |project|
-        project.stubs(:id).returns('my-project')
-      end
-    end
-
     before do
       ElectricSheep::Crypto.expects(:get_key).
         with('/path/to/private/key', :private).
@@ -109,7 +111,6 @@ describe ElectricSheep::Interactors::SshInteractor do
         with('host.tld', 'johndoe', port: 22, key_data: 'SECRET', keys_only: true).
         returns( connection )
       user = 'johndoe'
-      @interactor= subject.new( host, project, 'johndoe', logger )
       project.expects(:private_key).returns('/path/to/private/key')
       ElectricSheep::Helpers::Directories.any_instance.expects(:mk_project_directory!)
     end
@@ -123,8 +124,8 @@ describe ElectricSheep::Interactors::SshInteractor do
       end
       logger.expects(:debug).with('whatever')
       assert_scripted do
-        @interactor.in_session do
-          proc{ @interactor.exec 'whatever' }.must_raise RuntimeError
+        interactor.in_session do
+          proc{ interactor.exec 'whatever' }.must_raise RuntimeError
         end
       end
     end
@@ -134,8 +135,8 @@ describe ElectricSheep::Interactors::SshInteractor do
       logger.expects(:debug).with('echo "Hello World"')
       logger.expects(:debug).with('Hello World')
       assert_scripted do
-        @interactor.in_session do
-          result = @interactor.exec 'echo "Hello World"'
+        interactor.in_session do
+          result = interactor.exec 'echo "Hello World"'
           result.must_equal({:out=>"Hello World", :err=>"", :exit_status=>0})
         end
       end
@@ -145,8 +146,8 @@ describe ElectricSheep::Interactors::SshInteractor do
       build_ssh_story 'echo "Goodbye Cruel World" >&2', {extended_data: 'Goodbye Cruel World'}
       logger.expects(:debug).with('echo "Goodbye Cruel World" >&2')
       assert_scripted do
-        @interactor.in_session do
-          result = @interactor.exec 'echo "Goodbye Cruel World" >&2'
+        interactor.in_session do
+          result = interactor.exec 'echo "Goodbye Cruel World" >&2'
           result.must_equal({:out=>"", :err=>"Goodbye Cruel World", :exit_status=>0})
         end
       end
@@ -158,8 +159,8 @@ describe ElectricSheep::Interactors::SshInteractor do
       logger.expects(:debug).with('echo "Hello World" ; echo "Goodbye Cruel World" >&2')
       logger.expects(:debug).with('Hello World')
       assert_scripted do
-        @interactor.in_session do
-          result = @interactor.exec 'echo "Hello World" ; echo "Goodbye Cruel World" >&2'
+        interactor.in_session do
+          result = interactor.exec 'echo "Hello World" ; echo "Goodbye Cruel World" >&2'
           result.must_equal({:out=>"Hello World", :err=>"Goodbye Cruel World", :exit_status=>0})
         end
       end
@@ -172,8 +173,8 @@ describe ElectricSheep::Interactors::SshInteractor do
         logger.expects(:debug).with('Hello World')
         assert_scripted do
           result=nil
-          @interactor.in_session do
-            result = @interactor.exec('echo "Hello World"')
+          interactor.in_session do
+            result = interactor.exec('echo "Hello World"')
           end
           result[:exit_status].must_equal 0
           result[:out].must_equal 'Hello World'
@@ -184,12 +185,87 @@ describe ElectricSheep::Interactors::SshInteractor do
         build_ssh_story 'ls --wtf', {extended_data: 'An error'}, 2
         logger.expects(:debug).with('ls --wtf')
         assert_scripted do
-          @interactor.in_session do
-            proc{ @interactor.exec('ls --wtf') }.must_raise RuntimeError
+          interactor.in_session do
+            proc{ interactor.exec('ls --wtf') }.must_raise RuntimeError
           end
         end
       end
     end
+
+  end
+
+  it 'uses the SCP from SSH session' do
+    interactor.expects(:session).returns(mock(scp: scp=mock))
+    interactor.scp.must_equal scp
+  end
+
+  describe 'transfering resources' do
+
+    [:input, :output].each do |m|
+
+      let(m) do
+        mock.tap do |r|
+          r.stubs(:path).returns(m.to_s)
+        end
+      end
+
+      let("#{m}_path"){ "/path/to/#{m}" }
+
+    end
+
+    let(:local_interactor){ mock }
+
+    let(:scp){ mock }
+
+    let(:seq){ sequence('transfer') }
+
+    before do
+      interactor.stubs(:scp).returns(scp)
+    end
+
+    def expects_paths_expansion(input_expander, output_expander)
+      input_expander.expects(:expand_path).with(input.path).
+        returns(input_path)
+      output_expander.expects(:expand_path).with(output.path).
+        returns(output_path)
+    end
+
+    def expects_file_op(action, interactor)
+      scp.expects(action).in_sequence(seq).
+        with(input_path, output_path, recursive: input.directory?)
+    end
+
+    def expects_directory_op(action, interactor)
+      path_regexp=/\/path\/to\/tmp\d{8}/
+      interactor.expects(:exec).in_sequence(seq).
+        with(regexp_matches(/^mkdir #{path_regexp}/))
+      scp.expects(action).in_sequence(seq).
+        with(input_path, regexp_matches(path_regexp), recursive: input.directory?)
+      interactor.expects(:exec).in_sequence(seq).
+        with(regexp_matches(/^mv #{path_regexp}.* #{output_path}/))
+      interactor.expects(:exec).in_sequence(seq).
+        with(regexp_matches(/^rm -rf #{path_regexp}/))
+    end
+
+    def self.ensure_scp(type, action)
+
+      it "#{action}s a #{type}" do
+        [:input, :output].each do |m|
+          send(m).stubs(:directory?).returns(type==:directory)
+        end
+        expanders=[local_interactor, interactor]
+        expanders.reverse! if action == :download
+        expects_paths_expansion(*expanders)
+        send "expects_#{type}_op", "#{action}!", expanders.last
+        interactor.send "#{action}!", input, output, local_interactor
+      end
+
+    end
+
+    ensure_scp :file, :download
+    ensure_scp :file, :upload
+    ensure_scp :directory, :download
+    ensure_scp :directory, :upload
 
   end
 end

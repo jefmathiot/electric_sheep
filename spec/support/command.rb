@@ -26,14 +26,15 @@ module Support
       end
     end
 
-    def expects_output_stat
-      expects_filesystem_stat(output_path)
+    def expects_output_stat(size=1024)
+      expects_stat output_type, kind_of(ElectricSheep::Resources::Resource),
+        size
     end
 
-    def expects_filesystem_stat(path, size=1024)
-      shell.expects(:exec).in_sequence(seq).
-        with("du -bs #{path} | cut -f1").
-        returns(out: size.to_s)
+    def expects_stat(type, resource, size=1024)
+      shell.expects("stat_#{type}").in_sequence(seq).
+        with(resource).
+        returns(size)
     end
 
     def assert_product

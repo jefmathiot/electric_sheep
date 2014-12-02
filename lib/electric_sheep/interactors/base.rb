@@ -15,7 +15,9 @@ module ElectricSheep
       def after_exec(&block)
         block.call.tap do |result|
           unless result[:exit_status] == 0
-            raise result[:err].empty? ? "Command terminated with exit status : #{result[:exit_status]}" : result[:err]
+            raise result[:err].empty? ?
+              "Command terminated with exit status : #{result[:exit_status]}" :
+              result[:err]
           end
         end
       end

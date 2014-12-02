@@ -47,11 +47,17 @@ module ElectricSheep
       end
 
       def upload!(from, to, local)
-        scp.upload! local.expand_path(from.path), expand_path(to.path)
+        source, target = local.expand_path(from.path), expand_path(to.path)
+        copy_paths( source, target, self, from.directory? ) do |source, target|
+          scp.upload! source, target, recursive: from.directory?
+        end
       end
 
       def download!(from, to, local)
-        scp.download! expand_path(from.path), local.expand_path(to.path)
+        source, target = expand_path(from.path), local.expand_path(to.path)
+        copy_paths( source, target, local, from.directory? ) do |source, target|
+          scp.download! source, target, recursive: from.directory?
+        end
       end
 
       protected
@@ -70,6 +76,34 @@ module ElectricSheep
         @host.private_key || @project.private_key
       end
 
+      def copy_paths(source, target, context, directory, &block)
+        if directory
+          to_tmpdir(source, target, context) do |path|
+            yield source, path
+          end
+        else
+          yield source, target
+        end
+      end
+
+      def to_tmpdir(source, target, context, &block)
+        path=tmpdir(source, target)
+        File.expand_path(File.join(path, '..')).tap do |parent|
+          context.exec "mkdir #{parent}"
+          yield parent
+          context.exec "mv #{path} #{target}"
+          context.exec "rm -rf #{parent}"
+        end
+      end
+
+      def tmpdir(source, target)
+        t = Time.now.strftime("%Y%m%d")
+        File.join(
+          File.dirname(target),
+          "tmp#{t}-#{$$}-#{rand(0x100000000).to_s(36)}",
+          File.basename(source)
+        )
+      end
     end
   end
 end

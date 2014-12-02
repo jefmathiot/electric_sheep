@@ -31,6 +31,7 @@ describe ElectricSheep::Commands::Database::MySQLDump do
   executing do
     let(:output_name){ "$MyDatabase-20140605-040302" }
     let(:output_ext){ ".sql" }
+    let(:output_type){:file}
     let(:database){
       ElectricSheep::Resources::Database.new name: '$MyDatabase'
     }
