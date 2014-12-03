@@ -15,7 +15,7 @@ module ElectricSheep
     def stat!(resource, interactor)
       resource.stat! interactor.stat(resource)
     rescue Exception => e
-      logger.debug "Unable to stat resource of type #{resource.type}: #{e.message}"
+      logger.warn "Unable to stat resource of type #{resource.type}: #{e.message}"
     end
 
     def file_resource(host, opts={})
