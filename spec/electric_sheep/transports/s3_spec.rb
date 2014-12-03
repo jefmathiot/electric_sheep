@@ -95,7 +95,7 @@ describe ElectricSheep::Transports::S3 do
       end
 
       after do
-        #reset_directories false, working_directory, bucket_path
+        reset_directories false, working_directory, bucket_path
       end
 
       it 'yields in session' do
