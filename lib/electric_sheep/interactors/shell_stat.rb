@@ -1,5 +1,5 @@
 module ElectricSheep
-  module Helpers
+  module Interactors
     module ShellStat
       extend ActiveSupport::Concern
 

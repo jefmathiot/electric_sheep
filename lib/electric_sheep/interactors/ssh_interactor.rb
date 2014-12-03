@@ -1,7 +1,7 @@
 module ElectricSheep
   module Interactors
     class SshInteractor < Base
-      include Helpers::ShellStat
+      include ShellStat
 
       def initialize(host, project, user, logger=nil)
         super(host, project, logger)
