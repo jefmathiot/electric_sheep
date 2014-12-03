@@ -112,22 +112,25 @@ describe ElectricSheep::Transports::S3 do
         end
       end
 
-      def ensure_transfer(action, from_dir, to_dir, local_resource)
+      def ensure_transfer(action, from_dir, to_dir, expanded_dir,
+        local_resource)
         source=dummy(from_dir, from.path)
         local_interactor.expects(:expand_path).with(local_resource.path).
-          returns(File.join(to_dir, local_resource.path))
+          returns(File.join(expanded_dir, local_resource.path))
         interactor.send action, from, to, local_interactor
         File.read(File.join(to_dir, to.path)).must_equal dummy_content
       end
 
       it 'downloads a file from the remote bucket' do
         from.stubs(:bucket).returns(bucket)
-        ensure_transfer(:download!, bucket_path, working_directory, to)
+        ensure_transfer(:download!, bucket_path, working_directory,
+          working_directory, to)
       end
 
       it 'uploads a file to the remote bucket' do
         to.stubs(:bucket).returns(bucket)
-        ensure_transfer(:upload!, tmp_directory, bucket_path, from)
+        ensure_transfer(:upload!, tmp_directory, bucket_path, tmp_directory,
+          from)
       end
 
       describe 'with a file in the remote bucket' do
