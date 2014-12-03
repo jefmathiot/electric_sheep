@@ -10,8 +10,6 @@ module ElectricSheep
       option :access_key_id, required: true
       option :secret_key, required: true
 
-      protected
-
       def remote_interactor
         @remote_interactor ||= S3Interactor.new(
           option(:access_key_id), option(:secret_key)
@@ -30,6 +28,8 @@ module ElectricSheep
           end
         end
       end
+
+      protected
 
       def with_directory(&block)
         paths=option(:to).split('/')

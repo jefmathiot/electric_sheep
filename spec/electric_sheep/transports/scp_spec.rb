@@ -2,11 +2,7 @@ require 'spec_helper'
 require 'net/ssh/test'
 
 describe ElectricSheep::Transports::SCP do
-
-  let(:project){ ElectricSheep::Metadata::Project.new(id: 'some-project') }
-  let(:resource){ mock }
-  let(:metadata){ mock }
-  let(:logger){ mock }
+  include Support::Transport
 
   before do
     project.stubs(:last_product).returns(resource)
@@ -18,7 +14,7 @@ describe ElectricSheep::Transports::SCP do
 
     let(:interactor_klazz){ ElectricSheep::Interactors::SshInteractor }
 
-    let(:scp){ subject.new(project, logger, metadata, nil) }
+    let(:scp){ subject.new(project, logger, metadata, hosts) }
 
     it 'creates an SSH interactor referencing to the provided host' do
       resource.stubs(:local?).returns(true)
