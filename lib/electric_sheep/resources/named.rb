@@ -27,10 +27,12 @@ module ElectricSheep
 
       def normalize_path(path)
         basename, extension = ::File.basename(path), nil
-        while (part=::File.extname(basename)) != ""
-          extension ||= ""
-          extension="#{part}#{extension}"
-          basename=::File.basename(basename, part)
+        if respond_to?(:extension)
+          while (part=::File.extname(basename)) != ""
+            extension ||= ""
+            extension="#{part}#{extension}"
+            basename=::File.basename(basename, part)
+          end
         end
         names=Pathname.new(path).split
         parent=names.first.to_s

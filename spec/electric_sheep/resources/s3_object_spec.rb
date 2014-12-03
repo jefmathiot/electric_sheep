@@ -14,11 +14,12 @@ describe ElectricSheep::Resources::S3Object do
     subject.new.local?.must_equal false
   end
 
-  it 'normalize its path' do
-    resource=subject.new(path: 'path/to/file.ext')
-    resource.extension.must_equal '.ext'
-    resource.basename.must_equal 'file'
-    resource.parent.must_equal 'path/to'
+  it 'normalizes its path' do
+    subject.new(path: 'path/to/file.ext').tap do |resource|
+      resource.extension.must_equal '.ext'
+      resource.basename.must_equal 'file'
+      resource.parent.must_equal 'path/to'
+    end
   end
 
 end
