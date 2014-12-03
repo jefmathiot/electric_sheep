@@ -41,5 +41,22 @@ Vagrant.configure("2") do |config|
     cd /tmp/electric_sheep/build
     bundle install
     bundle exec omnibus build electric_sheep
+
+    echo "NOW TEST PACKAGE"
+    sudo dpkg -r electric-sheep
+    electric_sheep help
+    if [ $? == 0 ]
+      then
+      echo "electric_sheep uninstall failed"
+      exit 1
+    fi
+    sudo dpkg -i /var/cache/omnibus/pkg/*.deb
+    electric_sheep help
+    if [ $? != 0 ]
+    then
+      echo "electric_sheep install failed"
+      exit 1
+    fi
+
   SCRIPT
 end
