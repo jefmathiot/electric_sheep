@@ -14,13 +14,13 @@ module ElectricSheep
       local_interactor.in_session do
         remote_interactor.in_session do
           log_run
-          if host(option(:to)).local?
-            handling_input(remote_interactor) do
-              remote_interactor.download! input, output, local_interactor
-            end
-          else
+          if input.local?
             handling_input(local_interactor) do
               remote_interactor.upload! input, output, local_interactor
+            end
+          else
+            handling_input(remote_interactor) do
+              remote_interactor.download! input, output, local_interactor
             end
           end
           done! output
