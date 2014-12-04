@@ -9,7 +9,8 @@ module Support
 
     def requires(*options)
       options.each do |option|
-        subject.new.tap do |subject|
+        args=[nil] * [subject.allocate.method(:initialize).arity, 0].max
+        subject.new(*args).tap do |subject|
           expects_validation_error(subject, option,
             "Option #{option} is required")
         end

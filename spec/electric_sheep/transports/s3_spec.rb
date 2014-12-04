@@ -5,16 +5,31 @@ describe ElectricSheep::Transports::S3 do
   include Support::Transport
 
   it {
-    defines_options :access_key_id, :secret_key
+    defines_options :access_key_id, :secret_key, :region
   }
 
   let(:s3){ subject.new(project, logger, metadata, hosts) }
 
-  it 'creates an S3 interactor' do
-    metadata.expects(:access_key_id).returns('ABCD')
-    metadata.expects(:secret_key).returns('secret')
-    interactor=s3.remote_interactor
-    interactor.must_be_instance_of ElectricSheep::Transports::S3::S3Interactor
+  describe 'creating an S3 interactor' do
+    before do
+      metadata.expects(:access_key_id).returns('ABCD')
+      metadata.expects(:secret_key).returns('secret')
+    end
+
+    it 'creates an S3 interactor with the default S3 region' do
+      metadata.expects(:region).returns(nil)
+      interactor=s3.remote_interactor
+      interactor.must_be_instance_of ElectricSheep::Transports::S3::S3Interactor
+      # Good enough...
+      interactor.instance_variable_get(:@region).must_equal 'us-east-1'
+    end
+
+    it 'uses the provided S3 region' do
+      metadata.expects(:region).returns('eu-central-1')
+      interactor=s3.remote_interactor.instance_variable_get(:@region).
+        must_equal 'eu-central-1'
+    end
+
   end
 
   it 'creates an S3 object' do
@@ -31,7 +46,7 @@ describe ElectricSheep::Transports::S3 do
 
   describe ElectricSheep::Transports::S3::S3Interactor do
 
-    let(:interactor){ subject.new('ABCD', 'secret') }
+    let(:interactor){ subject.new('ABCD', 'secret', 'eu-central-1') }
 
     let(:local_interactor){ mock }
 
@@ -58,7 +73,33 @@ describe ElectricSheep::Transports::S3 do
         connection.instance_variable_get(:@aws_access_key_id).must_equal 'ABCD'
         connection.instance_variable_get(:@aws_secret_access_key).
           must_equal 'secret'
+        connection.instance_variable_get(:@region).
+          must_equal 'eu-central-1'
       end
+    end
+
+    describe 'handling multipart upload' do
+
+      let(:source){ mock }
+
+      it 'doesnt split files up to 10 MB' do
+        source.stubs(:size).returns(10.megabytes)
+        interactor.send(:upload_options, source)[:multipart_chunk_size].
+          must_be_nil
+      end
+
+      it 'split files beyond 10 MB' do
+        source.stubs(:size).returns(10.megabytes + 1)
+        interactor.send(:upload_options, source)[:multipart_chunk_size].
+        must_equal 5.megabytes
+      end
+
+      it 'selects the smallest chunk size available' do
+        source.stubs(:size).returns(5.megabytes * 10001)
+        interactor.send(:upload_options, source)[:multipart_chunk_size].
+          must_equal 10.megabytes
+      end
+
     end
 
     describe 'in the test env' do
@@ -131,6 +172,18 @@ describe ElectricSheep::Transports::S3 do
         to.stubs(:bucket).returns(bucket)
         ensure_transfer(:upload!, tmp_directory, bucket_path, tmp_directory,
           from)
+      end
+
+      it 'uses the upload options' do
+        "#{working_directory}/dummy.file".tap do |path|
+          local_interactor.stubs(:expand_path).returns(path)
+          FileUtils.touch(path)
+        end
+        interactor.expects(:remote_files).with(to).returns(files=mock)
+        interactor.expects(:upload_options).with(kind_of(File)).
+          returns(an_option: 'a_value')
+        files.expects(:create).with(has_entry(:an_option, 'a_value'))
+        interactor.upload!(from, to, local_interactor)
       end
 
       describe 'with a file in the remote bucket' do

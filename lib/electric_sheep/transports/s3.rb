@@ -9,10 +9,11 @@ module ElectricSheep
 
       option :access_key_id, required: true
       option :secret_key, required: true
+      option :region
 
       def remote_interactor
         @remote_interactor ||= S3Interactor.new(
-          option(:access_key_id), option(:secret_key)
+          option(:access_key_id), option(:secret_key), option(:region)
         )
       end
 
@@ -39,9 +40,10 @@ module ElectricSheep
 
       class S3Interactor
 
-        def initialize(access_key_id, secret_key)
+        def initialize(access_key_id, secret_key, region)
           @access_key_id = access_key_id
           @secret_key = secret_key
+          @region = region || 'us-east-1'
         end
 
         def in_session(&block)
@@ -59,11 +61,12 @@ module ElectricSheep
         end
 
         def upload!(from, to, local)
-          # TODO Handle large files ?
+          source=File.new( local.expand_path(from.path) )
           remote_files(to).create(
-            key: to.path,
-            body: File.open( local.expand_path(from.path) ),
-            multipart_chunk_size: 100.megabytes
+            {
+              key: to.path,
+              body: source
+            }.merge(upload_options(source))
           )
         end
 
@@ -93,7 +96,8 @@ module ElectricSheep
             {
               provider: 'AWS',
               aws_access_key_id: @access_key_id,
-              aws_secret_access_key: @secret_key
+              aws_secret_access_key: @secret_key,
+              region: @region
             }
           end
         end
@@ -112,6 +116,19 @@ module ElectricSheep
 
         def key(resource)
           resource.path
+        end
+
+        def upload_options(file)
+          {}.tap do |opts|
+            if file.size > 10.megabytes
+              # Try to use small chunks to reduce memory consumption
+              chunk=[5, 10, 20, 30, 40, 50, 100, 200, 300, 500].find do |size|
+                # S3 hard-limit: 10000 chunks
+                size.megabytes * 10000 >= file.size
+              end
+              opts[:multipart_chunk_size]=chunk.megabytes
+            end
+          end
         end
 
       end
