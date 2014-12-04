@@ -54,9 +54,10 @@ module ElectricSheep
         def download!(from, to, local)
           path = local.expand_path(to.path)
           # TODO Handle large files ?
-          file = remote_file(from)
           File.open(path, "w") do |f|
-            f.write(file.body)
+            file = remote_file(from) do |chunk, remaining, total|
+              f.write(chunk)
+            end
           end
         end
 
@@ -110,8 +111,8 @@ module ElectricSheep
           remote_directory(resource.bucket).files
         end
 
-        def remote_file(resource)
-          remote_files(resource).get(key(resource))
+        def remote_file(resource, &block)
+          remote_files(resource).get(key(resource), &block)
         end
 
         def key(resource)
