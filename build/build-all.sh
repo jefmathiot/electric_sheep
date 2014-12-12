@@ -1,7 +1,4 @@
 #!/bin/bash
 
-build_dir=`pwd`
-
-cd $build_dir/vagrant
-librarian-chef install
+cd vagrant
 vagrant up --provision && vagrant halt

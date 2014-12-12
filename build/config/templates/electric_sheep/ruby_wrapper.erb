@@ -1,0 +1,8 @@
+#!/bin/sh
+
+export RUBY_GC_MALLOC_LIMIT_MIN=16777216
+export RUBY_GC_MALLOC_LIMIT_MAX=16777216
+export RUBY_GC_OLDMALLOC_LIMIT_MIN=16777216
+export RUBY_GC_OLDMALLOC_LIMIT_MAX=33554432
+
+exec <%= install_dir %>/embedded/bin/ruby <%= install_dir %>/bin/electric_sheep "$@"

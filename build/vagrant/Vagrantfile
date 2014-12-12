@@ -1,14 +1,18 @@
+ES_BOXES={
+  ubuntu32: "ubuntu/trusty32",
+  ubuntu64: "ubuntu/trusty64",
+  debian32: "chef/debian-7.4-i386",
+  debian64: "chef/debian-7.4"
+}
+
 Vagrant.configure("2") do |config|
 
-  config.vm.define "ubuntu32" do |web|
-    web.vm.box = "ubuntu/trusty32"
+  ES_BOXES.each do |box, image|
+    config.vm.define box.to_sym do |b|
+      b.vm.box = image
+    end
   end
 
-  config.vm.define "ubuntu64" do |db|
-    db.vm.box = "ubuntu/trusty64"
-  end
-
-  config.omnibus.chef_version = :latest
   config.vm.provider "virtualbox" do |v|
     v.memory = 4096
     v.cpus = 2
@@ -16,20 +20,14 @@ Vagrant.configure("2") do |config|
   end
 
   config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
-  config.vm.provision :shell, inline: "sudo locale-gen fr_FR.UTF-8 && sudo dpkg-reconfigure locales"
 
-  config.vm.provision :chef_solo do |chef|
-    chef.cookbooks_path = ["cookbooks"]
-    chef.add_recipe "apt"
-  end
-
-  config.vm.synced_folder File.expand_path(File.join(File.dirname(__FILE__), "../../")), "/tmp/electric_sheep/"
+  workdir=File.expand_path(File.join(File.dirname(__FILE__), "../../"))
+  config.vm.synced_folder workdir, "/tmp/electric_sheep/"
 
   config.vm.provision :shell, privileged: true, inline: <<-SCRIPT
-    apt-get install -y python-software-properties
-    apt-add-repository ppa:brightbox/ruby-ng
+    set -e
     apt-get update
-    apt-get install -y ruby2.1 git ruby2.1-dev ruby-dev build-essential autoconf zlib1g-dev
+    apt-get install -y ruby git ruby-dev build-essential autoconf zlib1g-dev
     gem install bundler --no-rdoc --no-ri
     gem install omnibus --no-rdoc --no-ri
     git config --global user.email "humans@electricsheep.io"
@@ -42,21 +40,9 @@ Vagrant.configure("2") do |config|
     bundle install
     bundle exec omnibus build electric_sheep
 
-    echo "NOW TEST PACKAGE"
-    sudo dpkg -r electric-sheep
-    electric_sheep help
-    if [ $? == 0 ]
-      then
-      echo "electric_sheep uninstall failed"
-      exit 1
-    fi
+    echo "Package built, testing installation and removal"
     sudo dpkg -i /var/cache/omnibus/pkg/*.deb
     electric_sheep help
-    if [ $? != 0 ]
-    then
-      echo "electric_sheep install failed"
-      exit 1
-    fi
-
+    sudo dpkg -r electric-sheep
   SCRIPT
 end
