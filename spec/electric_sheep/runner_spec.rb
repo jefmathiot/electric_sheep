@@ -6,6 +6,13 @@ describe ElectricSheep::Runner do
 
   let(:script) { sequence('script') }
 
+  let(:project) do
+    ElectricSheep::Metadata::Project.new(id: 'first-project',
+      description: 'First project description').tap do |p|
+      p.stubs(:execution_time).returns(10.112)
+    end
+  end
+
   describe ElectricSheep::Runner::Inline do
 
     let(:config) do
@@ -15,13 +22,7 @@ describe ElectricSheep::Runner do
     let(:runner) { subject.new(config: config, logger: logger) }
 
     before do
-      config.add(
-        p=ElectricSheep::Metadata::Project.new(
-          id: 'first-project',
-          description: 'First project description'
-        )
-      )
-      p.stubs(:execution_time).returns(10.112)
+      config.add( project )
     end
 
     it 'raises when told to run an unknown project' do
@@ -36,8 +37,6 @@ describe ElectricSheep::Runner do
       before do
         logger.expects(:info).in_sequence(script).
           with("Executing \"First project description\" (first-project)")
-        logger.expects(:info).
-          with("Project \"first-project\" completed in 10.112 seconds")
       end
 
       describe 'with multiple projects' do
@@ -50,16 +49,36 @@ describe ElectricSheep::Runner do
           end
         end
 
-        it 'should not have remaining projects' do
+        def expects_second_project_run
           logger.expects(:info).in_sequence(script).
             with("Executing second-project")
           logger.expects(:info).in_sequence(script).
             with("Project \"second-project\" completed in 5.500 seconds")
+        end
+
+        it 'should not have remaining projects' do
+          logger.expects(:info).
+            with("Project \"first-project\" completed in 10.112 seconds")
+          expects_second_project_run
           runner.run!
           config.remaining.must_equal 0
         end
 
+        it 'reports failing projects' do
+          project.add ElectricSheep::Metadata::Shell.new
+          shell = ElectricSheep::Shell::LocalShell.any_instance
+          shell.expects(:perform!).in_sequence(script).
+            raises(RuntimeError, 'Error message')
+          logger.expects(:error).in_sequence(script).with('Error message')
+          logger.expects(:debug).in_sequence(script).with(kind_of(RuntimeError))
+          expects_second_project_run
+          ex = ->{ runner.run! }.must_raise RuntimeError
+          ex.message.must_equal "Some projects have failed: first-project"
+        end
+
         it 'executes a single project when told to do so' do
+          logger.expects(:info).
+            with("Project \"first-project\" completed in 10.112 seconds")
           logger.expects(:info).never.with("Executing second-project")
           runner = subject.new(config: config, project: 'first-project',
             logger: logger)
@@ -77,14 +96,7 @@ describe ElectricSheep::Runner do
     let(:config) do
       ElectricSheep::Config.new.tap do |c|
         c.hosts.add('some-host', hostname: 'some-host.tld')
-      end
-    end
-
-    let(:project) do
-      config.add(
-        ElectricSheep::Metadata::Project.new(id: 'project')
-      ).tap do |p|
-        p.stubs(:execution_time).returns(10.112)
+        c.add project
       end
     end
 
@@ -100,7 +112,7 @@ describe ElectricSheep::Runner do
 
     before do
       logger.expects(:info).in_sequence(script).
-        with("Executing project")
+        with("Executing \"First project description\" (first-project)")
       project.start_with! resource
     end
 
@@ -118,7 +130,7 @@ describe ElectricSheep::Runner do
         shell = ElectricSheep::Shell::LocalShell.any_instance
         shell.expects(:perform!).in_sequence(script)
         logger.expects(:info).in_sequence(script).
-          with("Project \"project\" completed in 10.112 seconds")
+          with("Project \"first-project\" completed in 10.112 seconds")
         runner.run!
         expects_execution_times(project, metadata)
       end
@@ -132,7 +144,7 @@ describe ElectricSheep::Runner do
         shell = ElectricSheep::Shell::RemoteShell.any_instance
         shell.expects(:perform!).in_sequence(script).returns(shell)
         logger.expects(:info).in_sequence(script).
-          with("Project \"project\" completed in 10.112 seconds")
+          with("Project \"first-project\" completed in 10.112 seconds")
         runner.run!
         expects_execution_times(project, metadata)
       end
@@ -148,7 +160,7 @@ describe ElectricSheep::Runner do
       metadata.expects(:agent).in_sequence(script).at_least(1).returns(FakeTransport)
       FakeTransport.any_instance.expects(:run!).in_sequence(script)
       logger.expects(:info).in_sequence(script).
-        with("Project \"project\" completed in 10.112 seconds")
+        with("Project \"first-project\" completed in 10.112 seconds")
       runner.run!
       expects_execution_times(project, metadata)
     end

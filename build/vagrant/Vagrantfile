@@ -1,0 +1,48 @@
+ES_BOXES={
+  ubuntu32: "ubuntu/trusty32",
+  ubuntu64: "ubuntu/trusty64",
+  debian32: "chef/debian-7.4-i386",
+  debian64: "chef/debian-7.4"
+}
+
+Vagrant.configure("2") do |config|
+
+  ES_BOXES.each do |box, image|
+    config.vm.define box.to_sym do |b|
+      b.vm.box = image
+    end
+  end
+
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 4096
+    v.cpus = 2
+    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+  end
+
+  config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+
+  workdir=File.expand_path(File.join(File.dirname(__FILE__), "../../"))
+  config.vm.synced_folder workdir, "/tmp/electric_sheep/"
+
+  config.vm.provision :shell, privileged: true, inline: <<-SCRIPT
+    set -e
+    apt-get update
+    apt-get install -y ruby git ruby-dev build-essential autoconf zlib1g-dev
+    gem install bundler --no-rdoc --no-ri
+    gem install omnibus --no-rdoc --no-ri
+    git config --global user.email "humans@electricsheep.io"
+    git config --global user.name "Electric Sheep IO"
+    mkdir -p /opt/electric_sheep /var/cache/omnibus
+    rm -rf /var/cache/omnibus/pkg/*
+    chown vagrant:vagrant /opt/electric_sheep
+    chown vagrant:vagrant /var/cache/omnibus
+    cd /tmp/electric_sheep/build
+    bundle install
+    bundle exec omnibus build electric_sheep
+
+    echo "Package built, testing installation and removal"
+    sudo dpkg -i /var/cache/omnibus/pkg/*.deb
+    electric_sheep help
+    sudo dpkg -r electric-sheep
+  SCRIPT
+end

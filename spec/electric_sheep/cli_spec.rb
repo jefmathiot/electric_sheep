@@ -52,10 +52,11 @@ describe ElectricSheep::CLI do
   end
 
   def self.ensure_exception_handling(&block)
-    it 'logs the exception' do
+    it 'logs the exception and fails' do
       logger.expects(:error).with("fail")
       logger.expects(:debug).with(kind_of(Exception))
       Exception.any_instance.stubs(:backtrace).returns('backtrace')
+      Kernel.expects(:exit).with(1)
       self.instance_eval &block
     end
   end

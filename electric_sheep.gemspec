@@ -40,8 +40,4 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'fog', '~> 1.23', '>= 1.23.0'
   spec.add_dependency 'lumberjack', '~> 1.0', '>= 1.0.9'
 
-  # Avoids an error installing nokogiri when building packages (nokogiri >= 1.6.5 / libxml2 2.9.2)
-  # TODO Remove as soon as problem is fixed
-  spec.add_dependency 'nokogiri', '1.6.3'
-
 end

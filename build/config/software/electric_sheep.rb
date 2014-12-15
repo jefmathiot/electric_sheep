@@ -2,7 +2,6 @@ require File.join(File.dirname(__FILE__), '../build')
 
 name "electric_sheep"
 
-#git default version
 default_version ElectricSheep::VERSION
 
 dependency "ruby"
@@ -18,4 +17,8 @@ build do
   gem "build electric_sheep.gemspec", env: env
   gem "install electric_sheep-#{ElectricSheep::VERSION}.gem \
     -n #{install_dir}/bin --no-ri --no-rdoc", env: env
+  erb source: 'ruby_wrapper.erb',
+    dest: "#{install_dir}/bin/ruby_wrapper",
+    vars: {install_dir: install_dir},
+    mode: 0755
 end

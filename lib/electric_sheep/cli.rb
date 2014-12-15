@@ -32,7 +32,7 @@ module ElectricSheep
       desc: 'Name of a single project to execute'
 
     def work
-      rescued do
+      rescued(true) do
         Runner::Inline.new(
           config: configuration,
           logger: logger,
@@ -46,7 +46,7 @@ module ElectricSheep
     logging_options
 
     def encrypt(secret)
-      rescued do
+      rescued(true) do
         logger.info Crypto.encrypt(secret, options[:key])
       end
     end
@@ -55,7 +55,7 @@ module ElectricSheep
     startup_options
 
     def start
-      rescued do
+      rescued(true) do
         master(config: configuration).start!
       end
     end
@@ -65,7 +65,7 @@ module ElectricSheep
     logging_options
 
     def stop
-      rescued do
+      rescued(true) do
         master.stop!
       end
     end
@@ -74,7 +74,7 @@ module ElectricSheep
     startup_options
 
     def restart
-      rescued do
+      rescued(true) do
         master(config: configuration).restart!
       end
     end
@@ -82,6 +82,7 @@ module ElectricSheep
     default_task :work
 
     protected
+
     def configuration
       Sheepfile::Evaluator.new(options[:config]).evaluate
     end

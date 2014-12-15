@@ -12,7 +12,7 @@ function error_exit
   exit 1
 }
 
-sudo bash -c "ln -s /opt/electric_sheep/bin/electric_sheep /usr/bin/electric_sheep"
+sudo bash -c "ln -s /opt/electric_sheep/bin/ruby_wrapper /usr/bin/electric_sheep"
 
 echo "Thank you for installing electric_sheep!"
 

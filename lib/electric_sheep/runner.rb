@@ -21,13 +21,14 @@ module ElectricSheep
             "Executing \"#{project.description}\" (#{project.id})" :
             "Executing #{project.id}"
           project.each_item do |step|
-            return if rescued do
+            return false if rescued do
               send("execute_#{executable_type(step)}", project, step)
             end
           end
         end
         @logger.info "Project \"#{project.id}\" completed in %.3f seconds" %
           project.execution_time.round(3)
+        true
       end
 
       def executable_type(executable)
@@ -80,8 +81,12 @@ module ElectricSheep
 
       protected
       def run_all!
+        failures=[]
         @config.each_item do |project|
-          run(project)
+          failures << project.id unless run(project)
+        end
+        if failures.count > 0
+          raise "Some projects have failed: #{failures.join(', ')}"
         end
       end
 
@@ -90,7 +95,7 @@ module ElectricSheep
         if project.nil?
           raise "Project \"#{@project}\" does not exist"
         else
-          run(project)
+          raise "Project #{project.id} has failed" unless run(project)
         end
       end
 
