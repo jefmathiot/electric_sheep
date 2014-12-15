@@ -17,16 +17,14 @@ module ElectricSheep
 
       def run!
         project.benchmarked do
-          @logger.info project.description ?
-            "Executing \"#{project.description}\" (#{project.id})" :
-            "Executing #{project.id}"
+          @logger.info "Executing #{project.name}"
           project.each_item do |step|
             return false if rescued do
               send("execute_#{executable_type(step)}", project, step)
             end
           end
         end
-        @logger.info "Project \"#{project.id}\" completed in %.3f seconds" %
+        @logger.info "Project #{project.name} completed in %.3f seconds" %
           project.execution_time.round(3)
         true
       end
@@ -83,7 +81,7 @@ module ElectricSheep
       def run_all!
         failures=[]
         @config.each_item do |project|
-          failures << project.id unless run(project)
+          failures << project.name unless run(project)
         end
         if failures.count > 0
           raise "Some projects have failed: #{failures.join(', ')}"

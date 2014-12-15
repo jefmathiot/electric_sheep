@@ -56,6 +56,10 @@ module ElectricSheep
         end
       end
 
+      def name
+        description.nil? ? "\"#{id}\"" : "\"#{description}\" (#{id})"
+      end
+
     end
   end
 end

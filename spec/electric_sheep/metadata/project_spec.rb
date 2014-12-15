@@ -71,6 +71,15 @@ describe ElectricSheep::Metadata::Project do
     end
   end
 
+  it 'uses its id as the default name' do
+    subject.new(id: 'project-name').name.must_equal '"project-name"'
+  end
+
+  it 'uses its description and id' do
+    subject.new(id: 'project-name', description: 'Description').name.
+      must_equal '"Description" (project-name)'
+  end
+
   describe 'on inspecting schedule' do
 
     def scheduled(expired, updates, &block)
