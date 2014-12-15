@@ -119,10 +119,10 @@ describe ElectricSheep::Runner do
       project.start_with! resource
     end
 
-    def expects_execution_times(*metered_objects)
-      metered_objects.each do |metered|
-        metered.execution_time.wont_be_nil
-        metered.execution_time.must_be :>, 0
+    def expects_execution_times(*objects)
+      objects.each do |monitor|
+        monitor.execution_time.wont_be_nil
+        monitor.execution_time.must_be :>, 0
       end
     end
 

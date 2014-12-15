@@ -45,7 +45,7 @@ describe ElectricSheep::Shell::Base do
       id: 'second', type: 'fake'
     )
     shell.interactor.expects(:in_session).yields
-    ElectricSheep::Metadata::Command.any_instance.expects(:benchmarked).
+    ElectricSheep::Metadata::Command.any_instance.expects(:monitored).
       twice.yields
     FakeCommand.any_instance.tap do |cmd|
       cmd.expects(:check_prerequisites).twice

@@ -16,10 +16,10 @@ module ElectricSheep
       end
 
       def run!
-        project.benchmarked do
-          @logger.info "Executing #{project.name}"
-          project.each_item do |step|
-            return false if rescued do
+        return false if rescued do
+          project.monitored do
+            @logger.info "Executing #{project.name}"
+            project.each_item do |step|
               send("execute_#{executable_type(step)}", project, step)
             end
           end
@@ -34,7 +34,7 @@ module ElectricSheep
       end
 
       def execute_shell(project, metadata)
-        metadata.benchmarked do
+        metadata.monitored do
             Shell::LocalShell.new(
               @config.hosts.localhost, project, @logger
             ).perform!(metadata)
@@ -42,7 +42,7 @@ module ElectricSheep
       end
 
       def execute_remote_shell(project, metadata)
-        metadata.benchmarked do
+        metadata.monitored do
           Shell::RemoteShell.new(
             project.last_product.host,
             project,
@@ -54,7 +54,7 @@ module ElectricSheep
 
       def execute_transport(project, metadata)
         transport = metadata.agent.new(project, @logger, metadata, @config.hosts)
-        metadata.benchmarked do
+        metadata.monitored do
           transport.run!
         end
       end

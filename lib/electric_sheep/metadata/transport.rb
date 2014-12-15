@@ -1,7 +1,7 @@
 module ElectricSheep
   module Metadata
     class Transport < Agent
-      include Metered
+      include Monitor
 
       option :transport, required: true
       option :type, required: true # move or copy

@@ -2,7 +2,7 @@ module ElectricSheep
   module Metadata
     class Shell < Base
       include Queue
-      include Metered
+      include Monitor
 
       def initialize(options={})
         super

@@ -3,7 +3,7 @@ require 'spec_helper'
 describe ElectricSheep do
 
   it 'provides the path to the gem installation' do
-    subject.gem_path.must_match /electric_sheep$/
+    subject.gem_path.must_equal `pwd`.chomp
   end
 
   it 'provides the path to the templates' do

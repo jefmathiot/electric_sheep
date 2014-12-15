@@ -1,7 +1,7 @@
 module ElectricSheep
   module Metadata
     class Command < Agent
-      include Metered
+      include Monitor
 
       option :id, required: true
       option :type, required: true

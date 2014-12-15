@@ -2,7 +2,7 @@ module ElectricSheep
   module Metadata
     class Project < Base
       include Queue
-      include Metered
+      include Monitor
 
       option :id, required: true
       option :description
@@ -58,6 +58,14 @@ module ElectricSheep
 
       def name
         description.nil? ? "\"#{id}\"" : "\"#{description}\" (#{id})"
+      end
+
+      def successful?
+        @status==:success
+      end
+
+      def mark!(status)
+        @status=status
       end
 
     end
