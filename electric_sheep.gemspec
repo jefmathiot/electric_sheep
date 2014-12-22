@@ -39,5 +39,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'net-scp', '~> 1.2', '>= 1.2.1'
   spec.add_dependency 'fog', '~> 1.23', '>= 1.23.0'
   spec.add_dependency 'lumberjack', '~> 1.0', '>= 1.0.9'
+  spec.add_dependency 'mail', '~> 2.6', '>= 2.6.3'
+  spec.add_dependency 'premailer', '~> 1.8', '>= 1.8.2'
 
 end
