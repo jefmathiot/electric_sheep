@@ -6,7 +6,7 @@ describe ElectricSheep::Transport do
 
   let(:hosts){ ElectricSheep::Metadata::Hosts.new }
 
-  let(:transport){ subject.new(project, logger, metadata, hosts) }
+  let(:transport){ subject.new(project, logger, hosts, resource, metadata) }
 
   [:local_interactor, :logger, :metadata].each do |m|
     let(m){ mock }
@@ -75,16 +75,16 @@ describe ElectricSheep::Transport do
       hosts.localhost, project, logger
     ).returns( local_interactor )
     local_interactor.expects(:in_session).in_sequence(seq).yields
-    project.stubs(:last_product).returns(resource)
     hosts.stubs(:get).with('localhost').returns(localhost)
     metadata.stubs(:transport).returns('airplane')
   end
 
-  [NoRemoteResourceTransportKlazz, NoRemoteInteractorTransportKlazz].each do |klazz|
+  [NoRemoteResourceTransportKlazz, NoRemoteInteractorTransportKlazz].
+    each do |klazz|
     describe klazz do
       it 'complains remote_interactor is not implemented' do
         metadata.stubs(:to).returns('some-host')
-        metadata.stubs(:type).returns('copy')
+        metadata.stubs(:action).returns('copy')
         resource.stubs(:local?).returns(true)
         logger.stubs(:info)
         transport.stubs(:stat!)
@@ -98,24 +98,26 @@ describe ElectricSheep::Transport do
 
   describe TransportKlazz do
 
-    {move: 'Moving', copy: 'Copying'}.each do |type, msg|
+    {move: 'Moving', copy: 'Copying'}.each do |action, msg|
 
-      def expects_delete(interactor, type)
-        return if type==:copy
+      def expects_delete(interactor, action)
+        return if action==:copy
         interactor.expects(:delete!).in_sequence(seq).
           with(resource)
       end
 
-      def expects_done(output, type)
-        project.expects(:store_product!).in_sequence(seq).
-          with(type==:copy ? resource : output)
+      def ensure_done(input, output, action)
+        expected=(action==:copy ? input : output)
+        transport.run!.must_equal output
+        transport.product.must_equal expected
       end
 
       describe "#{msg.downcase} a resource" do
 
         before do
-          transport.remote_interactor.expects(:in_session).in_sequence(seq).yields
-          metadata.stubs(:type).returns(type)
+          transport.remote_interactor.expects(:in_session).in_sequence(seq).
+            yields
+          metadata.stubs(:action).returns(action)
         end
 
         it 'transfers from local to remote' do
@@ -128,11 +130,10 @@ describe ElectricSheep::Transport do
             with(resource, local_interactor)
           transport.remote_interactor.expects(:upload!).in_sequence(seq).
             with(resource, transport.remote_resource, local_interactor)
-          expects_delete(local_interactor, type)
+          expects_delete(local_interactor, action)
           transport.expects(:stat!).in_sequence(seq).
             with(transport.remote_resource, transport.remote_interactor)
-          expects_done(transport.remote_resource, type)
-          transport.run!
+          ensure_done(resource, transport.remote_resource, action)
         end
 
         it 'transfers from remote to local' do
@@ -146,11 +147,10 @@ describe ElectricSheep::Transport do
             with(resource, transport.remote_interactor)
           transport.remote_interactor.expects(:download!).in_sequence(seq).
             with(resource, output, local_interactor)
-          expects_delete(transport.remote_interactor, type)
+          expects_delete(transport.remote_interactor, action)
           transport.expects(:stat!).in_sequence(seq).
             with(output, local_interactor)
-          expects_done(output, type)
-          transport.run!
+          ensure_done(resource, output, action)
         end
 
       end
