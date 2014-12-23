@@ -3,21 +3,25 @@ require 'net/ssh/test'
 
 describe ElectricSheep::Transports::SCP do
   include Support::Transport
+  include Support::Options
 
-  before do
-    project.stubs(:last_product).returns(resource)
-    metadata.stubs(:as).returns('user')
-    metadata.stubs(:to).returns('some-host')
-  end
+  it{ defines_options :as }
 
   describe 'creating a remote interactor' do
 
+    before do
+      metadata.stubs(:as).returns('user')
+      metadata.stubs(:to).returns('some-host')
+    end
+
+    let(:input){ mock }
+
     let(:interactor_klazz){ ElectricSheep::Interactors::SshInteractor }
 
-    let(:scp){ subject.new(project, logger, metadata, hosts) }
+    let(:scp){ subject.new(project, logger, hosts, input, metadata) }
 
     it 'creates an SSH interactor referencing to the provided host' do
-      resource.stubs(:local?).returns(true)
+      input.stubs(:local?).returns(true)
       metadata.stubs(:as).returns('user')
       scp.expects(:host).with('some-host').returns(host=mock)
       interactor_klazz.expects(:new).with(host, project, 'user', logger).
@@ -26,15 +30,15 @@ describe ElectricSheep::Transports::SCP do
     end
 
     it 'creates an SSH interactor referencing the host of the input resource' do
-      resource.stubs(:local?).returns(false)
-      resource.expects(:host).returns(host=mock)
+      input.stubs(:local?).returns(false)
+      input.expects(:host).returns(host=mock)
       interactor_klazz.expects(:new).with(host, project, 'user', logger).
         returns(interactor=Object.new)
       scp.remote_interactor.must_equal interactor
     end
 
     it 'builds a remote resource' do
-      resource.stubs(:type).returns('file')
+      input.stubs(:type).returns('file')
       scp.expects(:host).with('some-host').returns(host=mock)
       scp.expects(:file_resource).with(host).returns(output=mock)
       scp.remote_resource.must_equal output

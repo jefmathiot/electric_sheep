@@ -7,6 +7,8 @@ module ElectricSheep
 
       register as: "scp"
 
+      option :as
+
       def remote_interactor
         @remote_interactor ||= Interactors::SshInteractor.new(
           input.local? ? host(option(:to)) : input.host,
