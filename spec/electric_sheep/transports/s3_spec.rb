@@ -8,7 +8,7 @@ describe ElectricSheep::Transports::S3 do
     defines_options :access_key_id, :secret_key, :region
   }
 
-  let(:s3){ subject.new(project, logger, metadata, hosts) }
+  let(:s3){ subject.new(project, logger, hosts, resource, metadata) }
 
   describe 'creating an S3 interactor' do
     before do
@@ -33,7 +33,6 @@ describe ElectricSheep::Transports::S3 do
   end
 
   it 'creates an S3 object' do
-    project.stubs(:last_product).returns(resource)
     resource.stubs(:basename).returns('file')
     resource.stubs(:extension).returns('.ext')
     resource.stubs(:timestamp?).returns(false)
