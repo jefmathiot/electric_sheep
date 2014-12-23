@@ -11,9 +11,13 @@ module ElectricSheep
       option :secret_key, required: true
       option :region
 
+      DEFAULT_REGION='us-east-1'
+
       def remote_interactor
         @remote_interactor ||= S3Interactor.new(
-          option(:access_key_id), option(:secret_key), option(:region)
+          option(:access_key_id),
+          option(:secret_key),
+          option(:region) || DEFAULT_REGION
         )
       end
 
@@ -23,7 +27,8 @@ module ElectricSheep
             bucket: bucket,
             parent: prefix,
             basename: input.basename,
-            extension: input.extension
+            extension: input.extension,
+            region: option(:region) || DEFAULT_REGION
           }).tap do |resource|
             resource.timestamp!(input)
           end
@@ -43,7 +48,7 @@ module ElectricSheep
         def initialize(access_key_id, secret_key, region)
           @access_key_id = access_key_id
           @secret_key = secret_key
-          @region = region || 'us-east-1'
+          @region = region
         end
 
         def in_session(&block)

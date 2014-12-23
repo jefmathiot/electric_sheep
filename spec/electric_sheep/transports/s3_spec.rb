@@ -32,15 +32,30 @@ describe ElectricSheep::Transports::S3 do
 
   end
 
-  it 'creates an S3 object' do
-    resource.stubs(:basename).returns('file')
-    resource.stubs(:extension).returns('.ext')
-    resource.stubs(:timestamp?).returns(false)
-    metadata.stubs(:to).returns('bucket/path/to')
-    resource=s3.remote_resource
-    resource.must_be_instance_of ElectricSheep::Resources::S3Object
-    resource.bucket.must_equal 'bucket'
-    resource.path.must_match /^path\/to\/file-\d{8}-\d{6}\.ext/
+  describe 'creating an S3 object' do
+
+    def ensure_s3_object_created
+      resource.stubs(:basename).returns('file')
+      resource.stubs(:extension).returns('.ext')
+      resource.stubs(:timestamp?).returns(false)
+      metadata.stubs(:to).returns('bucket/path/to')
+      resource=s3.remote_resource
+      resource.must_be_instance_of ElectricSheep::Resources::S3Object
+      resource.bucket.must_equal 'bucket'
+      resource.path.must_match /^path\/to\/file-\d{8}-\d{6}\.ext/
+      resource
+    end
+
+    it 'uses the default S3 region' do
+      metadata.stubs(:region).returns nil
+      ensure_s3_object_created.region.must_equal 'us-east-1'
+    end
+
+    it 'uses the provided S3 region' do
+      metadata.stubs(:region).returns('eu-central-1')
+      ensure_s3_object_created.region.must_equal 'eu-central-1'
+    end
+
   end
 
   describe ElectricSheep::Transports::S3::S3Interactor do
