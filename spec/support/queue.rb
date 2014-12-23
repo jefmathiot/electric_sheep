@@ -12,22 +12,14 @@ module Support
           end
         end
 
-        it 'provides queue size' do
+        it 'gives its size' do
           @queue.size.must_equal @items.size
-          @queue.remaining.must_equal @items.size
         end
 
-        it 'retains steps order' do
-          @items.size.times do |i|
-            @queue.next!.must_equal @items[i]
-            @queue.remaining.must_equal @items.size - ( i + 1 )
-            @queue.size.must_equal @items.size
-          end
-        end
 
-        it 'yields block for each item' do
+        it 'iterates through items' do
           times = 0
-          @queue.each_item do |item|
+          @queue.iterate do |item|
             @items[times].must_equal item
             times += 1
           end

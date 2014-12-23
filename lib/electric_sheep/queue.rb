@@ -1,37 +1,21 @@
 module ElectricSheep
   module Queue
 
+    delegate :size, to: :queue
+
     def add(item)
-      @items << item
+      queue << item
       item
     end
 
-    def size
-      @items.size
-    end
-
-    def remaining
-      [@items.size - @current, 0].max
-    end
-
-    def next!
-      @current += 1
-      @items[@current - 1]
-    end
-
-    def reset!
-      @items = []
-      @current = 0
-    end
-
-    def each_item
-      while item = next!
+    def iterate
+      queue.each do |item|
         yield item if block_given?
       end
     end
 
-    def all
-      @items
+    def queue
+      @queue ||= []
     end
   end
 end

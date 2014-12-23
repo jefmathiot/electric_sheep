@@ -6,7 +6,6 @@ module ElectricSheep
 
     def initialize
       @hosts = Metadata::Hosts.new
-      reset!
     end
 
   end
