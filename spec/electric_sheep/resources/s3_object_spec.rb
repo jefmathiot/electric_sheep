@@ -6,7 +6,7 @@ describe ElectricSheep::Resources::S3Object do
   include Support::Files::Extended
 
   it {
-    defines_options :directory, :bucket
+    defines_options :directory, :bucket, :region
     requires :bucket
   }
 
@@ -20,6 +20,18 @@ describe ElectricSheep::Resources::S3Object do
       resource.basename.must_equal 'file'
       resource.parent.must_equal 'path/to'
     end
+  end
+
+  it 'converts to a location' do
+    location=subject.new(
+      bucket: 'my-bucket',
+      directory: 'directory',
+      region: 'us-east-1'
+    ).to_location
+    location.must_be_instance_of ElectricSheep::Metadata::Pipe::Location
+    location.id.must_equal 'my-bucket/directory'
+    location.location.must_equal 'us-east-1'
+    location.type.must_equal :bucket
   end
 
 end

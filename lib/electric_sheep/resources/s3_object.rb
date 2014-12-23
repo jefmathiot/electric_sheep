@@ -5,6 +5,7 @@ module ElectricSheep
 
       option :directory
       option :bucket, required: true
+      option :region
 
       def initialize(opts={})
         if path=opts.delete(:path)
@@ -15,6 +16,12 @@ module ElectricSheep
 
       def local?
         false
+      end
+
+      def to_location
+        Metadata::Pipe::Location.new(
+          [bucket, directory].compact.join('/'), region, :bucket
+        )
       end
 
     end
