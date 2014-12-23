@@ -17,17 +17,16 @@ describe ElectricSheep::Interactors::ShellInteractor do
 
   describe 'executing a command' do
 
-    def expects_execution(out, err)
+    def expects_execution(cmd, out=nil, err=nil)
       interactor.stubs(:session).returns(session=mock)
-      session.expects(:execute).with('ls').
+      session.expects(:execute).with(cmd).
         yields(out && "#{out}\n", err && "#{err}\n")
       session.expects(:exit_status).returns(err ? 2:0)
-      logger.expects(:debug).with(out) unless out.nil?
-      logger.expects(:debug).with('ls')
+      logger.expects(:debug).with(cmd)
       if err
-        proc{interactor.exec('ls')}.must_raise RuntimeError
+        proc{interactor.exec(cmd)}.must_raise RuntimeError
       else
-        result=interactor.exec('ls')
+        result=interactor.exec(cmd)
         result[:out].must_equal out || ''
         result[:err].must_equal err || ''
         result[:exit_status].must_equal 0
@@ -35,13 +34,23 @@ describe ElectricSheep::Interactors::ShellInteractor do
     end
 
     it 'returns the out, err and exit status' do
-        expects_execution "Output", "Error"
+      logger.expects(:debug).with('Output')
+      expects_execution 'ls', "Output", "Error"
     end
 
     it 'doesnt log unless out, err and exit status' do
-        expects_execution nil, nil
+      expects_execution 'ls'
     end
 
+  end
+
+  it 'deletes a resource' do
+    resource=mock(path: 'resource')
+    cmd='rm -rf /path/to/resource'
+    interactor.expects(:expand_path).with('resource').
+      returns('/path/to/resource')
+    interactor.expects(:exec).with(cmd)
+    interactor.delete!(resource)
   end
 
 end

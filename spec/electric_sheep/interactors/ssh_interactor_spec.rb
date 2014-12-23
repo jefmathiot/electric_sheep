@@ -190,6 +190,21 @@ describe ElectricSheep::Interactors::SshInteractor do
           end
         end
       end
+
+      it 'should be able to delete resources' do
+        resource=mock(path: 'resource')
+        cmd='rm -rf /path/to/resource'
+        build_ssh_story cmd, {}
+        logger.expects(:debug).with(cmd)
+        interactor.expects(:expand_path).with('resource').
+          returns('/path/to/resource')
+        assert_scripted do
+          interactor.in_session do
+            result = interactor.delete!(resource)
+            result[:exit_status].must_equal 0
+          end
+        end
+      end
     end
 
   end
