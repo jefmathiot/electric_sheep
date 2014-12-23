@@ -4,10 +4,6 @@ module ElectricSheep
   module Shell
     class LocalShell < Base
 
-      def initialize(host, project, logger)
-        super
-      end
-
       def perform!(metadata)
         @logger.info "Starting a local shell session"
         super

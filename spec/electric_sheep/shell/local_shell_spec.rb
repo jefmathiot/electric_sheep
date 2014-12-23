@@ -2,14 +2,14 @@ require 'spec_helper'
 
 describe ElectricSheep::Shell::LocalShell do
 
-  [:host, :project, :logger].each do |var|
+  [:host, :project, :input, :logger].each do |var|
     let(var) do
       mock
     end
   end
 
   let(:shell) do
-    subject.new(host, project, logger)
+    subject.new(host, project, input, logger)
   end
 
   it 'initializes an interactor and cache it' do
