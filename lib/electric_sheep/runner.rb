@@ -1,5 +1,3 @@
-require 'active_support/core_ext'
-
 module ElectricSheep
   module Runner
 
@@ -17,14 +15,12 @@ module ElectricSheep
 
       def run!
         return false if rescued do
-          project.monitored do
-            @logger.info "Executing #{project.name}"
-            project.each_item do |step|
-              send("execute_#{executable_type(step)}", project, step)
-            end
+          @logger.info "Executing \"#{project.name}\""
+          project.pipelined(project.starts_with) do |step, input|
+            send("execute_#{executable_type(step)}", project, input, step)
           end
         end
-        @logger.info "Project #{project.name} completed in %.3f seconds" %
+        @logger.info "Project \"#{project.name}\" completed in %.3f seconds" %
           project.execution_time.round(3)
         true
       end
@@ -33,30 +29,31 @@ module ElectricSheep
         executable.class.name.underscore.split('/').last
       end
 
-      def execute_shell(project, metadata)
-        metadata.monitored do
-            Shell::LocalShell.new(
-              @config.hosts.localhost, project, @logger
-            ).perform!(metadata)
-        end
-      end
-
-      def execute_remote_shell(project, metadata)
-        metadata.monitored do
-          Shell::RemoteShell.new(
-            project.last_product.host,
-            project,
-            @logger,
-            metadata.user
+      def execute_shell(project, input, metadata)
+          Shell::LocalShell.new(
+            @config.hosts.localhost, project, input, @logger
           ).perform!(metadata)
-        end
+          metadata.last_product
       end
 
-      def execute_transport(project, metadata)
-        transport = metadata.agent.new(project, @logger, metadata, @config.hosts)
+      def execute_remote_shell(project, input, metadata)
+        Shell::RemoteShell.new(
+          project.last_product.host,
+          project,
+          input,
+          @logger,
+          metadata.user
+        ).perform!(metadata)
+        metadata.last_product
+      end
+
+      def execute_transport(project, input, metadata)
+        transport = metadata.agent.new(project, @logger, @config.hosts, input,
+          metadata)
         metadata.monitored do
           transport.run!
         end
+        transport.product
       end
 
     end
@@ -80,16 +77,17 @@ module ElectricSheep
       protected
       def run_all!
         failures=[]
-        @config.each_item do |project|
+        @config.iterate do |project|
           failures << project.name unless run(project)
         end
         if failures.count > 0
-          raise "Some projects have failed: #{failures.join(', ')}"
+          projects=failures.map{ |p| "\"#{p}\""}.join(', ')
+          raise "Some projects have failed: #{projects}"
         end
       end
 
       def run_single!
-        project=@config.all.find{|p|p.id==@project}
+        project=@config.queue.find{|p|p.id==@project}
         if project.nil?
           raise "Project \"#{@project}\" does not exist"
         else
