@@ -9,9 +9,9 @@ module ElectricSheep
 
       def monitored
         start = Time.now
-        yield if block_given?
+        output = yield if block_given?
         @status = :success
-        self
+        output
       rescue Exception => e
         @status = :failed
         raise e
