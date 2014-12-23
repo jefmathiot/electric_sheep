@@ -2,8 +2,8 @@ module ElectricSheep
   module Shell
     class RemoteShell < Base
 
-      def initialize(host, project, logger, user)
-        super(host, project, logger)
+      def initialize(host, project, input, logger, user)
+        super(host, project, input, logger)
         @user = user
       end
 
