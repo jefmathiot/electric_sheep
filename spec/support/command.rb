@@ -37,17 +37,15 @@ module Support
         returns(size)
     end
 
-    def assert_product
-      product = project.last_product
+    def assert_product(product)
       product.wont_be_nil
       product.path.must_equal "#{output_name}#{output_ext}"
       product.stat.size.must_equal 1024
     end
 
     def assert_command
-      command.run!
+      assert_product(command.run!)
       input.stat.size.must_equal 4096
-      assert_product
     end
 
     def ensure_execution(*expected_cmds)
@@ -76,7 +74,7 @@ module Support
 
           let(:seq){sequence('command_exec')}
           let(:output_ext){ nil }
-          let(:command){subject.new(project, logger, shell, metadata)}
+          let(:command){subject.new(project, logger, shell, input, metadata)}
 
           let(:project){ ElectricSheep::Metadata::Project.new }
           [:logger, :shell, :host, :metadata].each do |m|

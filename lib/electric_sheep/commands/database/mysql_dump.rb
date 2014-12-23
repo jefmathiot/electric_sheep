@@ -12,11 +12,9 @@ module ElectricSheep
 
         def perform!
           logger.info "Creating a dump of the \"#{input.basename}\" MySQL database"
-          done!(
-            file_resource(host, extension: '.sql').tap do |dump|
-              shell.exec cmd(input.name, option(:user), option(:password), dump)
-            end
-          )
+          file_resource(host, extension: '.sql').tap do |dump|
+            shell.exec cmd(input.name, option(:user), option(:password), dump)
+          end
         end
 
         def stat_database(input)

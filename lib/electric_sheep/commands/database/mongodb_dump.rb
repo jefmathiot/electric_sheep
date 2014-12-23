@@ -14,11 +14,9 @@ module ElectricSheep
 
         def perform!
           logger.info "Creating a dump of the \"#{input.basename}\" MongoDB database"
-          done!(
-            directory_resource(host).tap do |dump|
-              shell.exec cmd(input.name, option(:user), option(:password), dump)
-            end
-          )
+          directory_resource(host).tap do |dump|
+            shell.exec cmd(input.name, option(:user), option(:password), dump)
+          end
         end
 
         def stat_database(input)
