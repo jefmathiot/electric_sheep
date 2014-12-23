@@ -1,35 +1,25 @@
 module ElectricSheep
   module Metadata
     class Project < Base
-      include Queue
+      include Pipe
       include Monitor
 
       option :id, required: true
       option :description
 
-      attr_accessor :products
-      attr_reader :schedule
+      attr_reader :products
+      attr_reader :schedule, :starts_with
 
       def initialize(options={})
         super
-        reset!
-        @products = []
       end
 
       def start_with!(resource)
-        @initial_resource = resource
+        @starts_with = resource
       end
 
       def use_private_key!(key)
         @private_key=key
-      end
-
-      def store_product!(resource)
-        @products << resource
-      end
-
-      def last_product
-        @products.last || @initial_resource
       end
 
       def private_key
@@ -37,7 +27,7 @@ module ElectricSheep
       end
 
       def validate(config)
-        all.each do |step|
+        queue.each do |step|
           unless step.validate(config)
             errors.add(:base, "Invalid step #{step.to_s}", step.errors)
           end
@@ -57,15 +47,7 @@ module ElectricSheep
       end
 
       def name
-        description.nil? ? "\"#{id}\"" : "\"#{description}\" (#{id})"
-      end
-
-      def successful?
-        @status==:success
-      end
-
-      def mark!(status)
-        @status=status
+        description.nil? ? "#{id}" : "#{description} (#{id})"
       end
 
     end

@@ -40,23 +40,16 @@ describe ElectricSheep::Metadata::Project do
     end
   end
 
-  it "initializes the project's id" do
+  it "initializes" do
     project = subject.new(id: 'some-project')
     project.id.must_equal 'some-project'
-    project.products.size.must_equal 0
+    project.execs.size.must_equal 0
   end
 
-  it 'uses the initial resource when there are no products' do
+  it 'keeps a reference to its initial resource' do
     project = subject.new
     project.start_with!(resource = mock)
-    project.last_product.must_equal resource
-  end
-
-  it 'retrieves the last product' do
-    project = subject.new
-    project.store_product!(mock)
-    project.store_product!(resource = mock)
-    project.last_product.must_equal resource
+    project.starts_with.must_equal resource
   end
 
   it 'uses the default private key' do
@@ -72,12 +65,12 @@ describe ElectricSheep::Metadata::Project do
   end
 
   it 'uses its id as the default name' do
-    subject.new(id: 'project-name').name.must_equal '"project-name"'
+    subject.new(id: 'project-name').name.must_equal 'project-name'
   end
 
   it 'uses its description and id' do
     subject.new(id: 'project-name', description: 'Description').name.
-      must_equal '"Description" (project-name)'
+      must_equal 'Description (project-name)'
   end
 
   describe 'on inspecting schedule' do
