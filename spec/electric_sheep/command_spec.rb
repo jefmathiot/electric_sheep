@@ -4,7 +4,6 @@ describe ElectricSheep::Command do
 
   CommandKlazz = Class.new do
     include ElectricSheep::Command
-    prerequisite :check_something
   end
 
   [:project, :logger, :shell, :resource, :metadata].each do |m|

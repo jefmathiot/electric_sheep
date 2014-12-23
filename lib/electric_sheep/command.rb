@@ -15,12 +15,6 @@ module ElectricSheep
       @metadata = metadata
     end
 
-    def check_prerequisites
-      self.class.prerequisites.each { |prerequisite|
-        self.send prerequisite
-      }
-    end
-
     def run!
       stat!(input)
       perform!.tap do |output|
@@ -43,14 +37,6 @@ module ElectricSheep
     module ClassMethods
       def register(options={})
         ElectricSheep::Agents::Register.register(options.merge(command: self))
-      end
-
-      def prerequisite(*args)
-        @prerequisites = args.dup
-      end
-
-      def prerequisites
-        @prerequisites ||= []
       end
     end
 
