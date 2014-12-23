@@ -7,27 +7,24 @@ describe ElectricSheep::Runnable do
 
     attr_reader :logger
 
-    def initialize(project, logger)
+    def initialize(project, logger, resource)
       @project=project
       @logger=logger
+      @input=resource
     end
   end
 
   describe RunnableKlazz do
 
-    let(:project){ mock }
-    let(:logger){ mock }
-    let(:runnable){ subject.new(project, logger) }
+    [:project, :logger, :resource].each do |m|
+      let(m){ mock }
+    end
+    let(:runnable){ subject.new(project, logger, resource) }
     let(:resource){ ElectricSheep::Resources::Resource.new }
     let(:host){ ElectricSheep::Metadata::Host.new }
 
-    it 'marks the run done' do
-      project.expects(:store_product!).with(resource)
-      runnable.send(:done!, resource)
-    end
 
-    it 'uses the previous product as its input' do
-      project.expects(:last_product).returns(resource)
+    it 'uses the provided resource as its input' do
       runnable.send(:input).must_equal resource
     end
 

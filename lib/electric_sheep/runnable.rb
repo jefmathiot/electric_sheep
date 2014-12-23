@@ -3,14 +3,9 @@ module ElectricSheep
     extend ActiveSupport::Concern
     include Agent
 
-    protected
-    def done!(resource)
-      @project.store_product!(resource)
-    end
+    attr_reader :input
 
-    def input
-      @project.last_product
-    end
+    protected
 
     def stat!(resource, interactor)
       resource.stat! interactor.stat(resource)
