@@ -44,7 +44,7 @@ describe ElectricSheep::Dsl do
 
     def build_project(options={}, &block)
       @dsl.project 'some-project', options, &block
-      @config.next!
+      @config.queue.first
     end
 
     it "appends the project to the configuration" do
@@ -60,7 +60,7 @@ describe ElectricSheep::Dsl do
       project = build_project do
         resource :database, name: 'mydb'
       end
-      project.last_product.must_be_instance_of ElectricSheep::Resources::Database
+      project.starts_with.must_be_instance_of ElectricSheep::Resources::Database
     end
 
     it 'assigns the private key to use' do
@@ -101,13 +101,13 @@ describe ElectricSheep::Dsl do
             build_shell do
               do_nothing options
             end
-            @command = @shell.next!
+            @command = @shell.queue.first
           end
 
           it "appends the command to the shell's queue" do
             build_command
             @command.must_be_instance_of ElectricSheep::Metadata::Command
-            @command.type.must_equal :do_nothing
+            @command.action.must_equal :do_nothing
           end
 
         end
@@ -122,7 +122,7 @@ describe ElectricSheep::Dsl do
           opts = {as: "op"}
           remotely opts, &block
         end
-        @shell = project.next!
+        @shell = project.queue.first
       end
 
       it "appends the shell to the project's queue" do
@@ -140,7 +140,7 @@ describe ElectricSheep::Dsl do
         project = build_project do
           locally &block
         end
-        @shell = project.next!
+        @shell = project.queue.first
       end
 
       it "appends the shell to the project's queue" do
@@ -157,9 +157,9 @@ describe ElectricSheep::Dsl do
           project = build_project do
             send type, to: 'some-host', using: :scp
           end
-          transport = project.next!
+          transport = project.queue.first
           transport.must_be_instance_of ElectricSheep::Metadata::Transport
-          transport.type.must_equal type
+          transport.action.must_equal type
         end
       end
     end
@@ -170,4 +170,3 @@ describe ElectricSheep::Dsl do
   end
 
 end
-

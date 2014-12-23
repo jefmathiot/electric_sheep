@@ -7,7 +7,6 @@ module ElectricSheep
         @options = opts
       end
 
-
       def errors
         @errors ||= Errors.new
       end

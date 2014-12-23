@@ -3,11 +3,19 @@ module ElectricSheep
     class Command < Agent
       include Monitor
 
-      option :id, required: true
-      option :type, required: true
-
       def agent
-        @options[:type] && Agents::Register.command(@options[:type])
+        @options[:action] && Agents::Register.command(@options[:action])
+      end
+
+      def type
+        'command'
+      end
+
+      private
+      def ensure_known_agent
+        if agent.nil?
+          errors.add(:action, "Unknown command #{action}")
+        end
       end
 
     end

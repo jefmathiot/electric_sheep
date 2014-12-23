@@ -1,6 +1,9 @@
 module ElectricSheep
   module Metadata
     class Agent < Base
+
+      option :action, required: true
+
       def validate(config)
         ensure_known_agent
         super
@@ -14,12 +17,6 @@ module ElectricSheep
         end
       end
 
-      private
-      def ensure_known_agent
-        if agent.nil?
-          errors.add(:type, "Unknown agent type #{type}")
-        end
-      end
     end
   end
 end

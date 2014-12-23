@@ -5,26 +5,27 @@ describe ElectricSheep::Metadata::Transport do
   include Support::Options
 
   it{
-    defines_options :type, :transport, :to
-    requires :type, :transport, :to
+    defines_options :action, :transport, :to
+    requires :action, :transport, :to
   }
 
   it 'describes a copy' do
-    subject.new(type: :copy).tap do |subject|
+    subject.new(action: :copy).tap do |subject|
       subject.copy?.must_equal true
       subject.move?.must_equal false
     end
   end
 
   it 'describes a move' do
-    subject.new(type: :move).tap do |subject|
+    subject.new(action: :move).tap do |subject|
       subject.move?.must_equal true
       subject.copy?.must_equal false
     end
   end
 
   it{
-    expects_validation_error(subject.new(type: 'foo'), :type, "Unknown agent type foo")
+    expects_validation_error( subject.new(transport: 'foo'), :type,
+      "Unknown transport type foo")
   }
 
   it 'resolves the agent class' do
@@ -32,5 +33,8 @@ describe ElectricSheep::Metadata::Transport do
     subject.new(transport: 'foo').agent.must_equal Object
   end
 
-end
+  it 'indicates its type' do
+    subject.new.type.must_equal 'transport'
+  end
 
+end

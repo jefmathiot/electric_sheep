@@ -96,10 +96,10 @@ module ElectricSheep
       end
 
       private
-      def transport(type, options)
+      def transport(action, options)
         options[:transport]=options.delete(:using)
         options[:to] = options[:to]
-        @subject.add Metadata::Transport.new(options.merge(type: type))
+        @subject.add Metadata::Transport.new(options.merge(action: action))
       end
     end
 
@@ -113,7 +113,7 @@ module ElectricSheep
 
       def method_missing(method, *args, &block)
         if Agents::Register.command(method)
-          opts = {type: method}.merge(args.first || {})
+          opts = {action: method}.merge(args.first || {})
           @subject.add Metadata::Command.new(opts)
         else
           super
