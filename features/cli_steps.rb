@@ -16,11 +16,11 @@ When(/^I tell the sheep to work on failing project "(.*?)"$/) do |project|
 end
 
 Then(/^the project "(.*?)" has been executed$/) do |project|
-  expect(all_output).to match(/Executing #{project}/)
+  expect(all_output).to match(/Executing \"#{project}\"/)
 end
 
 Then(/^the project "(.*?)" hasn't been executed$/) do |project|
-  expect(all_output).to_not match(/Executing #{project}/)
+  expect(all_output).to_not match(/Executing \"#{project}\"/)
 end
 
 When(/^I tell the sheep to work on the project$/) do
