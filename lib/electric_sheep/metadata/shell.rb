@@ -1,21 +1,19 @@
 module ElectricSheep
   module Metadata
     class Shell < Base
-      include Queue
+      include Pipe
       include Monitor
 
       def initialize(options={})
         super
-        reset!
       end
 
       def validate(config)
-        each_item do |command|
+        iterate do |command|
           unless command.validate(config)
-            errors.add(:base, "Invalid command #{command.id}", command.errors)
+            errors.add(:base, "Invalid command #{command.action}", command.errors)
           end
         end
-        reset!
         super
       end
 
