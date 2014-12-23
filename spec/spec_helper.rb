@@ -21,6 +21,7 @@ require 'minitest-implicit-subject'
 require 'mocha/setup'
 
 require 'support/hosts'
+require 'support/hosted'
 require 'support/shell_metadata'
 require 'support/options'
 require 'support/command'

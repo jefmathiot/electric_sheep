@@ -2,6 +2,7 @@ module ElectricSheep
   module Resources
     class FileSystem < Resource
       include Named
+      include Hosted
 
       def initialize(opts={})
         if path=opts.delete(:path)

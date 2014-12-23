@@ -2,8 +2,6 @@ module ElectricSheep
   module Resources
     class Resource < Metadata::Base
 
-      option :host, required: true
-
       attr_reader :timestamp
 
       def timestamp?

@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe ElectricSheep::Resources::Database do
   include Support::Options
+  include Support::Hosted
 
   it{
     defines_options :name

@@ -1,4 +1,5 @@
 require 'electric_sheep/resources/resource'
+require 'electric_sheep/resources/hosted'
 require 'electric_sheep/resources/stat'
 require 'electric_sheep/resources/named'
 require 'electric_sheep/resources/extended'

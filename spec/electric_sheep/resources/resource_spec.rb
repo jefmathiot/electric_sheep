@@ -3,11 +3,6 @@ require 'spec_helper'
 describe ElectricSheep::Resources::Resource do
   include Support::Options
 
-  it {
-    defines_options :host
-    requires :host
-  }
-
   let(:origin){ mock }
 
   it 'uses original timestamp if any' do
