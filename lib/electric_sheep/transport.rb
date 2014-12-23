@@ -3,9 +3,10 @@ module ElectricSheep
     extend ActiveSupport::Concern
     include Runnable
 
-    def initialize(project, logger, metadata, hosts)
+    def initialize(project, logger, hosts, input, metadata)
       @project = project
       @logger = logger
+      @input = input
       @metadata = metadata
       @hosts = hosts
     end
@@ -23,16 +24,24 @@ module ElectricSheep
               remote_interactor.download! input, output, local_interactor
             end
           end
-          done! output
+          stat!(output, output.local? ? local_interactor : remote_interactor)
         end
       end
+      output
+    end
+
+    def product
+      move? ? output : input
     end
 
     protected
 
-    def done!(output)
-      stat!(output, output.local? ? local_interactor : remote_interactor)
-      super move? ? output : input
+    def output
+      @output ||= if input.local?
+        remote_resource
+      else
+        local_resource
+      end
     end
 
     def handling_input(from, &block)
@@ -42,20 +51,12 @@ module ElectricSheep
     end
 
     def move?
-      @metadata.type == :move
+      @metadata.action == :move
     end
 
     def log_run
       logger.info "#{move? ? 'Moving' : 'Copying'} " +
         "#{input.name} to #{option(:to)} using #{option(:transport)}"
-    end
-
-    def output
-      @output ||= if input.local?
-        remote_resource
-      else
-        local_resource
-      end
     end
 
     def local_interactor
