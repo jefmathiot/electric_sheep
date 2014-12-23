@@ -4,12 +4,14 @@ module ElectricSheep
     include Runnable
 
     attr_reader :shell
+
     delegate :stat_file, :stat_directory, :stat_filesystem, to: :shell
 
-    def initialize(project, logger, shell, metadata)
+    def initialize(project, logger, shell, input, metadata)
       @project = project
       @logger = logger
       @shell = shell
+      @input=input
       @metadata = metadata
     end
 
@@ -21,15 +23,12 @@ module ElectricSheep
 
     def run!
       stat!(input)
-      perform!
+      perform!.tap do |output|
+        stat!(output)
+      end
     end
 
     protected
-
-    def done!(output)
-      stat!(output)
-      super
-    end
 
     def host
       shell.host
