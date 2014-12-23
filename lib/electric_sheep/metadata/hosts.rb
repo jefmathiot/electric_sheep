@@ -30,6 +30,10 @@ module ElectricSheep
         id
       end
 
+      def to_location
+        Metadata::Pipe::Location.new(id, hostname, :host)
+      end
+
     end
 
     class Localhost < BaseHost
@@ -45,6 +49,15 @@ module ElectricSheep
       def to_s
         "localhost"
       end
+
+      def hostname
+        @hostname ||= `hostname`.chomp
+      end
+
+      def to_location
+        Metadata::Pipe::Location.new(to_s, hostname, :host)
+      end
+
     end
 
     class Hosts
