@@ -18,10 +18,6 @@ module ElectricSheep
         @options[:transport] && Agents::Register.transport(@options[:transport])
       end
 
-      def type
-        'transport'
-      end
-
       private
       def ensure_known_agent
         if agent.nil?

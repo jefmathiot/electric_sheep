@@ -7,10 +7,6 @@ module ElectricSheep
         @options[:action] && Agents::Register.command(@options[:action])
       end
 
-      def type
-        'command'
-      end
-
       private
       def ensure_known_agent
         if agent.nil?
