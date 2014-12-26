@@ -19,8 +19,7 @@ module ElectricSheep
       stat!(input)
       output = perform!
       stat!(output)
-      # Product output, next resource
-      return output, output
+      output
     end
 
     protected
