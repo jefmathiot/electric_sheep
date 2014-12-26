@@ -75,6 +75,11 @@ module ElectricSheep
         transport(:move, options)
       end
 
+      def notify(options)
+        options[:notifier]=options.delete(:via)
+        @subject.notifier Metadata::Notifier.new(options)
+      end
+
       def resource(type, options={})
         options[:host] = @config.hosts.get(options[:host])
         begin

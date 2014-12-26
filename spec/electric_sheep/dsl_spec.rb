@@ -85,6 +85,14 @@ describe ElectricSheep::Dsl do
       project.schedule.must_be_instance_of ElectricSheep::Metadata::Schedule::Hourly
     end
 
+    it 'appends a notifier' do
+      project = build_project do
+        notify via: "email"
+      end
+      project.notifiers.first.must_be_instance_of ElectricSheep::Metadata::Notifier
+      project.notifiers.first.send(:notifier).must_equal "email"
+    end
+
     module ShellSpecs
       extend ActiveSupport::Concern
 
