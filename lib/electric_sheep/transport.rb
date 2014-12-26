@@ -34,8 +34,6 @@ module ElectricSheep
       move? ? output : input
     end
 
-    protected
-
     def output
       @output ||= if input.local?
         remote_resource
@@ -44,10 +42,21 @@ module ElectricSheep
       end
     end
 
+    protected
+
     def handling_input(from, &block)
       stat!(input, from)
       yield
-      from.delete!(input) if move?
+      if move?
+        from.delete!(input)
+        input.transient!
+      end
+    end
+
+    def stat!(resource, interactor)
+      resource.stat! interactor.stat(resource)
+    rescue Exception => e
+      logger.warn "Unable to stat resource of type #{resource.type}: #{e.message}"
     end
 
     def move?
@@ -66,7 +75,7 @@ module ElectricSheep
     end
 
     def local_resource
-      file_resource(host('localhost'))
+      send("#{input.type}_resource", host('localhost'))
     end
 
     def remote_interactor

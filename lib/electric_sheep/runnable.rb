@@ -7,12 +7,6 @@ module ElectricSheep
 
     protected
 
-    def stat!(resource, interactor)
-      resource.stat! interactor.stat(resource)
-    rescue Exception => e
-      logger.warn "Unable to stat resource of type #{resource.type}: #{e.message}"
-    end
-
     def file_resource(host, opts={})
       file_system_resource(:file, host, opts)
     end
