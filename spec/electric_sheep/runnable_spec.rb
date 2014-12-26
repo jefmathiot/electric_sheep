@@ -28,25 +28,6 @@ describe ElectricSheep::Runnable do
       runnable.send(:input).must_equal resource
     end
 
-    describe 'trying to stat a resource' do
-
-      let(:interactor){ mock }
-
-      it 'stats the resource using the interactor' do
-        interactor.expects(:stat).with(resource).returns(1024)
-        runnable.send(:stat!, resource, interactor)
-        resource.stat.size.must_equal 1024
-
-      end
-      it 'rescues interactor failure' do
-        logger.expects(:warn).
-          with("Unable to stat resource of type resource: Exception")
-        interactor.expects(:stat).with(resource).raises('Exception')
-        runnable.send(:stat!, resource, interactor)
-      end
-
-    end
-
     describe 'creating filesystem resources' do
 
       before do
