@@ -37,6 +37,15 @@ module ElectricSheep
         host.nil? || host.local?
       end
 
+      def transient!
+        @transient=true
+        self
+      end
+
+      def transient?
+        !!@transient
+      end
+
     end
   end
 end

@@ -39,4 +39,9 @@ describe ElectricSheep::Resources::Resource do
   it 'lets the world know its type' do
     subject.new.type.must_equal 'resource'
   end
+
+  it 'is marked as transient' do
+    subject.new.transient?.must_equal false
+    subject.new.transient!.transient?.must_equal true
+  end
 end
