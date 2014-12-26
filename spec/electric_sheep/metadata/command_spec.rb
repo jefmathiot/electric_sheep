@@ -17,9 +17,5 @@ describe ElectricSheep::Metadata::Command do
     ElectricSheep::Agents::Register.expects(:command).with('foo').returns(Object)
     subject.new(action: 'foo').agent.must_equal Object
   end
-  
-  it 'indicates its type' do
-    subject.new.type.must_equal 'command'
-  end
 
 end

@@ -33,8 +33,4 @@ describe ElectricSheep::Metadata::Transport do
     subject.new(transport: 'foo').agent.must_equal Object
   end
 
-  it 'indicates its type' do
-    subject.new.type.must_equal 'transport'
-  end
-
 end
