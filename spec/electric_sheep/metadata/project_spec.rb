@@ -43,7 +43,6 @@ describe ElectricSheep::Metadata::Project do
   it "initializes" do
     project = subject.new(id: 'some-project')
     project.id.must_equal 'some-project'
-    project.execs.size.must_equal 0
   end
 
   it 'keeps a reference to its initial resource' do

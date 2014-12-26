@@ -9,10 +9,6 @@ module ElectricSheep
 
       attr_reader :schedule, :starts_with
 
-      def initialize(options={})
-        super
-      end
-
       def start_with!(resource)
         @starts_with = resource
       end
