@@ -108,6 +108,15 @@ describe ElectricSheep::Metadata::Project do
       end
       called.must_be_nil "Block should not have been called"
     end
+
+    it 'appends a notifier' do
+      subject.new.tap do |project|
+        project.notifiers.size.must_equal 0
+        project.notifier mock
+        project.notifiers.size.must_equal 1
+      end
+    end
+
   end
 
 end

@@ -7,7 +7,6 @@ module ElectricSheep
       option :id, required: true
       option :description
 
-      attr_reader :products
       attr_reader :schedule, :starts_with
 
       def initialize(options={})
@@ -24,6 +23,10 @@ module ElectricSheep
 
       def private_key
         @private_key || File.expand_path('~/.ssh/id_rsa')
+      end
+
+      def notifier(metadata)
+        notifiers << metadata
       end
 
       def validate(config)
@@ -48,6 +51,10 @@ module ElectricSheep
 
       def name
         description.nil? ? "#{id}" : "#{description} (#{id})"
+      end
+
+      def notifiers
+        @notifiers ||= []
       end
 
     end
