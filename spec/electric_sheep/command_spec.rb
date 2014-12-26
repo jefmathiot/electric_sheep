@@ -27,7 +27,7 @@ describe ElectricSheep::Command do
       command.expects(:stat!).with(resource)
       command.expects(:perform!).returns(output=mock)
       command.expects(:stat!).with(output)
-      command.run!.must_equal output
+      command.run!.must_equal [output, output]
     end
 
     # TODO Move to an agent spec

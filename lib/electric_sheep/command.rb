@@ -17,9 +17,10 @@ module ElectricSheep
 
     def run!
       stat!(input)
-      perform!.tap do |output|
-        stat!(output)
-      end
+      output = perform!
+      stat!(output)
+      # Product output, next resource
+      return output, output
     end
 
     protected
