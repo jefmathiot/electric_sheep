@@ -13,11 +13,7 @@ module ElectricSheep
       end
 
       def stat(resource)
-        if resource.stat.size
-          resource
-        else
-          resource.stat!(send("stat_#{resource.type}", resource))
-        end
+        resource.stat.size || send("stat_#{resource.type}", resource)
       end
 
     end
