@@ -3,16 +3,20 @@ module ElectricSheep
     extend ActiveSupport::Concern
     include Agent
 
-    def initialize(project, logger, metadata)
+    attr_reader :project, :hosts
+
+    def initialize(project, hosts, logger, metadata)
       @project = project
       @logger = logger
       @metadata = metadata
+      @hosts = hosts
     end
 
     module ClassMethods
       def register(options={})
-        ElectricSheep::Agents::Register.register(options.merge(command: self))
+        ElectricSheep::Agents::Register.register(options.merge(notifier: self))
       end
     end
+
   end
 end
