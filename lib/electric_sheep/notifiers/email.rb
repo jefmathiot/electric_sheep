@@ -1,3 +1,6 @@
+require 'mail'
+require 'premailer'
+
 module ElectricSheep
   module Notifiers
     class Email
@@ -5,19 +8,56 @@ module ElectricSheep
 
       register as: "email"
 
-      def notify
-        message = Mail.new do
-          from option(:from)
-          to option(:to)
-          subject
-          # TODO add the log
+      option :from, required: true
+      option :to, required: true
+      # Delivery method
+      option :using, required: true
+      # Delivery options
+      option :with
+
+      def notify!
+        msg = Mail.new
+        msg.from option(:from)
+        msg.to option(:to)
+        msg.subject subject
+        msg.html_part = Mail::Part.new.tap do |part|
+          part.content_type 'text/html; charset=UTF-8'
+          part.body html_body
         end
+        deliver(msg)
       end
 
       protected
-      def email_subject()
-        project.successful? ? "Backup successful: #{project.id}" :
-          "BACKUP FAILED: #{project.id}"
+
+      def subject
+        project.successful? ? "Backup successful: #{project.name}" :
+          "BACKUP FAILED: #{project.name}"
+      end
+
+      def html_body
+        html = preflight(Template.new('email.html').
+          render(
+            project: project,
+            assets_url: assets_url,
+            time: Time.now.getlocal,
+            timezone: Time.now.getlocal.zone,
+            hostname: `hostname`.chomp
+          )
+        )
+      end
+
+      def preflight(body)
+        Premailer.new(body, with_html_string: true).to_inline_css
+      end
+
+      def deliver(msg)
+        msg.delivery_method option(:using), option(:with)
+        msg.deliver
+      end
+
+      def assets_url
+        "http://assets.electricsheep.io/#{ElectricSheep::VERSION}/" +
+          "notifiers/email"
       end
 
     end

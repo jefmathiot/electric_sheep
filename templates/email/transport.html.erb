@@ -1,0 +1,9 @@
+<div class="<%= object.copy? ? 'offset' : '' %> agent block">
+  <table>
+    <tr>
+      <td class="name"><img src="<%= asset('icons/transport.png') %>" alt="Transport"><%= object.transport %> (<%= object.option(:action) %>)</td>
+      <td class="info"><%= to_duration(object.execution_time) %></td>
+    </tr>
+  </table>
+  <%= partial 'email/agent_options.html', object: object %>
+</div>

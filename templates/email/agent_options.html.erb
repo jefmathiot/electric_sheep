@@ -1,0 +1,9 @@
+<% object.agent.options.tap do |options| %>
+  <% if options.count > 0 %>
+  <ul class="options">
+    <% options.each do |key, opts| %>
+    <li><span class="option key"><%= key %>:</span> <span class="option value"><%= object.safe_option(key) %></span></li>
+    <% end %>
+  </ul>
+  <% end %>
+<% end %>

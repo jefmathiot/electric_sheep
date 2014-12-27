@@ -106,7 +106,7 @@
         border: 3px solid #05AD87;
       }
 
-      .failure.headerContent .title, .failure.headerContent .resource{
+      .failed.headerContent .title, .failed.headerContent .resource{
         border: 3px solid #B20000;
       }
 
@@ -119,14 +119,14 @@
         background: #05AD87;
       }
 
-      .failure.headerContent .title {
+      .failed.headerContent .title {
         background: #B20000;
       }
 
       .headerContent .summary {
         padding: 5px;
         color: #ffffff;
-        background: #000000 url(email/background.jpg);
+        background: #000000 url(<%= asset('background.jpg') %>);
       }
 
       .headerContent .summary span.time{
@@ -147,7 +147,7 @@
         color:#05AD87 !important;
       }
 
-      .failure h2{
+      .failed h2{
         color:#B20000 !important;
       }
 
@@ -237,12 +237,16 @@
         font-family: Monaco,Menlo,Consolas,"Courier New",monospace;
       }
 
-      .stack .info {
+      .stack .info, .headerContent .info {
         text-align: right;
       }
 
-      .stack .offset {
+      .stack .offset, .stack .fork {
         margin-left: 20px;
+      }
+
+      .stack .transient.resource {
+        background: url(<%= asset('hatch.png')%>);
       }
 
       .failure.checks, .failure.causes {
@@ -277,7 +281,12 @@
                 <table id="templatePreheader">
                   <tr>
                     <td valign="top" class="preheaderContent">
-                      The project <span class="project">"<%= project_name %>"</span> completed successfuly. This notification has been sent on <span class="date"><%= date %></span> at <span class="time"><%= time%></span> <span class="timezone"><%= timezone %> by an <a href="http://electricsheep.io">Electric Sheep IO</a> worker running on <%= hostname %>.
+                      <% if project.successful? %>
+                      The project <span class="project"><%= project.name %></span> completed successfuly.
+                      <% else %>
+                      The project <span class="project"><%= project.name %></span> failed to complete.
+                      <% end %>
+                      This notification has been sent on <span class="date"><%= to_date time %></span> at <span class="time"><%= to_time time %></span> <span class="timezone"><%= to_timezone time %> by an <a href="http://electricsheep.io">Electric Sheep IO</a> worker running on <%= hostname %>.
                     </td>
                   </tr>
                 </table>
@@ -287,53 +296,31 @@
               <td align="center" valign="top">
                 <table id="templateHeader">
                   <tr>
-                    <td valign="top" class="success headerContent">
+                    <td valign="top" class="<%= project.status %> headerContent">
                       <div class="title">
-                        <h1><%= project_name %></h1>
+                        <h1><%= project.name %></h1>
                       </div>
                       <div class="summary">
                         <table>
                           <tr>
                             <td>
-                              <img src="email/success.png" alt="Success">
+                              <img src="<%= asset("#{project.status}.png")%>" alt="<%= project.status %>">
                             </td>
                             <td>
-                              <h2>Success</h2>
-                              <div class="nutshell">The backup project <span class="project">"<%= project_name %>"</span> completed successfully on <span class="date"><%= date %></span> at <span class="time"><%= time%></span> <span class="timezone"><%= timezone %></span>.</div>
+                              <h2><% if project.successful? %>Success<% else %>Failed<% end %></h2>
+                              <div class="nutshell">The backup project <span class="project"><%= project.name %></span>
+                                <% if project.successful? %>completed successfully<% else %>failed to complete<% end %>
+                                on <span class="date"><%= to_date time %></span> at <span class="time"><%= to_time time %></span> <span class="timezone"><%= to_timezone time %></span>.</div>
                             </td>
                           </tr>
                         </table>
                       </div>
-                      <div class="resource block">
-                        <table>
-                          <tr>
-                            <td class="name"><img src="email/icons/resources/file.png" alt="File"><%= resource.name %></td>
-                            <td class="info"><%= resource.stat %></td>
-                          </tr>
-                        </table>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td valign="top" class="failure headerContent">
-                      <div class="title">
-                        <h1><%= project_name %></h1>
-                      </div>
-                      <div class="summary">
-                        <table>
-                          <tr>
-                            <td>
-                              <img src="email/failure.png" alt="Failure">
-                            </td>
-                            <td>
-                              <h2>Failure</h2>
-                              <div class="nutshell">The backup project <span class="project">"<%= project_name %>"</span> failed to complete on <span class="date"><%= date %></span> at <span class="time"><%= time%></span> <span class="timezone"><%= timezone %></span>.</div>
-                            </td>
-                          </tr>
-                        </table>
-                      </div>
+                      <% if project.successful? %>
+                        <%= partial "email/resource.html", object: project.last_product, project: project %>
+                      <% else %>
                       <div class="empty resource block">
                       </div>
+                      <% end %>
                     </td>
                   </tr>
                 </table>
@@ -346,145 +333,33 @@
                     <td valign="top" class="bodyContent">
                       <h3>Execution Stack</h3>
                       <div class="stack">
-                        <div class="host block">
-                          <div class="name">
-                            <img src="email/icons/host.png" alt="Host"><%= host.id%> <span class="aside"><%= host.hostname %></span>
-                          </div>
-                          <div class="initial resource block">
-                            <table>
-                              <tr>
-                                <td class="name"><img src="email/icons/resources/initial/database.png" alt="Database"><%= resource.name %></td>
-                              </tr>
-                            </table>
-                          </div>
-                          <div class="agent block">
-                            <table>
-                              <tr>
-                                <td class="name"><img src="email/icons/command.png" alt="Command"><%= command.name %></td>
-                                <td class="info"><%= command.benchmark %></td>
-                              </tr>
-                            </table>
-                            <ul class="options">
-                              <li><span class="option key"><%= option.key %>:</span> <span class="option value"><%= option.value %></span></li>
-                            </ul>
-                          </div>
-                          <div class="transient resource block">
-                            <table>
-                              <tr>
-                                <td class="name"><img src="email/icons/resources/file.png" alt="File"><%= resource.name %></123402></td>
-                                <td class="info"><%= resource.stat %></td>
-                              </tr>
-                            </table>
-                          </div>
-                          <div class="agent block">
-                            <table>
-                              <tr>
-                                <td class="name"><img src="email/icons/command.png" alt="Command"><%= command.name %></td>
-                                <td class="info"><%= command.benchmark %></td>
-                              </tr>
-                            </table>
-                          </div>
-                          <div class="transient resource block">
-                            <table>
-                              <tr>
-                                <td class="name"><img src="email/icons/resources/file.png" alt="File"><%= resource.name %></123402></td>
-                                <td class="info"><%= resource.stat %></td>
-                              </tr>
-                            </table>
-                          </div>
-                        </div>
-                        <div class="agent block">
-                          <table>
-                            <tr>
-                              <td class="name"><img src="email/icons/transport.png" alt="Transport"><%= transport.type %></td>
-                              <td class="info"><%= transport.benchmark %></td>
-                            </tr>
-                          </table>
-                          <ul class="options">
-                            <li><span class="option key"><%= option.key %>:</span> <span class="option value"><%= option.value %></span></li>
-                          </ul>
-                        </div>
-                        <div class="local host block">
-                          <div class="name">
-                            <img src="email/icons/localhost.png" alt="Host"><%= host.id %> <span class="aside"><%= host.hostname %></span>
-                          </div>
-                          <div class="transient resource block">
-                            <table>
-                              <tr>
-                                <td class="name"><img src="email/icons/resources/file.png" alt="File"><%= resource.name %></td>
-                                <td class="info"><%= resource.stat %></td>
-                              </tr>
-                            </table>
-                          </div>
-                        </div>
-                        <div class="offset agent block">
-                          <table>
-                            <tr>
-                              <td class="name"><img src="email/icons/transport.png" alt="Transport"><%= transport.type %></td>
-                              <td class="info"><%= transport.benchmark %></td>
-                            </tr>
-                          </table>
-                          <ul class="options">
-                            <li><span class="option key"><%= option.key %>:</span> <span class="option value"><%= option.value %></span></li>
-                          </ul>
-                        </div>
-                        <div class="offset host block">
-                          <div class="name">
-                            <img src="email/icons/host.png" alt="Host"><%= host.id%> <span class="aside"><%= host.hostname %></span>
-                          </div>
-                          <div class="resource block">
-                            <table>
-                              <tr>
-                                <td class="name"><img src="email/icons/resources/file.png" alt="File"><%= resource.name %></td>
-                                <td class="info"><%= resource.stat %></td>
-                              </tr>
-                            </table>
-                          </div>
-                        </div>
-                        <div class="agent block">
-                          <table>
-                            <tr>
-                              <td class="name"><img src="email/icons/transport.png" alt="Transport"><%= transport.type %></td>
-                              <td class="info"><%= transport.benchmark %></td>
-                            </tr>
-                          </table>
-                          <ul class="options">
-                            <li><span class="option key"><%= option.key %>:</span> <span class="option value"><%= option.value %></span></li>
-                          </ul>
-                        </div>
-                        <div class="host block">
-                          <div class="name">
-                            <img src="email/icons/host.png" alt="Host"><%= bucket.name %></span>
-                          </div>
-                          <div class="resource block">
-                            <table>
-                              <tr>
-                                <td class="name"><img src="email/icons/resources/file.png" alt="File"><%= resource.name %></td>
-                                <td class="info"><%= resource.stat %></td>
-                              </tr>
-                            </table>
-                          </div>
-                        </div>
-                        <div class="failed agent block">
-                          <table>
-                            <tr>
-                              <td class="name"><img src="email/icons/transport.png" alt="Transport"><%= transport.type %></td>
-                              <td class="info"><%= transport.benchmark %></td>
-                            </tr>
-                          </table>
-                          <ul class="options">
-                            <li><span class="option key"><%= option.key %>:</span> <span class="option value"><%= option.value %></span></li>
-                            <li class="error">Connection timeout</li>
-                          </ul>
-                        </div>
+                        <% project.report.stack.tap do |stack| %>
+                          <%  stack.each do |step| %>
+                            <% if step.respond_to?(:location) %>
+                              <% if [stack.first, stack.last].include?(step) || step.branch!='mainstream' || step.agents.size > 0 %>
+                                <div class="<%= step.branch %> <%= step.location.id %> host block">
+                                  <div class="name">
+                                    <img src="<%= asset("icons/#{step.location.id == 'localhost' ? 'localhost' : step.location.type}.png") %>" alt="<%= step.location.type %>"><%= step.location.id %> <span class="aside"><%= step.location.location %></span>
+                                  </div>
+                                  <% step.steps.each do |substep| %>
+                                    <%= partial "email/#{substep.type}.html", object: substep.payload, project: project %>
+                                  <% end %>
+                                </div>
+                              <% end %>
+                            <% else %>
+                              <%= partial "email/#{step.type}.html", object: step.payload, project: project %>
+                            <% end %>
+                          <% end %>
+                        <% end %>
                       </div>
+                      <% if false %>
                       <h3>Logs</h3>
 
                         Check out the attached log file (log level was set to "<%= log_level %>").
 
                       <h3>Troubleshooting</h3>
 
-                      To help you spot the issue, the worker conducted the following tests just after the failure occured: 
+                      To help you spot the issue, the worker conducted the following tests just after the failure occured:
                       <ul class="failure checks">
                         <li><%= check.description %></li>
                       </ul>
@@ -493,6 +368,7 @@
                       <ul class="failure causes">
                         <li><%= cause.description %></li>
                       </ul>
+                      <% end %>
                     </td>
                   </tr>
                 </table>

@@ -1,0 +1,13 @@
+<% (project.input==object).tap do |initial| %>
+<div class="<%= [initial ? 'initial' : nil, object.transient? ? 'transient' : nil, 'resource', 'block'].compact.join(' ') %>">
+  <table>
+    <tr>
+      <td class="name"><img
+        src="<%= asset("#{['icons', 'resources', initial ? 'initial' : nil, object.type].compact.join('/')}.png") %>"
+        alt="<%= object.type %>"><%= object.name %>
+      </td>
+      <td class="info"><%= object.stat.humanize %></td>
+    </tr>
+  </table>
+</div>
+<% end %>
