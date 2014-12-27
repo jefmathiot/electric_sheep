@@ -21,7 +21,7 @@ module ElectricSheep
       private
       def ensure_known_agent
         if agent.nil?
-          errors.add(:type, "Unknown transport type #{transport}")
+          errors.add(:transport, "Unknown transport #{transport}")
         end
       end
     end

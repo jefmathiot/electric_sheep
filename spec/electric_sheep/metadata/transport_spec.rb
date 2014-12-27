@@ -24,8 +24,8 @@ describe ElectricSheep::Metadata::Transport do
   end
 
   it{
-    expects_validation_error( subject.new(transport: 'foo'), :type,
-      "Unknown transport type foo")
+    expects_validation_error( subject.new(transport: 'foo'), :transport,
+      "Unknown transport foo")
   }
 
   it 'resolves the agent class' do
