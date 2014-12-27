@@ -141,14 +141,21 @@ describe ElectricSheep::Runner do
 
     describe 'with shells' do
 
+      def expects_output(metadata)
+        metadata.stubs(:last_output).returns(output=mock)
+        project.expects(:done!).in_sequence(script).
+          with(metadata, output, output)
+        logger.expects(:info).in_sequence(script).
+          with("Project \"First project description (first-project)\" " +
+          "completed in 10.112 seconds")
+      end
+
       it 'wraps command executions in a local shell' do
         project.add(metadata = ElectricSheep::Metadata::Shell.new)
         shell = ElectricSheep::Shell::LocalShell.any_instance
         shell.expects(:perform!).in_sequence(script)
-        logger.expects(:info).in_sequence(script).
-          with("Project \"First project description (first-project)\" " +
-          "completed in 10.112 seconds")
-        runner.run!
+        expects_output(metadata)
+        runner.run!.must_equal true
         expects_execution_times(project)
       end
 
@@ -160,10 +167,8 @@ describe ElectricSheep::Runner do
         )
         shell = ElectricSheep::Shell::RemoteShell.any_instance
         shell.expects(:perform!).in_sequence(script).returns(shell)
-        logger.expects(:info).in_sequence(script).
-          with("Project \"First project description (first-project)\" " +
-          "completed in 10.112 seconds")
-        runner.run!
+        expects_output(metadata)
+        runner.run!.must_equal true
         expects_execution_times(project)
       end
 
@@ -174,15 +179,78 @@ describe ElectricSheep::Runner do
     end
 
     it 'executes transport' do
+      resource.expects(:local?).returns(false)
+      resource.stubs(:type).returns('file')
+      resource.stubs(:basename).returns('resource')
+      resource.stubs(:timestamp?).returns(false)
       project.add metadata = ElectricSheep::Metadata::Transport.new
-      metadata.expects(:agent).in_sequence(script).at_least(1).returns(FakeTransport)
+      metadata.expects(:agent).in_sequence(script).at_least(1).
+        returns(FakeTransport)
       FakeTransport.any_instance.expects(:run!).in_sequence(script)
+      project.expects(:done!).in_sequence(script).
+        with(metadata, kind_of(ElectricSheep::Resources::File), resource)
       logger.expects(:info).in_sequence(script).
         with("Project \"First project description (first-project)\" " +
         "completed in 10.112 seconds")
-      runner.run!
+      runner.run!.must_equal true
       expects_execution_times(project, metadata)
     end
+
+    describe 'with notifiers' do
+
+      let(:notifiers){ [mock, mock] }
+
+      before do
+        notifiers.each do |metadata|
+          project.notifier metadata
+        end
+      end
+
+      def expects_notifications
+        notifiers.map do |metadata|
+          metadata.expects(:agent).in_sequence(script).
+          returns(notifier_klazz=mock)
+          notifier_klazz.expects(:new).in_sequence(script).
+          with(project, config.hosts, logger, metadata).
+          returns(notifier=mock)
+          notifier.expects(:notify!).in_sequence(script)
+        end
+      end
+
+      it "triggers notifications" do
+        expects_notifications
+        logger.expects(:info).in_sequence(script).
+          with("Project \"First project description (first-project)\" " +
+          "completed in 10.112 seconds")
+        runner.run!.must_equal true
+      end
+
+      it 'fails and notifies' do
+        project.add ElectricSheep::Metadata::Shell.new
+        ElectricSheep::Shell::LocalShell.any_instance.expects(:perform!).
+          raises('An error')
+        logger.expects(:error).in_sequence(script).with('An error')
+        logger.expects(:debug).in_sequence(script).with(kind_of(RuntimeError))
+        expects_notifications
+        runner.run!.must_equal false
+      end
+
+
+      it 'ingores failed notifiers' do
+        expects_notifications.last.raises('Another error')
+        logger.expects(:error).in_sequence(script).with('Another error')
+        logger.expects(:debug).in_sequence(script).with(kind_of(RuntimeError))
+        logger.expects(:info).in_sequence(script).
+          with("Project \"First project description (first-project)\" " +
+          "completed in 10.112 seconds")
+        runner.run!.must_equal true
+      end
+
+    end
+
+      # it 'fails and triggers notifications even when the project failed' do
+      # end
+
   end
 
   it "defines logger" do

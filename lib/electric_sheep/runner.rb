@@ -14,15 +14,26 @@ module ElectricSheep
       end
 
       def run!
-        return false if rescued do
+        has_been_rescued = rescued do
           @logger.info "Executing \"#{project.name}\""
           project.pipelined(project.starts_with) do |step, input|
             send("execute_#{executable_type(step)}", project, input, step)
           end
         end
+        notify(project)
+        return false if has_been_rescued
         @logger.info "Project \"#{project.name}\" completed in %.3f seconds" %
           project.execution_time.round(3)
         true
+      end
+
+      private
+      def notify(project)
+        project.notifiers.each do |metadata|
+          rescued do
+            metadata.agent.new(project, @config.hosts, logger, metadata).notify!
+          end
+        end
       end
 
       def executable_type(executable)
@@ -33,18 +44,18 @@ module ElectricSheep
           Shell::LocalShell.new(
             @config.hosts.localhost, project, input, @logger
           ).perform!(metadata)
-          metadata.last_product
+          metadata.last_output
       end
 
       def execute_remote_shell(project, input, metadata)
         Shell::RemoteShell.new(
-          project.last_product.host,
+          project.last_output.host,
           project,
           input,
           @logger,
           metadata.user
         ).perform!(metadata)
-        metadata.last_product
+        metadata.last_output
       end
 
       def execute_transport(project, input, metadata)
@@ -53,7 +64,7 @@ module ElectricSheep
         metadata.monitored do
           transport.run!
         end
-        transport.product
+        return transport.output, transport.product
       end
 
     end
