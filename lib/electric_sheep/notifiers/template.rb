@@ -4,9 +4,9 @@ module ElectricSheep
   module Notifiers
     class Template
 
-      def initialize(type, ext=nil)
+      def initialize(type)
         # Trim mode omit newline for lines starting with <% and ending in %>
-        @renderer = ERB.new(template(type, ext), nil, '<>')
+        @renderer = ERB.new(template(type), nil, '<>')
       end
 
       def render(context)
@@ -14,9 +14,10 @@ module ElectricSheep
       end
 
       protected
-      def template(type, ext)
+
+      def template(type)
         path=File.join(ElectricSheep.template_path, type)
-        path << ".#{ext}" if ext
+        path << '.erb'
         raise "Unable to find template #{path}" unless File.exists?(path)
         File.read path
       end

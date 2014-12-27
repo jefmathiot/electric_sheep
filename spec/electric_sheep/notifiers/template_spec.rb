@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe ElectricSheep::Notifiers::Template do
 
-  def self.ensure_context_binding(ext=nil)
+  def self.ensure_rendering(ext=nil)
 
     describe "with the '#{ext}.erb' template" do
 
@@ -23,8 +23,8 @@ describe ElectricSheep::Notifiers::Template do
         template.unlink
       end
 
-      it 'binds context to a template' do
-        renderer=subject.new(File.basename(*[template.path, ext].compact))
+      it 'binds the context and renders the template' do
+        renderer=subject.new(File.basename(template.path, '.erb'))
         renderer.render(bound_value: 1).must_equal 'Value: 1'
       end
 
@@ -32,6 +32,6 @@ describe ElectricSheep::Notifiers::Template do
 
   end
 
-  ensure_context_binding
-  ensure_context_binding '.html'
+  ensure_rendering
+  ensure_rendering '.html'
 end
