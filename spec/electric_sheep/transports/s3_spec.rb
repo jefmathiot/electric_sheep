@@ -10,6 +10,11 @@ describe ElectricSheep::Transports::S3 do
 
   let(:s3){ subject.new(project, logger, hosts, resource, metadata) }
 
+
+  it 'should have registered as the "s3" transport' do
+    ElectricSheep::Agents::Register.transport("s3").must_equal subject
+  end
+
   describe 'creating an S3 interactor' do
     before do
       metadata.expects(:access_key_id).returns('ABCD')

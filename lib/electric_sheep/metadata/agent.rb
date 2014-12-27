@@ -17,6 +17,15 @@ module ElectricSheep
         end
       end
 
+
+      def safe_option(name)
+        value=option(name)
+        if value && options[name][:secret]
+          return '****'
+        end
+        value
+      end
+
     end
   end
 end

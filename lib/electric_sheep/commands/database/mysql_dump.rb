@@ -8,7 +8,7 @@ module ElectricSheep
         register as: "mysql_dump"
 
         option :user
-        option :password
+        option :password, secret: true
 
         def perform!
           logger.info "Creating a dump of the \"#{input.basename}\" MySQL database"

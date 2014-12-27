@@ -10,7 +10,7 @@ module ElectricSheep
         register as: "mongodb_dump"
 
         option :user
-        option :password
+        option :password, secret: true
 
         def perform!
           logger.info "Creating a dump of the \"#{input.basename}\" MongoDB database"

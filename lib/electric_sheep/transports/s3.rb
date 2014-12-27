@@ -8,7 +8,7 @@ module ElectricSheep
       register as: "s3"
 
       option :access_key_id, required: true
-      option :secret_key, required: true
+      option :secret_key, required: true, secret: true
       option :region
 
       DEFAULT_REGION='us-east-1'
@@ -33,6 +33,10 @@ module ElectricSheep
             resource.timestamp!(input)
           end
         end
+      end
+
+      def local_resource
+        file_resource host('localhost')
       end
 
       protected

@@ -44,6 +44,10 @@ describe ElectricSheep::Transports::SCP do
       scp.remote_resource.must_equal output
     end
 
+    it 'should have registered as the "scp" transport' do
+      ElectricSheep::Agents::Register.transport("scp").must_equal subject
+    end
+
   end
 
 end

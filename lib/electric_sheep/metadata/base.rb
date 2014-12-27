@@ -16,7 +16,7 @@ module ElectricSheep
       end
 
       def validate(config)
-        self.options.each do |option, opts|
+        options.each do |option, opts|
           ensure_present(option) if opts[:required]
         end
         errors.empty?
@@ -34,13 +34,13 @@ module ElectricSheep
         option?(method) || super
       end
 
+      def option(name)
+        @options[name]
+      end
+
       protected
       def option?(method)
         self.options.include?(method)
-      end
-
-      def option(name)
-        @options[name]
       end
 
       def ensure_present(opt)
