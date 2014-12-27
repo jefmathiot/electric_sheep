@@ -35,10 +35,37 @@ module ElectricSheep
           end
         end
 
+        def to_date(datetime)
+          datetime.strftime('%Y-%m-%d')
+        end
+
+        def to_time(datetime)
+          datetime.strftime('%H:%M:%S')
+        end
+
+        def to_timezone(datetime)
+          datetime.zone
+        end
+
+        def to_duration(seconds)
+          minutes, seconds = seconds.divmod(60)
+          hours, minutes = minutes.divmod(60)
+          "%dh%dm%ds" % [hours, minutes, seconds]
+        end
+
+        def asset(path)
+          "#{assets_url}/#{path}"
+        end
+
+        def partial(basename, context)
+          Template.new(basename).render(context.merge(assets_url: assets_url))
+        end
+
         # Access to the private binding method
         def get_binding
           binding
         end
+
       end
 
     end
