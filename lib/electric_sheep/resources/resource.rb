@@ -1,6 +1,7 @@
 module ElectricSheep
   module Resources
     class Resource < Metadata::Base
+      include Metadata::Typed
 
       attr_reader :timestamp
 
@@ -23,10 +24,6 @@ module ElectricSheep
 
       def stat
         @stat ||= Stat.new
-      end
-
-      def type
-        self.class.name.demodulize.underscore
       end
 
       def remote?

@@ -1,7 +1,7 @@
 <div class="<%= object.copy? ? 'offset' : '' %> agent block">
   <table>
     <tr>
-      <td class="name"><img src="<%= asset('icons/transport.png') %>" alt="Transport"><%= object.transport %> (<%= object.option(:action) %>)</td>
+      <td class="name"><img src="<%= asset('icons/transport.png') %>" alt="Transport"><%= object.agent %> (<%= object.action %>)</td>
       <td class="info"><%= to_duration(object.execution_time) %></td>
     </tr>
   </table>

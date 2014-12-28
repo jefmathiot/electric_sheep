@@ -65,7 +65,7 @@ module ElectricSheep
 
     def log_run
       logger.info "#{move? ? 'Moving' : 'Copying'} " +
-        "#{input.name} to #{option(:to)} using #{option(:transport)}"
+        "#{input.name} to #{option(:to)} using #{option(:agent)}"
     end
 
     def local_interactor

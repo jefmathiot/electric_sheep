@@ -1,8 +1,9 @@
 module ElectricSheep
   module Metadata
     class Agent < Base
+      include Typed
 
-      option :action, required: true
+      option :agent, required: true
 
       def validate(config)
         ensure_known_agent
@@ -10,13 +11,12 @@ module ElectricSheep
       end
 
       def options
-        unless agent.nil?
-          agent.options.merge(super)
+        unless agent_klazz.nil?
+          agent_klazz.options.merge(super)
         else
           super
         end
       end
-
 
       def safe_option(name)
         value=option(name)
@@ -24,6 +24,18 @@ module ElectricSheep
           return '****'
         end
         value
+      end
+
+      def agent_klazz
+        # Use the instance variable to avoid stack level too deep
+        @options[:agent] && Agents::Register.send(type, @options[:agent])
+      end
+
+      private
+      def ensure_known_agent
+        if agent_klazz.nil?
+          errors.add(type.to_sym, "Unknown #{type} \"#{agent}\"")
+        end
       end
 
     end

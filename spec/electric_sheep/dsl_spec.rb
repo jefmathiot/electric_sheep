@@ -19,20 +19,25 @@ describe ElectricSheep::Dsl do
 
   describe ElectricSheep::Dsl::AbstractDsl do
       it "raises an error on method missing" do
-        -> { ElectricSheep::Dsl::AbstractDsl.new.orphan_method }.must_raise ElectricSheep::SheepException
+        -> {
+          ElectricSheep::Dsl::AbstractDsl.new.orphan_method
+        }.must_raise ElectricSheep::SheepException
       end
   end
 
   describe ElectricSheep::Dsl::ProjectDsl do
       it "raises an error on class unknown" do
-        err = -> { ElectricSheep::Dsl::ProjectDsl.new(@config,nil,{}).resource('Unknown') }.must_raise ElectricSheep::SheepException
+        err = -> {
+          ElectricSheep::Dsl::ProjectDsl.new(@config,nil,{}).resource('Unknown')
+        }.must_raise ElectricSheep::SheepException
         err.message.must_equal "Resource 'Unknown' in Sheepfile is undefined"
       end
   end
 
   it "makes hosts available" do
     (host = @config.hosts.get('some-host')).wont_be_nil
-    check_properties host, id: "some-host", hostname: "some-host.tld", description: "Some host"
+    check_properties host, id: "some-host", hostname: "some-host.tld",
+      description: "Some host"
   end
 
   it 'defines the local working directory' do
@@ -90,7 +95,7 @@ describe ElectricSheep::Dsl do
         notify via: "email"
       end
       project.notifiers.first.must_be_instance_of ElectricSheep::Metadata::Notifier
-      project.notifiers.first.send(:notifier).must_equal "email"
+      project.notifiers.first.send(:agent).must_equal "email"
     end
 
     module ShellSpecs
@@ -115,7 +120,7 @@ describe ElectricSheep::Dsl do
           it "appends the command to the shell's queue" do
             build_command
             @command.must_be_instance_of ElectricSheep::Metadata::Command
-            @command.action.must_equal :do_nothing
+            @command.agent.must_equal :do_nothing
           end
 
         end

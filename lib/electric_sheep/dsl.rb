@@ -76,7 +76,7 @@ module ElectricSheep
       end
 
       def notify(options)
-        options[:notifier]=options.delete(:via)
+        options[:agent]=options.delete(:via)
         @subject.notifier Metadata::Notifier.new(options)
       end
 
@@ -102,7 +102,7 @@ module ElectricSheep
 
       private
       def transport(action, options)
-        options[:transport]=options.delete(:using)
+        options[:agent]=options.delete(:using)
         options[:to] = options[:to]
         @subject.add Metadata::Transport.new(options.merge(action: action))
       end
@@ -118,7 +118,7 @@ module ElectricSheep
 
       def method_missing(method, *args, &block)
         if Agents::Register.command(method)
-          opts = {action: method}.merge(args.first || {})
+          opts = {agent: method}.merge(args.first || {})
           @subject.add Metadata::Command.new(opts)
         else
           super

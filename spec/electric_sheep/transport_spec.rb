@@ -101,7 +101,7 @@ describe ElectricSheep::Transport do
       ).returns( local_interactor )
       local_interactor.expects(:in_session).in_sequence(seq).yields
       hosts.stubs(:get).with('localhost').returns(localhost)
-      metadata.stubs(:transport).returns('airplane')
+      metadata.stubs(:agent).returns('airplane')
     end
 
     [NoRemoteResourceTransportKlazz, NoRemoteInteractorTransportKlazz].

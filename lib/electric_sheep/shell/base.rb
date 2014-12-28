@@ -17,8 +17,8 @@ module ElectricSheep
       def perform!(metadata)
         interactor.in_session do
           metadata.pipelined(input, @project) do |cmd_metadata, cmd_input|
-            command=cmd_metadata.agent.new(@project, @logger, self, cmd_input,
-              cmd_metadata )
+            command=cmd_metadata.agent_klazz.
+              new(@project, @logger, self, cmd_input, cmd_metadata)
             cmd_metadata.monitored do
               command.run!
             end

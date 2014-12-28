@@ -184,7 +184,7 @@ describe ElectricSheep::Runner do
       resource.stubs(:basename).returns('resource')
       resource.stubs(:timestamp?).returns(false)
       project.add metadata = ElectricSheep::Metadata::Transport.new
-      metadata.expects(:agent).in_sequence(script).at_least(1).
+      metadata.expects(:agent_klazz).in_sequence(script).at_least(1).
         returns(FakeTransport)
       FakeTransport.any_instance.expects(:run!).in_sequence(script)
       project.expects(:done!).in_sequence(script).
@@ -208,7 +208,7 @@ describe ElectricSheep::Runner do
 
       def expects_notifications
         notifiers.map do |metadata|
-          metadata.expects(:agent).in_sequence(script).
+          metadata.expects(:agent_klazz).in_sequence(script).
           returns(notifier_klazz=mock)
           notifier_klazz.expects(:new).in_sequence(script).
           with(project, config.hosts, logger, metadata).

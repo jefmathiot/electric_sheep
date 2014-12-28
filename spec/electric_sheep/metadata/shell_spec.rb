@@ -14,9 +14,10 @@ describe ElectricSheep::Metadata::Shell do
   describe 'validating' do
     it 'adds child commands errors' do
       subject.new.tap do |shell|
-        shell.add(command = ElectricSheep::Metadata::Command.new(action: 'cmd'))
-        command.expects(:validate).with(instance_of(ElectricSheep::Config)).returns(false)
-        expects_validation_error(shell, :base, /Invalid command cmd/)
+        shell.add(command = ElectricSheep::Metadata::Command.new(agent: 'cmd'))
+        command.expects(:validate).with(instance_of(ElectricSheep::Config)).
+          returns(false)
+        expects_validation_error(shell, :base, /Invalid command "cmd"/)
       end
     end
   end

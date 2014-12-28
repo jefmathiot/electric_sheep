@@ -11,7 +11,7 @@ module ElectricSheep
       def validate(config)
         iterate do |command|
           unless command.validate(config)
-            errors.add(:base, "Invalid command #{command.action}", command.errors)
+            errors.add(:base, "Invalid command \"#{command.agent}\"", command.errors)
           end
         end
         super

@@ -48,7 +48,7 @@ describe ElectricSheep::Shell::Base do
     metadata.expects(:pipelined).with(input, project).in_sequence(seq).
       multiple_yields [first, input], [second, input]
     [first, second].each do |cmd_metadata|
-      cmd_metadata.stubs(:agent).returns(FakeCommand)
+      cmd_metadata.stubs(:agent_klazz).returns(FakeCommand)
       ElectricSheep::Metadata::Command.any_instance.expects(:monitored).
         in_sequence(seq).yields
       FakeCommand.any_instance.tap do |cmd|

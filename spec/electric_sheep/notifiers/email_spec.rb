@@ -22,7 +22,7 @@ describe ElectricSheep::Notifiers::Email do
 
   let(:metadata){
     ElectricSheep::Metadata::Notifier.new(
-      notifier: 'email',
+      agent: 'email',
       from: 'from@host.tld',
       to: 'to@host.tld',
       using: :test,

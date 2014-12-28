@@ -24,7 +24,7 @@ module ElectricSheep
 
       def method_missing(method, *args, &block)
         if option?(method)
-          @options[method]
+          option(method)
         else
           super
         end
@@ -38,10 +38,11 @@ module ElectricSheep
         @options[name]
       end
 
-      protected
       def option?(method)
-        self.options.include?(method)
+        options.include?(method)
       end
+
+      protected
 
       def ensure_present(opt)
         if option(opt).nil?

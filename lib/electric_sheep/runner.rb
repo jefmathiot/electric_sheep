@@ -31,7 +31,8 @@ module ElectricSheep
       def notify(project)
         project.notifiers.each do |metadata|
           rescued do
-            metadata.agent.new(project, @config.hosts, logger, metadata).notify!
+            metadata.agent_klazz.
+              new(project, @config.hosts, logger, metadata).notify!
           end
         end
       end
@@ -59,8 +60,8 @@ module ElectricSheep
       end
 
       def execute_transport(project, input, metadata)
-        transport = metadata.agent.new(project, @logger, @config.hosts, input,
-          metadata)
+        transport = metadata.agent_klazz.
+          new(project, @logger, @config.hosts, input, metadata)
         metadata.monitored do
           transport.run!
         end

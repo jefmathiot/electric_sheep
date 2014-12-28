@@ -5,8 +5,8 @@ describe ElectricSheep::Metadata::Transport do
   include Support::Options
 
   it{
-    defines_options :action, :transport, :to
-    requires :action, :transport, :to
+    defines_options :action, :agent, :to
+    requires :action, :agent, :to
   }
 
   it 'describes a copy' do
@@ -24,13 +24,13 @@ describe ElectricSheep::Metadata::Transport do
   end
 
   it{
-    expects_validation_error( subject.new(transport: 'foo'), :transport,
-      "Unknown transport foo")
+    expects_validation_error( subject.new(agent: 'foo'), :transport,
+      'Unknown transport "foo"')
   }
 
   it 'resolves the agent class' do
     ElectricSheep::Agents::Register.expects(:transport).with('foo').returns(Object)
-    subject.new(transport: 'foo').agent.must_equal Object
+    subject.new(agent: 'foo').agent_klazz.must_equal Object
   end
 
 end

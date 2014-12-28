@@ -4,18 +4,18 @@ describe ElectricSheep::Metadata::Command do
   include Support::Options
 
   it{
-    defines_options :action
-    requires :action
+    defines_options :agent
+    requires :agent
   }
 
   it{
-    expects_validation_error(subject.new(action: 'foo'), :action,
-      "Unknown command foo")
+    expects_validation_error(subject.new(agent: 'foo'), :command,
+      'Unknown command "foo"')
   }
 
   it 'resolves the agent class' do
     ElectricSheep::Agents::Register.expects(:command).with('foo').returns(Object)
-    subject.new(action: 'foo').agent.must_equal Object
+    subject.new(agent: 'foo').agent_klazz.must_equal Object
   end
 
 end
