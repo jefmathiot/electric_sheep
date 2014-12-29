@@ -125,7 +125,6 @@
 
       .headerContent .summary {
         padding: 5px;
-        color: #ffffff;
         background: #000000 url(<%= asset('background.jpg') %>);
       }
 
@@ -135,6 +134,7 @@
 
       .headerContent .summary .nutshell{
         line-height:130%;
+        color: #ffffff;
       }
 
       .headerContent .resource{
@@ -185,12 +185,18 @@
       .stack .initial.resource{
         border-color: #ffffff;
         background-color: #EB5387;
+      }
+
+      .stack .initial.resource td{;
         color: #ffffff;
       }
 
       .stack .resource, .headerContent .resource{
         border-color: #05AD87;
         background-color: #ffffff;
+      }
+
+      .stack .resource td, .headerContent .resource td{
         color: #05AD87;
       }
 
@@ -201,6 +207,9 @@
       .stack .agent {
         border-color: #437998;
         background-color: #437998;
+      }
+
+      .stack .agent td{
         color: #ffffff;
       }
 
