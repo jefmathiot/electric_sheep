@@ -61,6 +61,7 @@ describe ElectricSheep::Master do
 
       def expects_startup(&block)
         expects_daemonize do
+          master.expects(:trap_signals).in_sequence(seq)
           logger.expects(:debug).in_sequence(seq).
             with("Searching for scheduled projects")
           yield if block_given?
@@ -71,7 +72,7 @@ describe ElectricSheep::Master do
       end
 
       def expects_child_worker(&block)
-        config.stubs(:all).returns([project=mock])
+        config.stubs(:iterate).yields(project=mock)
         project.stubs(:id).returns('some-project')
         expects_startup do
           project.expects(:on_schedule).in_sequence(seq).yields
@@ -89,7 +90,7 @@ describe ElectricSheep::Master do
       end
 
       it 'forks' do
-        config.stubs(:all).returns([])
+        config.stubs(:iterate)
         expects_startup do
           logger.expects(:debug).in_sequence(seq).with("Active workers: 0")
         end
@@ -117,6 +118,13 @@ describe ElectricSheep::Master do
         expects_pidfile
       end
 
+    end
+
+    it 'traps the TERM signal' do
+      master.expects(:trap).with(:TERM).yields
+      master.send(:should_stop?).must_equal false
+      master.send(:trap_signals)
+      master.send(:should_stop?).must_equal true
     end
 
     it 'restarts' do

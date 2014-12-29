@@ -11,6 +11,7 @@ module ElectricSheep
       raise "Another daemon seems to be running" if running?
       @logger.info "Daemon starting"
       pid=daemonize do
+        trap_signals
         while !should_stop? do
           @logger.debug "Searching for scheduled projects"
           run_scheduled
@@ -45,6 +46,10 @@ module ElectricSheep
     end
 
     protected
+
+    def trap_signals
+      trap(:TERM){ @should_stop=true }
+    end
 
     def should_stop?
       !!@should_stop
@@ -88,9 +93,10 @@ module ElectricSheep
     end
 
     def run_scheduled
-      @config.all.each do |project|
+      @config.iterate do |project|
         project.on_schedule do
-          @logger.info "Forking a new worker to handle project \"#{project.id}\""
+          @logger.info "Forking a new worker to handle project " +
+            "\"#{project.id}\""
           # Turn children into daemons to let them run on master stop
           worker=daemonize do
             Runner::SingleRun.new(@config, @logger, project).run!
