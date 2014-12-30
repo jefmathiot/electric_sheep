@@ -120,12 +120,6 @@ describe ElectricSheep::Master do
 
     end
 
-    it 'traps the TERM signal' do
-      master.expects(:trap).with(:TERM).yields
-      master.send(:should_stop?).must_equal false
-      master.send(:trap_signals)
-      master.send(:should_stop?).must_equal true
-    end
 
     it 'restarts' do
       # Definitely enjoyed writing this test
@@ -158,4 +152,12 @@ describe ElectricSheep::Master do
     end
 
   end
+
+  it 'traps the TERM signal' do
+    master.expects(:trap).with(:TERM).yields
+    master.send(:should_stop?).must_equal false
+    master.send(:trap_signals)
+    master.send(:should_stop?).must_equal true
+  end
+
 end
