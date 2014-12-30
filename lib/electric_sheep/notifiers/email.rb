@@ -51,13 +51,23 @@ module ElectricSheep
       end
 
       def deliver(msg)
-        msg.delivery_method option(:using), option(:with)
+        # Mail expects option keys as symbols
+        msg.delivery_method option(:using), symbolize(option(:with))
         msg.deliver
       end
 
       def assets_url
         "http://assets.electricsheep.io/#{ElectricSheep::VERSION}/" +
           "notifiers/email"
+      end
+
+      def symbolize(options)
+        if options
+          options.reduce({}) do |h, (k, v)|
+            h[k.to_sym]=v
+            h
+          end
+        end
       end
 
     end

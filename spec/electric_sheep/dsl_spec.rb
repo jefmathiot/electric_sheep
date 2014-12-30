@@ -45,6 +45,12 @@ describe ElectricSheep::Dsl do
     @config.hosts.localhost.working_directory.must_equal '/local/directory'
   end
 
+  it 'allows defaults for agents' do
+    options={command: 'id'}
+    ElectricSheep::Agents::Register.expects(:set_defaults_for).with(options)
+    @dsl.defaults_for options
+  end
+
   describe "registering a project" do
 
     def build_project(options={}, &block)

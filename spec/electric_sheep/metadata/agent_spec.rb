@@ -11,6 +11,7 @@ describe ElectricSheep::Metadata::Agent do
   class AgentKlazz < ElectricSheep::Metadata::Agent
     option :secret, secret: true
     option :public
+    option :default
   end
 
   describe AgentKlazz do
@@ -27,6 +28,12 @@ describe ElectricSheep::Metadata::Agent do
 
     it 'takes its type from class' do
       agent.type.must_equal 'agent_klazz'
+    end
+
+    it 'fetches default values for options' do
+      ElectricSheep::Agents::Register.expects(:defaults_for).
+        with('agent_klazz', 'id').returns({default: 'value'})
+      subject.new(agent: 'id').option(:default).must_equal 'value'
     end
 
     it{

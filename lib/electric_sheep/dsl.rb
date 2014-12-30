@@ -27,6 +27,10 @@ module ElectricSheep
       @config.hosts.localhost.working_directory=dir
     end
 
+    def defaults_for(options)
+      Agents::Register.set_defaults_for(options)
+    end
+
     class AbstractDsl
 
       include RaiseOnMethodMissing

@@ -26,6 +26,11 @@ module ElectricSheep
         value
       end
 
+      def option(name)
+        super || @options[:agent] && Agents::Register.
+          defaults_for(type, @options[:agent])[name]
+      end
+
       def agent_klazz
         # Use the instance variable to avoid stack level too deep
         @options[:agent] && Agents::Register.send(type, @options[:agent])

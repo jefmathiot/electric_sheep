@@ -15,7 +15,8 @@ describe ElectricSheep::Notifiers::Email do
 
   let(:project){
     ElectricSheep::Metadata::Project.new(id: 'some-project').tap do |p|
-      p.stubs(:report).returns(mock(stack: []))
+      report=mock.tap{|m| m.stubs(:stack).returns([])}
+      p.stubs(:report).returns(report)
       p.stubs(:last_product).returns(resource)
     end
   }
@@ -26,7 +27,7 @@ describe ElectricSheep::Notifiers::Email do
       from: 'from@host.tld',
       to: 'to@host.tld',
       using: :test,
-      with: {}
+      with: {'an_option' => 'value'}
     )
   }
   let(:logger){ mock }
@@ -66,6 +67,13 @@ describe ElectricSheep::Notifiers::Email do
         delivery.html_part.body.to_s.wont_match /\.headerContent/
       end
     end
+  end
+
+  it 'symbolizes delivery options' do
+    msg=mock
+    msg.expects(:delivery_method).with(:test, {an_option: 'value'})
+    msg.expects(:deliver)
+    notifier.send(:deliver, msg)
   end
 
 
