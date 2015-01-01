@@ -10,6 +10,8 @@ module ElectricSheep
       process_options
       option :workers, aliases: %w(-w), type: :numeric,
         desc: 'Maximum number of parallel workers', default: 1
+      option :logfile, aliases: %w(-l), type: :string,
+        desc: 'Override path to log file', default: './electric_sheep.log'
     end
 
     def self.run_options
@@ -93,8 +95,8 @@ module ElectricSheep
     end
 
     def file_logger
-      # TODO Configure logger output
-      Lumberjack::Logger.new("electric_sheep.log", level: log_level)
+      path=File.expand_path(options[:logfile] || 'electric_sheep.log')
+      Lumberjack::Logger.new(path, level: log_level)
     end
 
     def logger

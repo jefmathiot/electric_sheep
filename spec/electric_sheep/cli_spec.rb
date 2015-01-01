@@ -11,8 +11,9 @@ describe ElectricSheep::CLI do
       returns(logger)
   end
 
-  def expects_file_logger(level)
-    Lumberjack::Logger.expects(:new).with("electric_sheep.log", {level: level}).
+  def expects_file_logger(level, path=nil)
+    Lumberjack::Logger.expects(:new).
+      with(path || File.expand_path("electric_sheep.log"), {level: level}).
       returns(logger)
   end
 
@@ -59,6 +60,12 @@ describe ElectricSheep::CLI do
       Kernel.expects(:exit).with(1)
       self.instance_eval &block
     end
+  end
+
+  it 'overrides the path to logfile' do
+    Lumberjack::Logger.expects(:new).
+      with('/var/log/electric_sheep.log', level: :info)
+    subject.new([], logfile: '/var/log/electric_sheep.log').send(:file_logger)
   end
 
   describe 'working' do
