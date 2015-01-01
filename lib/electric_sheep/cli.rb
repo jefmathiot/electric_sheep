@@ -8,6 +8,8 @@ module ElectricSheep
     def self.startup_options
       run_options
       process_options
+      option :workers, aliases: %w(-w), type: :numeric,
+        desc: 'Maximum number of parallel workers', default: 1
     end
 
     def self.run_options
@@ -53,11 +55,8 @@ module ElectricSheep
 
     desc "start", "Start a master process in the background"
     startup_options
-
     def start
-      rescued(true) do
-        master(config: configuration).start!
-      end
+      launch_master(:start!)
     end
 
     desc "stop", "Stop the master process"
@@ -74,9 +73,7 @@ module ElectricSheep
     startup_options
 
     def restart
-      rescued(true) do
-        master(config: configuration).restart!
-      end
+      launch_master(:restart!)
     end
 
     default_task :work
@@ -102,6 +99,12 @@ module ElectricSheep
 
     def logger
       @logger ||= stdout_logger
+    end
+
+    def launch_master(method)
+      rescued(true) do
+        master(config: configuration, workers: options[:workers]).send(method)
+      end
     end
 
     def master(opts={})

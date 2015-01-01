@@ -23,6 +23,18 @@ describe ElectricSheep::Master do
     @pidfile.unlink
   end
 
+  it 'defaults the number of workers to 1' do
+    subject.new({}).instance_variable_get(:@workers).must_equal 1
+  end
+
+  it 'uses the provided number of workers' do
+    subject.new(workers: 2).instance_variable_get(:@workers).must_equal 2
+  end
+
+  it 'ignores a non-positive number of workers' do
+    subject.new(workers: 0).instance_variable_get(:@workers).must_equal 1
+  end
+
   describe 'starting' do
 
     before do
@@ -85,8 +97,13 @@ describe ElectricSheep::Master do
           end
           logger.expects(:debug).in_sequence(seq).
             with("Forked a worker for project \"some-project\", pid: 10001")
-            yield if block_given?
+          yield if block_given?
         end
+      end
+
+      def launch
+        master.start!
+        expects_pidfile
       end
 
       it 'forks' do
@@ -94,8 +111,7 @@ describe ElectricSheep::Master do
         expects_startup do
           logger.expects(:debug).in_sequence(seq).with("Active workers: 0")
         end
-        master.start!
-        expects_pidfile
+        launch
       end
 
       it 'forks then launches a worker' do
@@ -103,8 +119,7 @@ describe ElectricSheep::Master do
           Process.expects(:kill).with(0, 10001).in_sequence(seq).returns(true)
           logger.expects(:debug).in_sequence(seq).with("Active workers: 1")
         end
-        master.start!
-        expects_pidfile
+        launch
       end
 
       it 'forks then flushes a completed worker' do
@@ -114,12 +129,20 @@ describe ElectricSheep::Master do
             with("Worker for project \"some-project\" completed, pid: 10001")
           logger.expects(:debug).in_sequence(seq).with("Active workers: 0")
         end
-        master.start!
-        expects_pidfile
+        launch
+      end
+
+      it 'does not fork when the max number of workers has been reached' do
+        config.stubs(:iterate).yields(project=mock)
+        master.instance_variable_set(:@workers, 0)
+        expects_startup do
+          project.expects(:on_schedule).never
+          logger.expects(:debug).in_sequence(seq).with("Active workers: 0")
+        end
+        launch
       end
 
     end
-
 
     it 'restarts' do
       # Definitely enjoyed writing this test

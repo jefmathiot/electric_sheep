@@ -4,7 +4,8 @@ module ElectricSheep
     def initialize(options)
       @config = options[:config]
       @logger = options[:logger]
-      @pidfile=File.expand_path(options[:pidfile])
+      @workers = [1, options[:workers]].compact.max
+      @pidfile=File.expand_path(options[:pidfile]) if options[:pidfile]
     end
 
     def start!
@@ -94,16 +95,18 @@ module ElectricSheep
 
     def run_scheduled
       @config.iterate do |project|
-        project.on_schedule do
-          @logger.info "Forking a new worker to handle project " +
-            "\"#{project.id}\""
-          # Turn children into daemons to let them run on master stop
-          worker=daemonize do
-            Runner::SingleRun.new(@config, @logger, project).run!
+        if worker_pids.size < @workers
+          project.on_schedule do
+            # Turn children into daemons to let them run on master stop
+            @logger.info "Forking a new worker to handle project " +
+              "\"#{project.id}\""
+            worker=daemonize do
+              Runner::SingleRun.new(@config, @logger, project).run!
+            end
+            worker_pids[worker]=project.id
+            @logger.debug "Forked a worker for project \"#{project.id}\", " +
+              "pid: #{worker}"
           end
-          worker_pids[worker]=project.id
-          @logger.debug "Forked a worker for project \"#{project.id}\", pid: " +
-            "#{worker}"
         end
       end
     end

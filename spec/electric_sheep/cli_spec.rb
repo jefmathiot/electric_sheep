@@ -110,7 +110,8 @@ describe ElectricSheep::CLI do
     concise do
 
       it 'encrypts secrets' do
-        ElectricSheep::Crypto.expects(:encrypt).with('SECRET', '/some/key').returns('CIPHER')
+        ElectricSheep::Crypto.expects(:encrypt).with('SECRET', '/some/key').
+          returns('CIPHER')
         logger.expects(:info).with("CIPHER")
         subject.new([], key: '/some/key').encrypt('SECRET')
       end
@@ -132,10 +133,10 @@ describe ElectricSheep::CLI do
       ElectricSheep::Master.expects(:new).with(options).returns(master)
     end
 
-    def expects_startup(method, master_options, config_file=nil)
+    def expects_startup(method, master_options, config_file=nil, workers=nil)
       expects_evaluator(config_file || 'Sheepfile')
       expects_control(method,
-        {config: config}.merge(master_options)
+        {config: config, workers: workers}.merge(master_options),
       )
     end
 
@@ -160,7 +161,13 @@ describe ElectricSheep::CLI do
 
         it 'overrides the path to pidfile' do
           expects_startup("#{action}!", {pidfile: '/tmp/es.lock'})
-          subject.new([], config: 'Sheepfile', pidfile: '/tmp/es.lock').send(action)
+          subject.new([], config: 'Sheepfile', pidfile: '/tmp/es.lock').
+            send(action)
+        end
+
+        it 'overrides the maximum number of workers' do
+          expects_startup("#{action}!", {workers: 2})
+          subject.new([], config: 'Sheepfile', workers: 2).send(action)
         end
 
       end
