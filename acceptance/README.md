@@ -2,6 +2,7 @@
 
 ## Prerequisites
 
+* Ruby 1.9.3+
 * [Vagrant 1.5+](http://www.vagrantup.com/downloads.html)
 * VirtualBox
 
