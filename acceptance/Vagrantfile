@@ -10,16 +10,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.omnibus.chef_version = :latest
 
-  config.vm.provision :shell, :inline => "sudo locale-gen fr_FR.UTF-8 && sudo dpkg-reconfigure locales"
+  config.vm.provision :shell, inline: "sudo locale-gen #{ENV['LANG']} && sudo dpkg-reconfigure locales"
   config.vm.provider :virtualbox do |vb|
     vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
   end
   config.vm.provision :chef_solo do |chef|
     chef.cookbooks_path = ['cookbooks']
     chef.add_recipe 'apt'
-    chef.add_recipe 'mysql::server'
     chef.add_recipe 'mongodb::10gen_repo'
     chef.add_recipe 'mongodb'
+    chef.add_recipe 'mysql::server'
+    chef.add_recipe 'postgresql::server'
     chef.json = {
       "mysql" => {
         "server_root_password" => "pseudorandom",
@@ -28,10 +29,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       },
       "mongodb" => {
         "package_version" => '2.4.9'
+      },
+      "postgresql" => {
+        "password" => { "postgres"=>"pseudorandom" }
       }
     }
   end
-
   config.vm.provision :shell, inline: "echo \"#{`cat ./id_rsa.pub`}\" >> ~vagrant/.ssh/authorized_keys"
   config.vm.provision :shell, path: 'setup.sh'
 end

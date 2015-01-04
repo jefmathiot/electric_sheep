@@ -31,5 +31,4 @@ $ vagrant up
 
 Head back to the project's root directory and:
 
-`bundle exec cucumber`
-
+`bundle exec cucumber --tags ~@pending`

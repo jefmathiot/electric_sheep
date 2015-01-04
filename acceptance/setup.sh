@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 service mysql restart
 service mongodb restart
@@ -25,4 +26,25 @@ mongo <<EOF
     pwd: "pseudorandom",
     roles: ["read"]
   });
+EOF
+
+sudo su postgres <<EOF
+  dropdb --if-exists controldb
+  dropuser --if-exists operator
+  createdb controldb
+  createuser operator
+EOF
+
+PGPASSWORD=pseudorandom psql -U postgres -h 127.0.0.1 <<EOF
+  ALTER USER operator WITH ENCRYPTED PASSWORD 'pseudorandom';
+  GRANT CONNECT ON DATABASE controldb TO operator;
+  \c controldb
+  GRANT USAGE ON SCHEMA public TO operator;
+  CREATE TABLE IF NOT EXISTS test (
+    id serial PRIMARY KEY,
+    value char(1)
+  );
+  INSERT INTO test(value) VALUES ('A'),('A'),('A'),('A'),('A'),('A'),('A'),('A'),('A'),('A');
+  GRANT SELECT ON ALL SEQUENCES IN SCHEMA public TO operator;
+  GRANT SELECT ON ALL TABLES IN SCHEMA public TO operator;
 EOF
