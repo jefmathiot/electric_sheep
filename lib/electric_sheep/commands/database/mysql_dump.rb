@@ -11,7 +11,8 @@ module ElectricSheep
         option :password, secret: true
 
         def perform!
-          logger.info "Creating a dump of the \"#{input.basename}\" MySQL database"
+          logger.info "Creating a dump of the \"#{input.basename}\" " +
+            "MySQL database"
           file_resource(host, extension: '.sql').tap do |dump|
             shell.exec cmd(dump)
           end
@@ -34,7 +35,8 @@ module ElectricSheep
         end
 
         def database_size_query(db)
-          "SELECT sum(data_length+index_length) FROM information_schema.tables" +
+          "SELECT sum(data_length+index_length)" +
+            " FROM information_schema.tables" +
             " WHERE table_schema='#{shell_safe(db)}'" +
             " GROUP BY table_schema"
         end

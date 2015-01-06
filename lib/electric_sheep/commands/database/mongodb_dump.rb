@@ -13,7 +13,8 @@ module ElectricSheep
         option :password, secret: true
 
         def perform!
-          logger.info "Creating a dump of the \"#{input.basename}\" MongoDB database"
+          logger.info "Creating a dump of the \"#{input.basename}\" " +
+            "MongoDB database"
           directory_resource(host).tap do |dump|
             shell.exec cmd(input.name, option(:user), option(:password), dump)
           end
@@ -26,7 +27,8 @@ module ElectricSheep
 
         private
         def cmd(db, user, password, dump)
-          cmd = "mongodump -d #{shell_safe(db)} -o #{shell.expand_path(dump.path)}"
+          cmd = "mongodump -d #{shell_safe(db)}"
+          cmd << " -o #{shell.expand_path(dump.path)}"
           cmd << credentials(user, password)
           cmd << " &> /dev/null"
         end
