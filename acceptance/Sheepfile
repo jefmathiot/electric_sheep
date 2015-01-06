@@ -156,7 +156,7 @@ project "mongodb-dump-auth-fail" do
   private_key private_key
   resource "database", name: "controldb", host: "main-host"
   remotely as: "vagrant" do
-    mongodb_dump user: "fail_user", password: "corrupt"
+    mongodb_dump user: "fail_user", password: "incorrect"
   end
 end
 
@@ -191,6 +191,42 @@ project "mysql-dump-auth-fail" do
   private_key private_key
   resource "database", name: "controldb", host: "main-host"
   remotely as: "vagrant" do
-    mysql_dump user: "fail_user", password: "corrupt"
+    mysql_dump user: "fail_user", password: "incorrect"
+  end
+end
+
+###############################################################################
+## PostgreSQL Dump
+project "postgresql-dump" do
+  private_key private_key
+  resource "database", name: "controldb", host: "main-host"
+  remotely as: "vagrant" do
+    postgresql_dump user: "operator", password: "pseudorandom", login_host: "localhost"
+  end
+  move to: "localhost", using: "scp", as: "vagrant"
+end
+
+project "postgresql-dump-sudo" do
+  private_key private_key
+  resource "database", name: "controldb", host: "main-host"
+  remotely as: "vagrant" do
+    postgresql_dump sudo_as: "postgres"
+  end
+  move to: "localhost", using: "scp", as: "vagrant"
+end
+
+project "postgresql-dump-unknown-db-fail" do
+  private_key private_key
+  resource "database", name: "unknown", host: "main-host"
+  remotely as: "vagrant" do
+    postgresql_dump user: "operator", password: "pseudorandom", login_host: "localhost"
+  end
+end
+
+project "postgresql-dump-auth-fail" do
+  private_key private_key
+  resource "database", name: "controldb", host: "main-host"
+  remotely as: "vagrant" do
+    postgresql_dump user: "fail_user", password: "incorrect", login_host: "localhost"
   end
 end

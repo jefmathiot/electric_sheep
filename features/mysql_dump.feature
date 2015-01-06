@@ -5,7 +5,7 @@ Feature: MySQL Dump
 
   Scenario: Create a dump
     Given I tell the sheep to work on project "mysql-dump"
-    Then a MySQL dump of the database should have been created
+    Then a dump of the MySQL database should have been created
 
   Scenario: Authentication error
     Given I tell the sheep to work on failing project "mysql-dump-auth-fail"
