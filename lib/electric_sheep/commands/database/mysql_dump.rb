@@ -18,8 +18,7 @@ module ElectricSheep
         end
 
         def stat_database(input)
-          cmd=database_size_cmd(input)
-          shell.exec(cmd)[:out].chomp.to_i
+          shell.exec(database_size_cmd(input))[:out].chomp.to_i
         end
 
         private
