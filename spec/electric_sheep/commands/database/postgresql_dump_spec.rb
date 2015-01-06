@@ -14,7 +14,7 @@ describe ElectricSheep::Commands::Database::PostgreSQLDump do
 
   def expects_log
     logger.expects(:info).in_sequence(seq).with(
-    "Creating a dump of the \"$MyDatabase\" PostgreSQL database"
+      "Creating a dump of the \"$MyDatabase\" PostgreSQL database"
     )
   end
 
