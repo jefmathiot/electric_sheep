@@ -7,17 +7,17 @@ module ElectricSheep
       def exec(cmd)
         @logger.debug cmd if @logger
         after_exec do
-          {out: '', err: ''}.tap{ |result|
-            @child = POSIX::Spawn::Child.new(cmd)
-            unless @child.out.nil?
-              result[:out] = @child.out.chomp
-              @logger.debug result[:out] if @logger
-            end
-            unless @child.err.nil?
-              result[:err] = @child.err.chomp
-            end
-
-          }.merge({exit_status: @child.status})
+          result = {out: '', err: ''}
+          child = POSIX::Spawn::Child.new(cmd)
+          unless child.out.nil?
+            result[:out] = child.out.chomp
+            @logger.debug result[:out] if @logger
+          end
+          unless child.err.nil?
+            result[:err] = child.err.chomp
+          end
+          result[:exit_status]=child.status
+          result
         end
       end
 
