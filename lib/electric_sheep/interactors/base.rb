@@ -3,7 +3,7 @@ module ElectricSheep
     class Base
       delegate :expand_path, to: :directories
 
-      attr_reader :directories
+      attr_reader :session, :directories
 
       def initialize(host, project, logger=nil)
         @host=host
@@ -22,16 +22,9 @@ module ElectricSheep
         end
       end
 
-      def session
-        unless @session
-          @session=build_session
-          @directories.mk_project_directory!
-        end
-        @session
-      end
-
       def in_session(&block)
-        session
+        @session=build_session
+        @directories.mk_project_directory!
         block.call if block_given?
         close
       end

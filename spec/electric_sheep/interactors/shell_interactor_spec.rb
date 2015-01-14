@@ -12,7 +12,7 @@ describe ElectricSheep::Interactors::ShellInteractor do
   end
 
   it 'builds a session' do
-    interactor.send(:build_session).must_equal true
+    interactor.send(:build_session).must_be_nil
   end
 
   describe 'executing a command' do
