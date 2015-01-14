@@ -85,8 +85,7 @@ module ElectricSheep
         end
 
         def stat(resource)
-          file=remote_files(resource).get(key(resource))
-          file.content_length
+          remote_file_length(resource)
         end
 
         private
@@ -112,6 +111,10 @@ module ElectricSheep
           end
         end
 
+        def remote_head(resource)
+          remote_files(resource).head(key(resource))
+        end
+
         def remote_directory(bucket)
           connection.directories.get(bucket)
         end
@@ -122,6 +125,11 @@ module ElectricSheep
 
         def remote_file(resource, &block)
           remote_files(resource).get(key(resource), &block)
+        end
+
+        def remote_file_length(resource)
+          file = remote_head(resource)
+          file["Content-Length"]
         end
 
         def key(resource)

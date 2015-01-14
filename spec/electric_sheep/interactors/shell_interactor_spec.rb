@@ -12,16 +12,16 @@ describe ElectricSheep::Interactors::ShellInteractor do
   end
 
   it 'builds a session' do
-    interactor.send(:build_session).must_be_instance_of ::Session::Sh
+    interactor.send(:build_session).must_equal true
   end
 
   describe 'executing a command' do
 
     def expects_execution(cmd, out=nil, err=nil)
-      interactor.stubs(:session).returns(session=mock)
-      session.expects(:execute).with(cmd).
-        yields(out && "#{out}\n", err && "#{err}\n")
-      session.expects(:exit_status).returns(err ? 2:0)
+      POSIX::Spawn::Child.stubs(:new).returns(child=mock)
+      child.stubs(:out).returns(out)
+      child.stubs(:err).returns(err)
+      child.expects(:status).returns(err ? 2:0)
       logger.expects(:debug).with(cmd)
       if err
         proc{interactor.exec(cmd)}.must_raise RuntimeError

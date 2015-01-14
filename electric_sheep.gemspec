@@ -41,5 +41,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'lumberjack', '~> 1.0', '>= 1.0.9'
   spec.add_dependency 'mail', '~> 2.6', '>= 2.6.3'
   spec.add_dependency 'premailer', '~> 1.8', '>= 1.8.2'
+  spec.add_dependency 'posix-spawn', '~> 0.3', '>= 0.3.9'
 
 end

@@ -220,6 +220,7 @@ describe ElectricSheep::Transports::S3 do
         end
 
         it 'stats the remote file' do
+          interactor.expects(:remote_file_length).with(from).returns(dummy_content.length)
           interactor.stat(from).must_equal dummy_content.length
         end
 

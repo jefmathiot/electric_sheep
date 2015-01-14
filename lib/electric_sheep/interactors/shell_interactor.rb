@@ -1,5 +1,6 @@
 module ElectricSheep
   module Interactors
+    require 'posix/spawn'
     class ShellInteractor < Base
       include ShellStat
 
@@ -7,22 +8,22 @@ module ElectricSheep
         @logger.debug cmd if @logger
         after_exec do
           {out: '', err: ''}.tap{ |result|
-            session.execute(cmd) do |out, err|
-              unless out.nil?
-                result[:out] = out.chomp
-                @logger.debug result[:out] if @logger
-              end
-              unless err.nil?
-                result[:err] = err.chomp
-              end
+            @child = POSIX::Spawn::Child.new(cmd)
+            unless @child.out.nil?
+              result[:out] = @child.out.chomp
+              @logger.debug result[:out] if @logger
             end
-          }.merge({exit_status: session.exit_status})
+            unless @child.err.nil?
+              result[:err] = @child.err.chomp
+            end
+
+          }.merge({exit_status: @child.status})
         end
       end
 
       protected
       def build_session
-        ::Session::Sh.new
+        true
       end
 
     end
