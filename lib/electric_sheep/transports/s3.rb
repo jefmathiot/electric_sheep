@@ -90,7 +90,7 @@ module ElectricSheep
 
         private
         def connection
-          Fog::Storage.new conn_options
+          @connection ||= Fog::Storage.new conn_options
         end
 
         def conn_options
