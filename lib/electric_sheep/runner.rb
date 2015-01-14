@@ -1,5 +1,3 @@
-require 'memstat_csv'
-
 module ElectricSheep
   module Runner
 
