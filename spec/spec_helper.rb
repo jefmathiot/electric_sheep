@@ -29,4 +29,4 @@ require 'support/queue'
 require 'support/transport'
 require 'support/files'
 
-ENV['ELECTRIC_SHEEPS_HOME'] = Dir.mktmpdir
+ENV['ELECTRIC_SHEEP_HOME'] = Dir.mktmpdir
