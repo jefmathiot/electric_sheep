@@ -1,3 +1,5 @@
+require 'memstat_csv'
+
 module ElectricSheep
   module Runner
 
@@ -38,14 +40,14 @@ module ElectricSheep
       end
 
       def executable_type(executable)
-        executable.class.name.underscore.split('/').last
+        executable.class.name.demodulize.underscore
       end
 
       def execute_shell(project, input, metadata)
-          Shell::LocalShell.new(
-            @config.hosts.localhost, project, input, @logger
-          ).perform!(metadata)
-          metadata.last_output
+        Shell::LocalShell.new(
+          @config.hosts.localhost, project, input, @logger
+        ).perform!(metadata)
+        metadata.last_output
       end
 
       def execute_remote_shell(project, input, metadata)
