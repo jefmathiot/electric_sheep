@@ -220,9 +220,9 @@ describe ElectricSheep::Transports::S3 do
         end
 
         it 'stats the remote file' do
-          file = {"Content-Length" => 22}
           interactor.expects(:remote_files).with(from).returns(files=mock)
-          files.expects(:head).returns(file)
+          files.expects(:head).returns(file=mock)
+          file.expects(:content_length).returns(22)
           interactor.stat(from).must_equal dummy_content.length
         end
 

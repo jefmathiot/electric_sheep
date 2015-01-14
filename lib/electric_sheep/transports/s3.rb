@@ -129,7 +129,7 @@ module ElectricSheep
 
         def remote_file_length(resource)
           file = remote_head(resource)
-          file["Content-Length"]
+          file.content_length
         end
 
         def key(resource)
