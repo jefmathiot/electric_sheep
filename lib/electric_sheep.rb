@@ -1,4 +1,5 @@
 require 'electric_sheep/version'
+require 'git_rev'
 require 'active_support'
 require 'active_support/core_ext'
 
@@ -23,7 +24,9 @@ require 'electric_sheep/transports'
 require 'electric_sheep/notifiers'
 
 module ElectricSheep
+
   class << self
+
     def template_path
       @_template_path ||= File.join(gem_path, 'templates')
     end
@@ -31,7 +34,33 @@ module ElectricSheep
     def gem_path
       @_gem_path ||= File.expand_path(File.join(File.dirname(__FILE__), '..'))
     end
+
+    def version
+      VERSION
+    end
+
+    def git_revision
+      if @sha.nil?
+        if ENV['ELECTRIC_SHEEP_REVISION']
+          @sha = ENV['ELECTRIC_SHEEP_REVISION'][0, 7]
+        else
+          begin
+            @sha = GitRev::Sha.new.short
+          # Not a git repository
+          rescue
+            @sha = "-" * 7
+          end
+        end
+      end
+      @sha
+    end
+
+    def revision
+      [version, git_revision].join(" ")
+    end
+
   end
+
 end
 
 I18n.enforce_available_locales=false
