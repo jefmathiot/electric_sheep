@@ -240,4 +240,11 @@ describe ElectricSheep::CLI do
 
   end
 
+  it 'outputs revision' do
+    ElectricSheep.expects(:revision).returns('0.0.0 0000000')
+    cli = subject.new([])
+    cli.expects(:puts).with('0.0.0 0000000')
+    cli.send(:version)
+  end
+
 end

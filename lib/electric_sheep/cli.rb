@@ -78,6 +78,11 @@ module ElectricSheep
       launch_master(:restart!)
     end
 
+    desc "version", "Show version and git revision"
+    def version
+      puts ElectricSheep.revision
+    end
+
     default_task :work
 
     protected
