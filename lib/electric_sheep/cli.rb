@@ -32,7 +32,7 @@ module ElectricSheep
 
     desc "work", "Process all jobs in sequence"
     run_options
-    option :job, aliases: %w(-p), type: :string,
+    option :job, aliases: %w(-j), type: :string,
       desc: 'Name of a single job to execute'
 
     def work
