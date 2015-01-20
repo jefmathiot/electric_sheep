@@ -7,9 +7,9 @@ describe ElectricSheep::Runner do
   let(:script) { sequence('script') }
 
 
-  let(:project) do
-    ElectricSheep::Metadata::Project.new(id: 'first-project',
-      description: 'First project description').tap do |p|
+  let(:job) do
+    ElectricSheep::Metadata::Job.new(id: 'first-job',
+      description: 'First job description').tap do |p|
       p.stubs(:execution_time).returns(10.112)
     end
   end
@@ -29,69 +29,69 @@ describe ElectricSheep::Runner do
     end
 
     before do
-      config.add( project )
-      project.start_with! resource
+      config.add( job )
+      job.start_with! resource
     end
 
-    it 'raises when told to run an unknown project' do
+    it 'raises when told to run an unknown job' do
       logger.expects(:info).never.with("Executing unknown")
-      runner = subject.new(config: config, project: 'unknown', logger: logger)
+      runner = subject.new(config: config, job: 'unknown', logger: logger)
       err = ->{ runner.run! }.must_raise RuntimeError
-      err.message.must_equal "Project \"unknown\" does not exist"
+      err.message.must_equal "job \"unknown\" does not exist"
     end
 
-    describe 'executing projects' do
+    describe 'executing jobs' do
 
       before do
         logger.expects(:info).in_sequence(script).
-          with("Executing \"First project description (first-project)\"")
+          with("Executing \"First job description (first-job)\"")
       end
 
-      describe 'with multiple projects' do
+      describe 'with multiple jobs' do
 
         before do
           config.add(
-            ElectricSheep::Metadata::Project.new(id: 'second-project')
+            ElectricSheep::Metadata::Job.new(id: 'second-job')
           ).tap do |p|
             p.stubs(:execution_time).returns(5.5)
             p.start_with! resource
           end
         end
 
-        def expects_second_project_run
+        def expects_second_job_run
           logger.expects(:info).in_sequence(script).
-            with("Executing \"second-project\"")
+            with("Executing \"second-job\"")
           logger.expects(:info).in_sequence(script).
-            with("Project \"second-project\" completed in 5.500 seconds")
+            with("job \"second-job\" completed in 5.500 seconds")
         end
 
-        it 'should not have remaining projects' do
+        it 'should not have remaining jobs' do
           logger.expects(:info).
-            with("Project \"First project description (first-project)\" " +
+            with("job \"First job description (first-job)\" " +
             "completed in 10.112 seconds")
-          expects_second_project_run
+          expects_second_job_run
           runner.run!
         end
 
-        it 'reports failing projects' do
-          project.add ElectricSheep::Metadata::Shell.new
+        it 'reports failing jobs' do
+          job.add ElectricSheep::Metadata::Shell.new
           shell = ElectricSheep::Shell::LocalShell.any_instance
           shell.expects(:perform!).in_sequence(script).
             raises(RuntimeError, 'Error message')
           logger.expects(:error).in_sequence(script).with('Error message')
           logger.expects(:debug).in_sequence(script).with(kind_of(RuntimeError))
-          expects_second_project_run
+          expects_second_job_run
           ex = ->{ runner.run! }.must_raise RuntimeError
-          ex.message.must_equal "Some projects have failed: \"First project " +
-            "description (first-project)\""
+          ex.message.must_equal "Some jobs have failed: \"First job " +
+            "description (first-job)\""
         end
 
-        it 'executes a single project when told to do so' do
+        it 'executes a single job when told to do so' do
           logger.expects(:info).
-            with("Project \"First project description (first-project)\" " +
+            with("job \"First job description (first-job)\" " +
             "completed in 10.112 seconds")
-          logger.expects(:info).never.with("Executing \"second-project\"")
-          runner = subject.new(config: config, project: 'first-project',
+          logger.expects(:info).never.with("Executing \"second-job\"")
+          runner = subject.new(config: config, job: 'first-job',
             logger: logger)
           runner.run!
         end
@@ -107,7 +107,7 @@ describe ElectricSheep::Runner do
     let(:config) do
       ElectricSheep::Config.new.tap do |c|
         c.hosts.add('some-host', hostname: 'some-host.tld')
-        c.add project
+        c.add job
       end
     end
 
@@ -123,13 +123,13 @@ describe ElectricSheep::Runner do
     end
 
     let(:runner) do
-      runner = subject.new(config, logger, project)
+      runner = subject.new(config, logger, job)
     end
 
     before do
       logger.expects(:info).in_sequence(script).
-        with("Executing \"First project description (first-project)\"")
-      project.start_with! resource
+        with("Executing \"First job description (first-job)\"")
+      job.start_with! resource
     end
 
     def expects_execution_times(*objects)
@@ -143,24 +143,24 @@ describe ElectricSheep::Runner do
 
       def expects_output(metadata)
         metadata.stubs(:last_output).returns(output=mock)
-        project.expects(:done!).in_sequence(script).
+        job.expects(:done!).in_sequence(script).
           with(metadata, output, output)
         logger.expects(:info).in_sequence(script).
-          with("Project \"First project description (first-project)\" " +
+          with("job \"First job description (first-job)\" " +
           "completed in 10.112 seconds")
       end
 
       it 'wraps command executions in a local shell' do
-        project.add(metadata = ElectricSheep::Metadata::Shell.new)
+        job.add(metadata = ElectricSheep::Metadata::Shell.new)
         shell = ElectricSheep::Shell::LocalShell.any_instance
         shell.expects(:perform!).in_sequence(script)
         expects_output(metadata)
         runner.run!.must_equal true
-        expects_execution_times(project)
+        expects_execution_times(job)
       end
 
       it 'wraps command executions in a remote shell' do
-        project.add(
+        job.add(
           metadata = ElectricSheep::Metadata::RemoteShell.new(
             user: 'op'
           )
@@ -169,7 +169,7 @@ describe ElectricSheep::Runner do
         shell.expects(:perform!).in_sequence(script).returns(shell)
         expects_output(metadata)
         runner.run!.must_equal true
-        expects_execution_times(project)
+        expects_execution_times(job)
       end
 
     end
@@ -183,17 +183,17 @@ describe ElectricSheep::Runner do
       resource.stubs(:type).returns('file')
       resource.stubs(:basename).returns('resource')
       resource.stubs(:timestamp?).returns(false)
-      project.add metadata = ElectricSheep::Metadata::Transport.new
+      job.add metadata = ElectricSheep::Metadata::Transport.new
       metadata.expects(:agent_klazz).in_sequence(script).at_least(1).
         returns(FakeTransport)
       FakeTransport.any_instance.expects(:run!).in_sequence(script)
-      project.expects(:done!).in_sequence(script).
+      job.expects(:done!).in_sequence(script).
         with(metadata, kind_of(ElectricSheep::Resources::File), resource)
       logger.expects(:info).in_sequence(script).
-        with("Project \"First project description (first-project)\" " +
+        with("job \"First job description (first-job)\" " +
         "completed in 10.112 seconds")
       runner.run!.must_equal true
-      expects_execution_times(project, metadata)
+      expects_execution_times(job, metadata)
     end
 
     describe 'with notifiers' do
@@ -202,7 +202,7 @@ describe ElectricSheep::Runner do
 
       before do
         notifiers.each do |metadata|
-          project.notifier metadata
+          job.notifier metadata
         end
       end
 
@@ -211,7 +211,7 @@ describe ElectricSheep::Runner do
           metadata.expects(:agent_klazz).in_sequence(script).
           returns(notifier_klazz=mock)
           notifier_klazz.expects(:new).in_sequence(script).
-          with(project, config.hosts, logger, metadata).
+          with(job, config.hosts, logger, metadata).
           returns(notifier=mock)
           notifier.expects(:notify!).in_sequence(script)
         end
@@ -220,13 +220,13 @@ describe ElectricSheep::Runner do
       it "triggers notifications" do
         expects_notifications
         logger.expects(:info).in_sequence(script).
-          with("Project \"First project description (first-project)\" " +
+          with("job \"First job description (first-job)\" " +
           "completed in 10.112 seconds")
         runner.run!.must_equal true
       end
 
       it 'fails and notifies' do
-        project.add ElectricSheep::Metadata::Shell.new
+        job.add ElectricSheep::Metadata::Shell.new
         ElectricSheep::Shell::LocalShell.any_instance.expects(:perform!).
           raises('An error')
         logger.expects(:error).in_sequence(script).with('An error')
@@ -241,14 +241,14 @@ describe ElectricSheep::Runner do
         logger.expects(:error).in_sequence(script).with('Another error')
         logger.expects(:debug).in_sequence(script).with(kind_of(RuntimeError))
         logger.expects(:info).in_sequence(script).
-          with("Project \"First project description (first-project)\" " +
+          with("job \"First job description (first-job)\" " +
           "completed in 10.112 seconds")
         runner.run!.must_equal true
       end
 
     end
 
-      # it 'fails and triggers notifications even when the project failed' do
+      # it 'fails and triggers notifications even when the job failed' do
       # end
 
   end

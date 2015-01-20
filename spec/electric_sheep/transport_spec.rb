@@ -2,11 +2,11 @@ require 'spec_helper'
 
 describe ElectricSheep::Transport do
 
-  let(:project){ ElectricSheep::Metadata::Project.new(id: 'some-project') }
+  let(:job){ ElectricSheep::Metadata::Job.new(id: 'some-job') }
 
   let(:hosts){ ElectricSheep::Metadata::Hosts.new }
 
-  let(:transport){ subject.new(project, logger, hosts, resource, metadata) }
+  let(:transport){ subject.new(job, logger, hosts, resource, metadata) }
 
   [:local_interactor, :logger, :metadata].each do |m|
     let(m){ mock }
@@ -97,7 +97,7 @@ describe ElectricSheep::Transport do
 
     before do
       ElectricSheep::Interactors::ShellInteractor.expects(:new).with(
-        hosts.localhost, project, logger
+        hosts.localhost, job, logger
       ).returns( local_interactor )
       local_interactor.expects(:in_session).in_sequence(seq).yields
       hosts.stubs(:get).with('localhost').returns(localhost)

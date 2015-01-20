@@ -2,15 +2,15 @@ module ElectricSheep
   module Shell
     class RemoteShell < Base
 
-      def initialize(host, project, input, logger, user)
-        super(host, project, input, logger)
+      def initialize(host, job, input, logger, user)
+        super(host, job, input, logger)
         @user = user
       end
 
       def interactor
         @interactor ||= Interactors::SshInteractor.new(
           @host,
-          @project,
+          @job,
           @user,
           @logger
         )

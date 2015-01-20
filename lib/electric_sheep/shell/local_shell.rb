@@ -13,7 +13,7 @@ module ElectricSheep
       def interactor
         @interactor ||= Interactors::ShellInteractor.new(
           @host,
-          @project,
+          @job,
           @logger
         )
       end

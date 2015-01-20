@@ -7,18 +7,18 @@ module ElectricSheep
 
       attr_reader :interactor, :host, :input
 
-      def initialize(host, project, input, logger)
+      def initialize(host, job, input, logger)
         @host = host
-        @project=project
+        @job=job
         @input=input
         @logger = logger
       end
 
       def perform!(metadata)
         interactor.in_session do
-          metadata.pipelined(input, @project) do |cmd_metadata, cmd_input|
+          metadata.pipelined(input, @job) do |cmd_metadata, cmd_input|
             command=cmd_metadata.agent_klazz.
-              new(@project, @logger, self, cmd_input, cmd_metadata)
+              new(@job, @logger, self, cmd_input, cmd_metadata)
             cmd_metadata.monitored do
               command.run!
             end

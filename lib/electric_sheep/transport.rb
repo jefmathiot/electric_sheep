@@ -3,8 +3,8 @@ module ElectricSheep
     extend ActiveSupport::Concern
     include Runnable
 
-    def initialize(project, logger, hosts, input, metadata)
-      @project = project
+    def initialize(job, logger, hosts, input, metadata)
+      @job = job
       @logger = logger
       @input = input
       @metadata = metadata
@@ -70,7 +70,7 @@ module ElectricSheep
 
     def local_interactor
       @local_interactor ||= Interactors::ShellInteractor.new(
-        @hosts.localhost, @project, @logger
+        @hosts.localhost, @job, @logger
       )
     end
 

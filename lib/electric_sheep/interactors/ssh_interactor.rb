@@ -3,8 +3,8 @@ module ElectricSheep
     class SshInteractor < Base
       include ShellStat
 
-      def initialize(host, project, user, logger=nil)
-        super(host, project, logger)
+      def initialize(host, job, user, logger=nil)
+        super(host, job, logger)
         @user=user
       end
 
@@ -73,7 +73,7 @@ module ElectricSheep
       end
 
       def private_key
-        @host.private_key || @project.private_key
+        @host.private_key || @job.private_key
       end
 
       def copy_paths(source, target, context, directory, &block)

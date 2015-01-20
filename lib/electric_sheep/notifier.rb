@@ -3,10 +3,10 @@ module ElectricSheep
     extend ActiveSupport::Concern
     include Agent
 
-    attr_reader :project, :hosts
+    attr_reader :job, :hosts
 
-    def initialize(project, hosts, logger, metadata)
-      @project = project
+    def initialize(job, hosts, logger, metadata)
+      @job = job
       @logger = logger
       @metadata = metadata
       @hosts = hosts

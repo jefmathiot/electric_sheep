@@ -6,14 +6,14 @@ describe ElectricSheep::Command do
     include ElectricSheep::Command
   end
 
-  [:project, :logger, :shell, :resource, :metadata].each do |m|
+  [:job, :logger, :shell, :resource, :metadata].each do |m|
     let(m){ mock }
   end
 
   describe CommandKlazz do
 
     let(:command) do
-      subject.new(project, logger, shell, resource, metadata)
+      subject.new(job, logger, shell, resource, metadata)
     end
 
     it 'makes initialization options available' do
@@ -39,7 +39,7 @@ describe ElectricSheep::Command do
     # TODO Move to an agent spec
     it 'decrypts options' do
       metadata.expects(:some_option).returns(encrypted = mock)
-      project.expects(:private_key).returns('/path/to/private/key')
+      job.expects(:private_key).returns('/path/to/private/key')
       encrypted.expects(:decrypt).with('/path/to/private/key').returns('VALUE')
       command.send(:option, :some_option).must_equal 'VALUE'
     end

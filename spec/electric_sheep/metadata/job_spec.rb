@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe ElectricSheep::Metadata::Project do
+describe ElectricSheep::Metadata::Job do
   include Support::Queue
   include Support::Options
 
@@ -21,34 +21,34 @@ describe ElectricSheep::Metadata::Project do
       queue_items.first
     end
 
-    let(:project) do
-      subject.new(id: 'some-id').tap do |project|
-        project.add step
+    let(:job) do
+      subject.new(id: 'some-id').tap do |job|
+        job.add step
       end
     end
 
     it 'adds child steps errors' do
       step.expects(:validate).with(instance_of(ElectricSheep::Config)).
         returns(false)
-      expects_validation_error(project, :base, "Invalid step", ElectricSheep::Config.new)
+      expects_validation_error(job, :base, "Invalid step", ElectricSheep::Config.new)
     end
 
     it 'validates' do
       step.expects(:validate).with(instance_of(ElectricSheep::Config)).
         returns(true)
-      project.validate(ElectricSheep::Config.new).must_equal true
+      job.validate(ElectricSheep::Config.new).must_equal true
     end
   end
 
   it "initializes" do
-    project = subject.new(id: 'some-project')
-    project.id.must_equal 'some-project'
+    job = subject.new(id: 'some-job')
+    job.id.must_equal 'some-job'
   end
 
   it 'keeps a reference to its initial resource' do
-    project = subject.new
-    project.start_with!(resource = mock)
-    project.starts_with.must_equal resource
+    job = subject.new
+    job.start_with!(resource = mock)
+    job.starts_with.must_equal resource
   end
 
   it 'uses the default private key' do
@@ -56,32 +56,32 @@ describe ElectricSheep::Metadata::Project do
   end
 
   it 'overrides the private key' do
-    project = subject.new
+    job = subject.new
     '/path/to/private/key'.tap do |key|
-      project.use_private_key! key
-      project.private_key.must_equal key
+      job.use_private_key! key
+      job.private_key.must_equal key
     end
   end
 
   it 'uses its id as the default name' do
-    subject.new(id: 'project-name').name.must_equal 'project-name'
+    subject.new(id: 'job-name').name.must_equal 'job-name'
   end
 
   it 'uses its description and id' do
-    subject.new(id: 'project-name', description: 'Description').name.
-      must_equal 'Description (project-name)'
+    subject.new(id: 'job-name', description: 'Description').name.
+      must_equal 'Description (job-name)'
   end
 
   describe 'on inspecting schedule' do
 
     def scheduled(expired, updates, &block)
       schedule=mock(expired?: expired).tap{|s| s.expects(:update!).send(updates)}
-      project, called=subject.new.tap{|p| p.schedule!(schedule) }, nil
-      project.on_schedule do
+      job, called=subject.new.tap{|p| p.schedule!(schedule) }, nil
+      job.on_schedule do
         called=true
       end
       yield called if block_given?
-      project
+      job
     end
 
     it 'expose its schedule' do
@@ -101,18 +101,18 @@ describe ElectricSheep::Metadata::Project do
     end
 
     it 'does not yield if it is not scheduled' do
-      project, called=subject.new, nil
-      project.on_schedule do
+      job, called=subject.new, nil
+      job.on_schedule do
         called=true
       end
       called.must_be_nil "Block should not have been called"
     end
 
     it 'appends a notifier' do
-      subject.new.tap do |project|
-        project.notifiers.size.must_equal 0
-        project.notifier mock
-        project.notifiers.size.must_equal 1
+      subject.new.tap do |job|
+        job.notifiers.size.must_equal 0
+        job.notifier mock
+        job.notifiers.size.must_equal 1
       end
     end
 

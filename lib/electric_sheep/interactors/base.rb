@@ -5,11 +5,11 @@ module ElectricSheep
 
       attr_reader :session, :directories
 
-      def initialize(host, project, logger=nil)
+      def initialize(host, job, logger=nil)
         @host=host
-        @project = project
+        @job = job
         @logger = logger
-        @directories=Helpers::Directories.new(host, project, self)
+        @directories=Helpers::Directories.new(host, job, self)
       end
 
       def after_exec(&block)
@@ -24,7 +24,7 @@ module ElectricSheep
 
       def in_session(&block)
         @session=build_session
-        @directories.mk_project_directory!
+        @directories.mk_job_directory!
         block.call if block_given?
         close
       end

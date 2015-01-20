@@ -74,14 +74,14 @@ module Support
 
           let(:seq){sequence('command_exec')}
           let(:output_ext){ nil }
-          let(:command){subject.new(project, logger, shell, input, metadata)}
+          let(:command){subject.new(job, logger, shell, input, metadata)}
 
-          let(:project){ ElectricSheep::Metadata::Project.new }
+          let(:job){ ElectricSheep::Metadata::Job.new }
           [:logger, :shell, :host, :metadata].each do |m|
             let(m){ mock }
           end
 
-          let(:output_path){ "/project/dir/#{output_name}#{output_ext}" }
+          let(:output_path){ "/job/dir/#{output_name}#{output_ext}" }
 
           let(:shell) do
             mock.tap do |shell|
@@ -93,7 +93,7 @@ module Support
           end
 
           before do
-            project.start_with! input
+            job.start_with! input
           end
 
           instance_eval &block

@@ -51,16 +51,16 @@ describe ElectricSheep::Interactors::SshInteractor do
   let(:logger){ mock }
 
   let(:interactor) do
-    subject.new( host, project, 'johndoe', logger )
+    subject.new( host, job, 'johndoe', logger )
   end
 
   let(:host) do
     ElectricSheep::Metadata::Host.new(hostname: 'host.tld')
   end
 
-  let(:project) do
-    mock.tap do |project|
-      project.stubs(:id).returns('my-project')
+  let(:job) do
+    mock.tap do |job|
+      job.stubs(:id).returns('my-job')
     end
   end
 
@@ -71,17 +71,17 @@ describe ElectricSheep::Interactors::SshInteractor do
   describe 'selecting the private key' do
 
     let(:host){ mock }
-    let(:project){ mock }
+    let(:job){ mock }
 
     it 'uses the host key if specified' do
       host.expects(:private_key).returns('key_rsa')
-      subject.new(host, project, 'user').send(:private_key).must_equal 'key_rsa'
+      subject.new(host, job, 'user').send(:private_key).must_equal 'key_rsa'
     end
 
-    it 'falls back to the project key' do
+    it 'falls back to the job key' do
       host.expects(:private_key).returns(nil)
-      project.expects(:private_key).returns('key_rsa')
-      subject.new(host, project, 'user').send(:private_key).must_equal 'key_rsa'
+      job.expects(:private_key).returns('key_rsa')
+      subject.new(host, job, 'user').send(:private_key).must_equal 'key_rsa'
     end
 
   end
@@ -111,8 +111,8 @@ describe ElectricSheep::Interactors::SshInteractor do
         with('host.tld', 'johndoe', port: 22, key_data: 'SECRET', keys_only: true).
         returns( connection )
       user = 'johndoe'
-      project.expects(:private_key).returns('/path/to/private/key')
-      ElectricSheep::Helpers::Directories.any_instance.expects(:mk_project_directory!)
+      job.expects(:private_key).returns('/path/to/private/key')
+      ElectricSheep::Helpers::Directories.any_instance.expects(:mk_job_directory!)
     end
 
     it 'logs to stderr on failing exec' do

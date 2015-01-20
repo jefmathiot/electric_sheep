@@ -8,7 +8,7 @@ describe ElectricSheep::Transports::S3 do
     defines_options :access_key_id, :secret_key, :region
   }
 
-  let(:s3){ subject.new(project, logger, hosts, resource, metadata) }
+  let(:s3){ subject.new(job, logger, hosts, resource, metadata) }
 
 
   it 'should have registered as the "s3" transport' do

@@ -14,7 +14,7 @@ end
 host "main-host", hostname: "127.0.0.1",
   ssh_port: 2222
 
-project "working-directories" do
+job "working-directories" do
     private_key private_key
     resource "file", path: file
     move to: "main-host", as: "vagrant", using: "scp"

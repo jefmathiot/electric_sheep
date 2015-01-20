@@ -18,13 +18,13 @@ describe ElectricSheep::Transports::SCP do
 
     let(:interactor_klazz){ ElectricSheep::Interactors::SshInteractor }
 
-    let(:scp){ subject.new(project, logger, hosts, input, metadata) }
+    let(:scp){ subject.new(job, logger, hosts, input, metadata) }
 
     it 'creates an SSH interactor referencing to the provided host' do
       input.stubs(:local?).returns(true)
       metadata.stubs(:as).returns('user')
       scp.expects(:host).with('some-host').returns(host=mock)
-      interactor_klazz.expects(:new).with(host, project, 'user', logger).
+      interactor_klazz.expects(:new).with(host, job, 'user', logger).
         returns(interactor=Object.new)
       scp.remote_interactor.must_equal interactor
     end
@@ -32,7 +32,7 @@ describe ElectricSheep::Transports::SCP do
     it 'creates an SSH interactor referencing the host of the input resource' do
       input.stubs(:local?).returns(false)
       input.expects(:host).returns(host=mock)
-      interactor_klazz.expects(:new).with(host, project, 'user', logger).
+      interactor_klazz.expects(:new).with(host, job, 'user', logger).
         returns(interactor=Object.new)
       scp.remote_interactor.must_equal interactor
     end

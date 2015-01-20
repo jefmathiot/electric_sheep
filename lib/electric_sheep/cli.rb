@@ -30,17 +30,17 @@ module ElectricSheep
         desc: 'Override path to pidfile', default: './electric_sheep.pid'
     end
 
-    desc "work", "Process all projects in sequence"
+    desc "work", "Process all jobs in sequence"
     run_options
-    option :project, aliases: %w(-p), type: :string,
-      desc: 'Name of a single project to execute'
+    option :job, aliases: %w(-p), type: :string,
+      desc: 'Name of a single job to execute'
 
     def work
       rescued(true) do
         Runner::Inline.new(
           config: configuration,
           logger: logger,
-          project: options[:project]
+          job: options[:job]
         ).run!
       end
     end

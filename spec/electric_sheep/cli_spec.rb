@@ -76,26 +76,26 @@ describe ElectricSheep::CLI do
         ElectricSheep::Runner::Inline.expects(:new).
           with(all_of(
             has_entry(config: config),
-            has_entry(project: 'some-project'),
+            has_entry(job: 'some-job'),
             has_entry(logger: logger)
           )).returns(mock(run!: true))
       end
 
       ensure_verbosity do
         expects_evaluator
-        subject.new([], config: 'Sheepfile', project: 'some-project', verbose: true).work
+        subject.new([], config: 'Sheepfile', job: 'some-job', verbose: true).work
       end
 
       concise do
 
         it 'gets the job done' do
           expects_evaluator
-          subject.new([], config: 'Sheepfile', project: 'some-project').work
+          subject.new([], config: 'Sheepfile', job: 'some-job').work
         end
 
         it 'overrides the path to configuration file' do
           expects_evaluator('Lambfile')
-          subject.new([], config: 'Lambfile', project: 'some-project').work
+          subject.new([], config: 'Lambfile', job: 'some-job').work
         end
 
       end

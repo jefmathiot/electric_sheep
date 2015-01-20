@@ -1,10 +1,10 @@
 Then(/^a MongoDB dump of the database should have been created$/) do
-  files=Dir.glob(File.join('tmp', @project, 'controldb*', 'controldb', '*.bson')).first
+  files=Dir.glob(File.join('tmp', @job, 'controldb*', 'controldb', '*.bson')).first
   raise "Dump not found" unless files
 end
 
 Then(/^a dump should exist with "(.*?)"$/) do |contents|
-  file=Dir.glob(File.join('tmp', @project, 'controldb*')).first
+  file=Dir.glob(File.join('tmp', @job, 'controldb*')).first
   raise "Dump not found" unless file
   raise "Not a dump" unless File.read(file) =~ /#{contents}/
 end

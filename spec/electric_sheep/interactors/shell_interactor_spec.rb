@@ -1,14 +1,14 @@
 require 'spec_helper'
 
 describe ElectricSheep::Interactors::ShellInteractor do
-  [:host, :project, :logger].each do |var|
+  [:host, :job, :logger].each do |var|
     let(var) do
       mock
     end
   end
 
   let(:interactor) do
-    subject.new(host, project, logger)
+    subject.new(host, job, logger)
   end
 
   it 'builds a session' do

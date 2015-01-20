@@ -4,35 +4,35 @@ module ElectricSheep
     class SingleRun
       include Rescueable
 
-      attr_reader :project
+      attr_reader :job
       attr_reader :logger
 
-      def initialize(config, logger, project)
+      def initialize(config, logger, job)
         @config=config
         @logger=logger
-        @project=project
+        @job=job
       end
 
       def run!
         has_been_rescued = rescued do
-          @logger.info "Executing \"#{project.name}\""
-          project.pipelined(project.starts_with) do |step, input|
-            send("execute_#{executable_type(step)}", project, input, step)
+          @logger.info "Executing \"#{job.name}\""
+          job.pipelined(job.starts_with) do |step, input|
+            send("execute_#{executable_type(step)}", job, input, step)
           end
         end
-        notify(project)
+        notify(job)
         return false if has_been_rescued
-        @logger.info "Project \"#{project.name}\" completed in %.3f seconds" %
-          project.execution_time.round(3)
+        @logger.info "job \"#{job.name}\" completed in %.3f seconds" %
+          job.execution_time.round(3)
         true
       end
 
       private
-      def notify(project)
-        project.notifiers.each do |metadata|
+      def notify(job)
+        job.notifiers.each do |metadata|
           rescued do
             metadata.agent_klazz.
-              new(project, @config.hosts, logger, metadata).notify!
+              new(job, @config.hosts, logger, metadata).notify!
           end
         end
       end
@@ -41,17 +41,17 @@ module ElectricSheep
         executable.class.name.demodulize.underscore
       end
 
-      def execute_shell(project, input, metadata)
+      def execute_shell(job, input, metadata)
         Shell::LocalShell.new(
-          @config.hosts.localhost, project, input, @logger
+          @config.hosts.localhost, job, input, @logger
         ).perform!(metadata)
         metadata.last_output
       end
 
-      def execute_remote_shell(project, input, metadata)
+      def execute_remote_shell(job, input, metadata)
         Shell::RemoteShell.new(
-          project.last_output.host,
-          project,
+          job.last_output.host,
+          job,
           input,
           @logger,
           metadata.user
@@ -59,9 +59,9 @@ module ElectricSheep
         metadata.last_output
       end
 
-      def execute_transport(project, input, metadata)
+      def execute_transport(job, input, metadata)
         transport = metadata.agent_klazz.
-          new(project, @logger, @config.hosts, input, metadata)
+          new(job, @logger, @config.hosts, input, metadata)
         metadata.monitored do
           transport.run!
         end
@@ -75,11 +75,11 @@ module ElectricSheep
       def initialize(options)
         @config = options[:config]
         @logger = options[:logger]
-        @project = options[:project]
+        @job = options[:job]
       end
 
       def run!
-        if @project.nil?
+        if @job.nil?
           run_all!
         else
           run_single!
@@ -89,26 +89,26 @@ module ElectricSheep
       protected
       def run_all!
         failures=[]
-        @config.iterate do |project|
-          failures << project.name unless run(project)
+        @config.iterate do |job|
+          failures << job.name unless run(job)
         end
         if failures.count > 0
-          projects=failures.map{ |p| "\"#{p}\""}.join(', ')
-          raise "Some projects have failed: #{projects}"
+          jobs=failures.map{ |p| "\"#{p}\""}.join(', ')
+          raise "Some jobs have failed: #{jobs}"
         end
       end
 
       def run_single!
-        project=@config.queue.find{|p|p.id==@project}
-        if project.nil?
-          raise "Project \"#{@project}\" does not exist"
+        job=@config.queue.find{|p|p.id==@job}
+        if job.nil?
+          raise "job \"#{@job}\" does not exist"
         else
-          raise "Project #{project.id} has failed" unless run(project)
+          raise "job #{job.id} has failed" unless run(job)
         end
       end
 
-      def run(project)
-        SingleRun.new(@config, @logger, project).run!
+      def run(job)
+        SingleRun.new(@config, @logger, job).run!
       end
 
     end

@@ -13,8 +13,8 @@ describe ElectricSheep::Notifiers::Email do
     end
   end
 
-  let(:project){
-    ElectricSheep::Metadata::Project.new(id: 'some-project').tap do |p|
+  let(:job){
+    ElectricSheep::Metadata::Job.new(id: 'some-job').tap do |p|
       report=mock.tap{|m| m.stubs(:stack).returns([])}
       p.stubs(:report).returns(report)
       p.stubs(:last_product).returns(resource)
@@ -35,7 +35,7 @@ describe ElectricSheep::Notifiers::Email do
 
   let(:notifier) do
     subject.new(
-      project,
+      job,
       hosts,
       logger,
       metadata
@@ -52,11 +52,11 @@ describe ElectricSheep::Notifiers::Email do
   end
 
   {
-    success: 'Backup successful: some-project',
-    failed: 'BACKUP FAILED: some-project'
+    success: 'Backup successful: some-job',
+    failed: 'BACKUP FAILED: some-job'
   }.each do |status, subject|
-    it "delivers the notification for a project with status #{status}" do
-      project.instance_variable_set(:@status, status)
+    it "delivers the notification for a job with status #{status}" do
+      job.instance_variable_set(:@status, status)
       notifier.notify!
       Mail::TestMailer.deliveries.length.must_equal 1
       Mail::TestMailer.deliveries.first.tap do |delivery|

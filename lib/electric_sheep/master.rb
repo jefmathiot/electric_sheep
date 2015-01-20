@@ -14,7 +14,7 @@ module ElectricSheep
       pid=daemonize do
         trap_signals
         while !should_stop? do
-          @logger.debug "Searching for scheduled projects"
+          @logger.debug "Searching for scheduled jobs"
           run_scheduled
           flush_workers
           # TODO Configurable rest time
@@ -94,17 +94,17 @@ module ElectricSheep
     end
 
     def run_scheduled
-      @config.iterate do |project|
+      @config.iterate do |job|
         if worker_pids.size < @workers
-          project.on_schedule do
+          job.on_schedule do
             # Turn children into daemons to let them run on master stop
-            @logger.info "Forking a new worker to handle project " +
-              "\"#{project.id}\""
+            @logger.info "Forking a new worker to handle job " +
+              "\"#{job.id}\""
             worker=daemonize do
-              Runner::SingleRun.new(@config, @logger, project).run!
+              Runner::SingleRun.new(@config, @logger, job).run!
             end
-            worker_pids[worker]=project.id
-            @logger.debug "Forked a worker for project \"#{project.id}\", " +
+            worker_pids[worker]=job.id
+            @logger.debug "Forked a worker for job \"#{job.id}\", " +
               "pid: #{worker}"
           end
         end
@@ -112,10 +112,10 @@ module ElectricSheep
     end
 
     def flush_workers
-      worker_pids.each do |pid, project|
+      worker_pids.each do |pid, job|
         unless process?(pid)
           worker_pids.delete(pid)
-          @logger.info "Worker for project \"#{project}\" completed, pid: #{pid}"
+          @logger.info "Worker for job \"#{job}\" completed, pid: #{pid}"
         end
       end
       @logger.debug "Active workers: #{worker_pids.size}"

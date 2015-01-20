@@ -26,62 +26,62 @@ host "backup-store", hostname: "127.0.0.1",
 
 ###############################################################################
 ## SCP
-project "scp-move-local-to-remote" do
+job "scp-move-local-to-remote" do
   private_key private_key
   resource "file", path: dummy
   move to: "main-host", using: "scp", as: "vagrant"
 end
 
-project "scp-fail" do
+job "scp-fail" do
   private_key private_key
   resource "file", path: 'tmp/fail.file'
   move to: "main-host", using: "scp", as: "vagrant"
 end
 
-project "scp-copy-local-to-remote" do
+job "scp-copy-local-to-remote" do
   private_key private_key
   resource "file", path: dummy
   copy to: "main-host", using: "scp", as: "vagrant"
 end
 
-project "scp-copy-remote-to-local" do
+job "scp-copy-remote-to-local" do
   private_key private_key
   resource "file", path: "dummy.file", host: "main-host"
   copy to: "localhost", using: "scp", as: "vagrant"
 end
 
-project "scp-move-remote-to-local" do
+job "scp-move-remote-to-local" do
   private_key private_key
   resource "file", path: "dummy.file", host: "main-host"
   move to: "localhost", using: "scp", as: "vagrant"
 end
 
-project "scp-copy-and-move" do
+job "scp-copy-and-move" do
   private_key private_key
   resource "file", path: dummy
   copy to: "main-host", using: "scp", as: "vagrant"
   move to: "backup-store", using: "scp", as: "vagrant"
 end
 
-project "scp-move-directory-local-to-remote" do
+job "scp-move-directory-local-to-remote" do
   private_key private_key
   resource "directory", path: dummy_directory
   move to: "main-host", using: "scp", as: "vagrant"
 end
 
-project "scp-copy-directory-local-to-remote" do
+job "scp-copy-directory-local-to-remote" do
   private_key private_key
   resource "directory", path: dummy_directory
   copy to: "main-host", using: "scp", as: "vagrant"
 end
 
-project "scp-move-directory-remote-to-local" do
+job "scp-move-directory-remote-to-local" do
   private_key private_key
   resource "directory", path: "dummy-directory", host: "main-host"
   move to: "localhost", using: "scp", as: "vagrant"
 end
 
-project "scp-copy-directory-remote-to-local" do
+job "scp-copy-directory-remote-to-local" do
   private_key private_key
   resource "directory", path: "dummy-directory", host: "main-host"
   copy to: "localhost", using: "scp", as: "vagrant"
@@ -89,34 +89,34 @@ end
 
 ###############################################################################
 ## S3
-project "s3-move-local-to-remote" do
+job "s3-move-local-to-remote" do
   resource "file", path: dummy
-  move to: "my-bucket/my-project", using: "s3"
+  move to: "my-bucket/my-job", using: "s3"
 end
 
-project "s3-copy-local-to-remote" do
+job "s3-copy-local-to-remote" do
   resource "file", path: dummy
-  copy to: "my-bucket/my-project", using: "s3"
+  copy to: "my-bucket/my-job", using: "s3"
 end
 
-project "s3-move-remote-to-local" do
-  resource "s3_object", bucket: "my-bucket", path: "my-project/dummy.file"
+job "s3-move-remote-to-local" do
+  resource "s3_object", bucket: "my-bucket", path: "my-job/dummy.file"
   move to: "localhost", using: "s3"
 end
 
-project "s3-copy-remote-to-local" do
-  resource "s3_object", bucket: "my-bucket", path: "my-project/dummy.file"
+job "s3-copy-remote-to-local" do
+  resource "s3_object", bucket: "my-bucket", path: "my-job/dummy.file"
   copy to: "localhost", using: "s3"
 end
 
-project "s3-fail" do
+job "s3-fail" do
   resource "file", path: dummy
-  move to: "my-bucket/my-project", using: "s3"
+  move to: "my-bucket/my-job", using: "s3"
 end
 
 ###############################################################################
 ## TarGz
-project "tar-gz-file" do
+job "tar-gz-file" do
   private_key private_key
   resource "file", path: "dummy.file", host: "main-host"
   remotely as: "vagrant" do
@@ -124,7 +124,7 @@ project "tar-gz-file" do
   end
 end
 
-project "tar-gz-directory" do
+job "tar-gz-directory" do
   private_key private_key
   resource "file", path: "dummy-directory", host: "main-host"
   remotely as: "vagrant" do
@@ -132,7 +132,7 @@ project "tar-gz-directory" do
   end
 end
 
-project "tar-gz-unknown-file" do
+job "tar-gz-unknown-file" do
   private_key private_key
   resource "file", path: "unknown-file", host: "main-host"
   remotely as: "vagrant" do
@@ -142,7 +142,7 @@ end
 
 ###############################################################################
 ## MongoDB Dump
-project "mongodb-dump" do
+job "mongodb-dump" do
   private_key private_key
   resource "database", name: "controldb", host: "main-host"
 
@@ -152,7 +152,7 @@ project "mongodb-dump" do
   move to: "localhost", using: "scp", as: "vagrant"
 end
 
-project "mongodb-dump-auth-fail" do
+job "mongodb-dump-auth-fail" do
   private_key private_key
   resource "database", name: "controldb", host: "main-host"
   remotely as: "vagrant" do
@@ -160,7 +160,7 @@ project "mongodb-dump-auth-fail" do
   end
 end
 
-project "mongodb-dump-unknown-db-fail" do
+job "mongodb-dump-unknown-db-fail" do
   private_key private_key
   resource "database", name: "unknown", host: "main-host"
   remotely as: "vagrant" do
@@ -170,7 +170,7 @@ end
 
 ###############################################################################
 ## MySQL Dump
-project "mysql-dump" do
+job "mysql-dump" do
   private_key private_key
   resource "database", name: "controldb", host: "main-host"
   remotely as: "vagrant" do
@@ -179,7 +179,7 @@ project "mysql-dump" do
   move to: "localhost", using: "scp", as: "vagrant"
 end
 
-project "mysql-dump-unknown-db-fail" do
+job "mysql-dump-unknown-db-fail" do
   private_key private_key
   resource "database", name: "unknown", host: "main-host"
   remotely as: "vagrant" do
@@ -187,7 +187,7 @@ project "mysql-dump-unknown-db-fail" do
   end
 end
 
-project "mysql-dump-auth-fail" do
+job "mysql-dump-auth-fail" do
   private_key private_key
   resource "database", name: "controldb", host: "main-host"
   remotely as: "vagrant" do
@@ -197,7 +197,7 @@ end
 
 ###############################################################################
 ## PostgreSQL Dump
-project "postgresql-dump" do
+job "postgresql-dump" do
   private_key private_key
   resource "database", name: "controldb", host: "main-host"
   remotely as: "vagrant" do
@@ -206,7 +206,7 @@ project "postgresql-dump" do
   move to: "localhost", using: "scp", as: "vagrant"
 end
 
-project "postgresql-dump-sudo" do
+job "postgresql-dump-sudo" do
   private_key private_key
   resource "database", name: "controldb", host: "main-host"
   remotely as: "vagrant" do
@@ -215,7 +215,7 @@ project "postgresql-dump-sudo" do
   move to: "localhost", using: "scp", as: "vagrant"
 end
 
-project "postgresql-dump-unknown-db-fail" do
+job "postgresql-dump-unknown-db-fail" do
   private_key private_key
   resource "database", name: "unknown", host: "main-host"
   remotely as: "vagrant" do
@@ -223,7 +223,7 @@ project "postgresql-dump-unknown-db-fail" do
   end
 end
 
-project "postgresql-dump-auth-fail" do
+job "postgresql-dump-auth-fail" do
   private_key private_key
   resource "database", name: "controldb", host: "main-host"
   remotely as: "vagrant" do

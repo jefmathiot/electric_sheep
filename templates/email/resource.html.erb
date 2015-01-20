@@ -1,4 +1,4 @@
-<% (project.input==object).tap do |initial| %>
+<% (job.input==object).tap do |initial| %>
 <div class="<%= [initial ? 'initial' : nil, object.transient? ? 'transient' : nil, 'resource', 'block'].compact.join(' ') %>">
   <table>
     <tr>

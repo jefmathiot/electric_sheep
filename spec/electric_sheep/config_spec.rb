@@ -5,7 +5,7 @@ describe ElectricSheep::Config do
 
   def queue_items
     ([0]*2).map do
-      ElectricSheep::Metadata::Project.new
+      ElectricSheep::Metadata::Job.new
     end
   end
 

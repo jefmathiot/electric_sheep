@@ -2,29 +2,29 @@ When(/^I'm working on configuration "(.*?)"$/) do |configuration|
   @sheepfile = "#{acceptance_dir}/#{configuration}"
 end
 
-When(/^I tell the sheep to work on project "(.*?)"$/) do |project|
-  options="-c #{sheepfile} -p #{project}"
-  @project=project
+When(/^I tell the sheep to work on job "(.*?)"$/) do |job|
+  options="-c #{sheepfile} -p #{job}"
+  @job=job
   step "I successfully run `bundle exec #{electric_sheep} work #{options}`"
 end
 
-When(/^I tell the sheep to work on failing project "(.*?)"$/) do |project|
-  options="-c #{sheepfile} -p #{project}"
-  @project=project
+When(/^I tell the sheep to work on failing job "(.*?)"$/) do |job|
+  options="-c #{sheepfile} -p #{job}"
+  @job=job
   step "I run `bundle exec #{electric_sheep} work #{options}`"
   step "the exit status should be 1"
 end
 
-Then(/^the project "(.*?)" has been executed$/) do |project|
-  expect(all_output).to match(/Executing \"#{project}\"/)
+Then(/^the job "(.*?)" has been executed$/) do |job|
+  expect(all_output).to match(/Executing \"#{job}\"/)
 end
 
-Then(/^the project "(.*?)" hasn't been executed$/) do |project|
-  expect(all_output).to_not match(/Executing \"#{project}\"/)
+Then(/^the job "(.*?)" hasn't been executed$/) do |job|
+  expect(all_output).to_not match(/Executing \"#{job}\"/)
 end
 
-When(/^I tell the sheep to work on the project$/) do
-  options="-c #{sheepfile} -p #{@project}"
+When(/^I tell the sheep to work on the job$/) do
+  options="-c #{sheepfile} -p #{@job}"
   step "I run `bundle exec #{electric_sheep} work #{options}`"
 end
 
@@ -33,8 +33,8 @@ When(/^I tell the sheep to work on configuration "(.*?)"$/) do |config|
   step "I run `bundle exec #{electric_sheep} work #{options}`"
 end
 
-Then(/^the program warns me the project is unknown$/) do
-  step "the output should match /Project \"unknown\" does not exist/"
+Then(/^the program warns me the job is unknown$/) do
+  step "the output should match /job \"unknown\" does not exist/"
 end
 
 Then(/^the program warns me an "(.*?)" error occured$/) do |error|

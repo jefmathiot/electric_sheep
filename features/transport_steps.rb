@@ -4,17 +4,17 @@ Given(/^a remote bucket$/) do
 end
 
 Then(/^the file should have been moved to the remote host$/) do
-  assert_remote_file_exists? "/tmp/acceptance/#{@project}/#{timestamped_resource(@resource_name)}"
+  assert_remote_file_exists? "/tmp/acceptance/#{@job}/#{timestamped_resource(@resource_name)}"
   refute_local_file_exists? @resource_name
 end
 
 Then(/^the file should have been copied to the remote host$/) do
-  assert_remote_file_exists? "/tmp/acceptance/#{@project}/#{timestamped_resource(@resource_name)}"
+  assert_remote_file_exists? "/tmp/acceptance/#{@job}/#{timestamped_resource(@resource_name)}"
   assert_local_file_exists? @resource_name
 end
 
 Then(/^the file should exist on the localhost$/) do
-  step "a file matching %r<#{@project}/dummy-\\d{8}-\\d{6}.file> should exist"
+  step "a file matching %r<#{@job}/dummy-\\d{8}-\\d{6}.file> should exist"
 end
 
 Then(/^the file should have been moved to the localhost$/) do
@@ -28,18 +28,18 @@ Then(/^the file should have been copied to the localhost$/) do
 end
 
 Then(/^the file should have been moved to the remote host in default directory$/) do
-  assert_remote_file_exists? "~/.electric_sheep/#{@project}/#{timestamped_resource(@resource_name)}"
+  assert_remote_file_exists? "~/.electric_sheep/#{@job}/#{timestamped_resource(@resource_name)}"
   refute_local_file_exists? @resource_name
 end
 
 Then(/^the file should have been copied and moved to the two remote hosts$/) do
-  assert_remote_file_exists? "/tmp/acceptance/#{@project}/#{timestamped_resource(@resource_name)}"
-  assert_remote_file_exists? "/tmp/acceptance_backup/#{@project}/#{timestamped_resource(@resource_name)}"
+  assert_remote_file_exists? "/tmp/acceptance/#{@job}/#{timestamped_resource(@resource_name)}"
+  assert_remote_file_exists? "/tmp/acceptance_backup/#{@job}/#{timestamped_resource(@resource_name)}"
   refute_local_file_exists? @resource_name
 end
 
 Then(/^the file should have been (copied|moved) to the remote bucket$/) do |op|
-  step "a file matching %r<#{@bucket_path}/my-project/dummy-\\d{8}-\\d{6}.file> should exist"
+  step "a file matching %r<#{@bucket_path}/my-job/dummy-\\d{8}-\\d{6}.file> should exist"
   if op=='moved'
     refute_local_file_exists? @resource_name
   else
@@ -49,7 +49,7 @@ end
 
 Then(/^the directory should exist on the remote host$/) do
   @files.each do |file|
-    assert_remote_file_exists? "/tmp/acceptance/#{@project}/#{timestamped_resource(@resource_name)}/#{file}"
+    assert_remote_file_exists? "/tmp/acceptance/#{@job}/#{timestamped_resource(@resource_name)}/#{file}"
   end
 end
 
@@ -65,7 +65,7 @@ end
 
 Then(/^the directory should exist on the localhost$/) do
   @files.each do |file|
-    step "a file matching %r<#{@project}/dummy-directory-\\d{8}-\\d{6}/#{file}> should exist"
+    step "a file matching %r<#{@job}/dummy-directory-\\d{8}-\\d{6}/#{file}> should exist"
   end
 end
 
@@ -80,13 +80,13 @@ Then(/^the directory should have been copied to the localhost$/) do
 end
 
 Then(/^the S3 object should have been moved to the localhost$/) do
-  step "a file matching %r<#{@project}/dummy-\\d{8}-\\d{6}.file> should exist"
-  refute_local_file_exists? "#{@bucket_path}/#{@project}/dummy.file"
+  step "a file matching %r<#{@job}/dummy-\\d{8}-\\d{6}.file> should exist"
+  refute_local_file_exists? "#{@bucket_path}/#{@job}/dummy.file"
 end
 
 Then(/^the S3 object should have been copied to the localhost$/) do
-  step "a file matching %r<#{@project}/dummy-\\d{8}-\\d{6}.file> should exist"
-  assert_local_file_exists? "#{@bucket_path}/my-project/dummy.file"
+  step "a file matching %r<#{@job}/dummy-\\d{8}-\\d{6}.file> should exist"
+  assert_local_file_exists? "#{@bucket_path}/my-job/dummy.file"
 end
 
 Then(/^I am notified the (?:s3|scp) move failed$/) do

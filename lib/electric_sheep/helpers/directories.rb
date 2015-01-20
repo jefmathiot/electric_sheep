@@ -6,23 +6,23 @@ module ElectricSheep
     class Directories
       include ShellSafe
 
-      def initialize(host, project, interactor)
+      def initialize(host, job, interactor)
         @host=host
-        @project=project
+        @job=job
         @interactor=interactor
       end
 
-      def mk_project_directory!
+      def mk_job_directory!
         @interactor.exec(
-          "mkdir -p \"#{project_directory}\" ; chmod 0700 \"#{project_directory}\""
+          "mkdir -p \"#{job_directory}\" ; chmod 0700 \"#{job_directory}\""
         )
       end
 
       def expand_path(path)
-        raise "Project directory has not been created, please" +
-          " call mk_project_directory!" unless @project_directory
+        raise "job directory has not been created, please" +
+          " call mk_job_directory!" unless @job_directory
         return path if Pathname.new(path).absolute?
-        File.join(project_directory, shell_safe(path))
+        File.join(job_directory, shell_safe(path))
       end
 
       private
@@ -31,15 +31,15 @@ module ElectricSheep
         @host.working_directory || "$HOME/.electric_sheep"
       end
 
-      def project_directory
-        unless @project_directory
+      def job_directory
+        unless @job_directory
           directory=File.join(
             working_directory,
-            shell_safe(@project.id.downcase)
+            shell_safe(@job.id.downcase)
           )
-          @project_directory=@interactor.exec("echo \"#{directory}\"")[:out]
+          @job_directory=@interactor.exec("echo \"#{directory}\"")[:out]
         end
-        @project_directory
+        @job_directory
       end
 
     end

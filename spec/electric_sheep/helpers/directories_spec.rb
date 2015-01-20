@@ -6,51 +6,51 @@ describe ElectricSheep::Helpers::Directories do
     sequence('shell')
   end
 
-  [:host, :project, :interactor].each do |var|
+  [:host, :job, :interactor].each do |var|
     let(var) do
       mock
     end
   end
 
   let(:directories) do
-    subject.new(host, project, interactor)
+    subject.new(host, job, interactor)
   end
 
   describe 'expanding paths' do
-    it 'raises unless project directory created' do
+    it 'raises unless job directory created' do
       -> { directories.expand_path('some-file') }.must_raise RuntimeError,
-        /Project directory has not been created/
+        /job directory has not been created/
     end
 
     [nil, '/host/working/dir'].each do |working_dir|
       describe "with#{working_dir ? '' : 'out'} an explicit working directory" do
-        describe 'with the project directory created' do
+        describe 'with the job directory created' do
 
           let(:script) do
             sequence(:script)
           end
 
           let(:raw_directory) do
-            "#{working_dir || '$HOME/.electric_sheep'}/unsafe\\$-project-name"
+            "#{working_dir || '$HOME/.electric_sheep'}/unsafe\\$-job-name"
           end
 
-          let(:project_directory) do
-            "/home/user/.electric_sheep/unsafe\\$-project-name"
+          let(:job_directory) do
+            "/home/user/.electric_sheep/unsafe\\$-job-name"
           end
 
           before do
             host.expects(:working_directory).returns(working_dir)
-            project.expects(:id).returns('UNSAFE$-PROJECT-NAME')
+            job.expects(:id).returns('UNSAFE$-job-NAME')
             interactor.expects(:exec).
               with("echo \"#{raw_directory}\"").
-              returns(out: project_directory)
+              returns(out: job_directory)
             interactor.expects(:exec).
-              with("mkdir -p \"#{project_directory}\" ; chmod 0700 \"#{project_directory}\"")
-            directories.mk_project_directory!
+              with("mkdir -p \"#{job_directory}\" ; chmod 0700 \"#{job_directory}\"")
+            directories.mk_job_directory!
           end
 
           it 'expands relative paths' do
-            directories.expand_path('path').must_equal "#{project_directory}/path"
+            directories.expand_path('path').must_equal "#{job_directory}/path"
           end
 
           it 'does not expand absolute paths' do

@@ -75,7 +75,7 @@ describe ElectricSheep::Master do
         expects_daemonize do
           master.expects(:trap_signals).in_sequence(seq)
           logger.expects(:debug).in_sequence(seq).
-            with("Searching for scheduled projects")
+            with("Searching for scheduled jobs")
           yield if block_given?
           master.expects(:sleep).with(1)
         end
@@ -84,19 +84,19 @@ describe ElectricSheep::Master do
       end
 
       def expects_child_worker(&block)
-        config.stubs(:iterate).yields(project=mock)
-        project.stubs(:id).returns('some-project')
+        config.stubs(:iterate).yields(job=mock)
+        job.stubs(:id).returns('some-job')
         expects_startup do
-          project.expects(:on_schedule).in_sequence(seq).yields
+          job.expects(:on_schedule).in_sequence(seq).yields
           logger.expects(:info).in_sequence(seq).
-            with("Forking a new worker to handle project \"some-project\"")
+            with("Forking a new worker to handle job \"some-job\"")
           expects_daemonize do
             ElectricSheep::Runner::SingleRun.expects(:new).in_sequence(seq).
-              with(config, logger, project).returns(runner=mock)
+              with(config, logger, job).returns(runner=mock)
             runner.expects(:run!)
           end
           logger.expects(:debug).in_sequence(seq).
-            with("Forked a worker for project \"some-project\", pid: 10001")
+            with("Forked a worker for job \"some-job\", pid: 10001")
           yield if block_given?
         end
       end
@@ -126,17 +126,17 @@ describe ElectricSheep::Master do
         expects_child_worker do
           Process.expects(:kill).with(0, 10001).in_sequence(seq).returns(false)
           logger.expects(:info).in_sequence(seq).
-            with("Worker for project \"some-project\" completed, pid: 10001")
+            with("Worker for job \"some-job\" completed, pid: 10001")
           logger.expects(:debug).in_sequence(seq).with("Active workers: 0")
         end
         launch
       end
 
       it 'does not fork when the max number of workers has been reached' do
-        config.stubs(:iterate).yields(project=mock)
+        config.stubs(:iterate).yields(job=mock)
         master.instance_variable_set(:@workers, 0)
         expects_startup do
-          project.expects(:on_schedule).never
+          job.expects(:on_schedule).never
           logger.expects(:debug).in_sequence(seq).with("Active workers: 0")
         end
         launch

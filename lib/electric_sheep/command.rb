@@ -7,8 +7,8 @@ module ElectricSheep
 
     delegate :stat_file, :stat_directory, :stat_filesystem, to: :shell
 
-    def initialize(project, logger, shell, input, metadata)
-      @project = project
+    def initialize(job, logger, shell, input, metadata)
+      @job = job
       @logger = logger
       @shell = shell
       @input=input

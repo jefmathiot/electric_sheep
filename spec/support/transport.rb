@@ -4,7 +4,7 @@ module Support
     include Options
 
     included do
-      let(:project){ ElectricSheep::Metadata::Project.new(id: 'some-project') }
+      let(:job){ ElectricSheep::Metadata::Job.new(id: 'some-job') }
       let(:resource){ mock }
       let(:metadata){ mock }
       let(:logger){ mock }

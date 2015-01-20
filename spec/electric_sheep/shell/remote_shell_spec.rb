@@ -2,19 +2,19 @@ require 'spec_helper'
 require 'net/ssh/test'
 
 describe ElectricSheep::Shell::RemoteShell do
-  [:host, :project, :input, :logger].each do |var|
+  [:host, :job, :input, :logger].each do |var|
     let(var) do
       mock
     end
   end
 
   let(:shell) do
-    subject.new(host, project, input, logger, 'johndoe')
+    subject.new(host, job, input, logger, 'johndoe')
   end
 
   it 'initializes an interactor and cache it' do
     ElectricSheep::Interactors::SshInteractor.expects(:new).
-      with(host, project, 'johndoe', logger).once.returns(interactor=mock)
+      with(host, job, 'johndoe', logger).once.returns(interactor=mock)
     2.times do
       shell.send(:interactor).must_equal interactor
     end

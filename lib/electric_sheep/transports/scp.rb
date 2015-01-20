@@ -12,7 +12,7 @@ module ElectricSheep
       def remote_interactor
         @remote_interactor ||= Interactors::SshInteractor.new(
           input.local? ? host(option(:to)) : input.host,
-          @project,
+          @job,
           option(:as),
           @logger
         )

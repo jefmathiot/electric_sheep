@@ -151,7 +151,7 @@
         color:#B20000 !important;
       }
 
-      span.project {
+      span.job {
         font-weight: bold;
       }
 
@@ -290,10 +290,10 @@
                 <table id="templatePreheader">
                   <tr>
                     <td valign="top" class="preheaderContent">
-                      <% if project.successful? %>
-                      The project <span class="project"><%= project.name %></span> completed successfuly.
+                      <% if job.successful? %>
+                      The job <span class="job"><%= job.name %></span> completed successfuly.
                       <% else %>
-                      The project <span class="project"><%= project.name %></span> failed to complete.
+                      The job <span class="job"><%= job.name %></span> failed to complete.
                       <% end %>
                       This notification has been sent on <span class="date"><%= to_date time %></span> at <span class="time"><%= to_time time %></span> <span class="timezone"><%= to_timezone time %> by an <a href="http://electricsheep.io">Electric Sheep IO</a> worker running on <%= hostname %>.
                     </td>
@@ -305,27 +305,27 @@
               <td align="center" valign="top">
                 <table id="templateHeader">
                   <tr>
-                    <td valign="top" class="<%= project.status %> headerContent">
+                    <td valign="top" class="<%= job.status %> headerContent">
                       <div class="title">
-                        <h1><%= project.name %></h1>
+                        <h1><%= job.name %></h1>
                       </div>
                       <div class="summary">
                         <table>
                           <tr>
                             <td>
-                              <img src="<%= asset("#{project.status}.png")%>" alt="<%= project.status %>">
+                              <img src="<%= asset("#{job.status}.png")%>" alt="<%= job.status %>">
                             </td>
                             <td>
-                              <h2><% if project.successful? %>Success<% else %>Failed<% end %></h2>
-                              <div class="nutshell">The backup project <span class="project"><%= project.name %></span>
-                                <% if project.successful? %>completed successfully<% else %>failed to complete<% end %>
+                              <h2><% if job.successful? %>Success<% else %>Failed<% end %></h2>
+                              <div class="nutshell">The backup job <span class="job"><%= job.name %></span>
+                                <% if job.successful? %>completed successfully<% else %>failed to complete<% end %>
                                 on <span class="date"><%= to_date time %></span> at <span class="time"><%= to_time time %></span> <span class="timezone"><%= to_timezone time %></span>.</div>
                             </td>
                           </tr>
                         </table>
                       </div>
-                      <% if project.successful? %>
-                        <%= partial "email/resource.html", object: project.last_product, project: project %>
+                      <% if job.successful? %>
+                        <%= partial "email/resource.html", object: job.last_product, job: job %>
                       <% else %>
                       <div class="empty resource block">
                       </div>
@@ -342,7 +342,7 @@
                     <td valign="top" class="bodyContent">
                       <h3>Execution Stack</h3>
                       <div class="stack">
-                        <% project.report.stack.tap do |stack| %>
+                        <% job.report.stack.tap do |stack| %>
                           <%  stack.each do |step| %>
                             <% if step.respond_to?(:location) %>
                               <% if [stack.first, stack.last].include?(step) || step.branch!='mainstream' || step.agents.size > 0 %>
@@ -351,12 +351,12 @@
                                     <img src="<%= asset("icons/#{step.location.id == 'localhost' ? 'localhost' : step.location.type}.png") %>" alt="<%= step.location.type %>"><%= step.location.id %> <span class="aside"><%= step.location.location %></span>
                                   </div>
                                   <% step.steps.each do |substep| %>
-                                    <%= partial "email/#{substep.type}.html", object: substep.payload, project: project %>
+                                    <%= partial "email/#{substep.type}.html", object: substep.payload, job: job %>
                                   <% end %>
                                 </div>
                               <% end %>
                             <% else %>
-                              <%= partial "email/#{step.type}.html", object: step.payload, project: project %>
+                              <%= partial "email/#{step.type}.html", object: step.payload, job: job %>
                             <% end %>
                           <% end %>
                         <% end %>

@@ -7,8 +7,8 @@ describe ElectricSheep::Runnable do
 
     attr_reader :logger
 
-    def initialize(project, logger, resource)
-      @project=project
+    def initialize(job, logger, resource)
+      @job=job
       @logger=logger
       @input=resource
     end
@@ -16,10 +16,10 @@ describe ElectricSheep::Runnable do
 
   describe RunnableKlazz do
 
-    [:project, :logger, :resource].each do |m|
+    [:job, :logger, :resource].each do |m|
       let(m){ mock }
     end
-    let(:runnable){ subject.new(project, logger, resource) }
+    let(:runnable){ subject.new(job, logger, resource) }
     let(:resource){ ElectricSheep::Resources::Resource.new }
     let(:host){ ElectricSheep::Metadata::Host.new }
 
@@ -31,7 +31,7 @@ describe ElectricSheep::Runnable do
     describe 'creating filesystem resources' do
 
       before do
-        project.stubs(:last_product).returns(resource)
+        job.stubs(:last_product).returns(resource)
         resource.stubs(:basename).returns('resource')
       end
 

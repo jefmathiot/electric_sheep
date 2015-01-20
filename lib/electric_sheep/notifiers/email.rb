@@ -30,14 +30,14 @@ module ElectricSheep
       protected
 
       def subject
-        project.successful? ? "Backup successful: #{project.name}" :
-          "BACKUP FAILED: #{project.name}"
+        job.successful? ? "Backup successful: #{job.name}" :
+          "BACKUP FAILED: #{job.name}"
       end
 
       def html_body
         html = preflight(Template.new('email.html').
           render(
-            project: project,
+            job: job,
             assets_url: assets_url,
             time: Time.now.getlocal,
             timezone: Time.now.getlocal.zone,

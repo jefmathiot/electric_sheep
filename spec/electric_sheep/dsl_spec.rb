@@ -25,10 +25,10 @@ describe ElectricSheep::Dsl do
       end
   end
 
-  describe ElectricSheep::Dsl::ProjectDsl do
+  describe ElectricSheep::Dsl::JobDsl do
       it "raises an error on class unknown" do
         err = -> {
-          ElectricSheep::Dsl::ProjectDsl.new(@config,nil,{}).resource('Unknown')
+          ElectricSheep::Dsl::JobDsl.new(@config,nil,{}).resource('Unknown')
         }.must_raise ElectricSheep::SheepException
         err.message.must_equal "Resource 'Unknown' in Sheepfile is undefined"
       end
@@ -51,57 +51,57 @@ describe ElectricSheep::Dsl do
     @dsl.defaults_for options
   end
 
-  describe "registering a project" do
+  describe "registering a job" do
 
-    def build_project(options={}, &block)
-      @dsl.project 'some-project', options, &block
+    def build_job(options={}, &block)
+      @dsl.job 'some-job', options, &block
       @config.queue.first
     end
 
-    it "appends the project to the configuration" do
-      project = build_project(description: "Some random project") do
+    it "appends the job to the configuration" do
+      job = build_job(description: "Some random job") do
         resource :database, name: 'mydb'
       end
-      project.wont_be_nil
-      project.id.must_equal "some-project"
-      project.description.must_equal "Some random project"
+      job.wont_be_nil
+      job.id.must_equal "some-job"
+      job.description.must_equal "Some random job"
     end
 
     it 'sets the initial resource' do
-      project = build_project do
+      job = build_job do
         resource :database, name: 'mydb'
       end
-      project.starts_with.must_be_instance_of ElectricSheep::Resources::Database
+      job.starts_with.must_be_instance_of ElectricSheep::Resources::Database
     end
 
     it 'assigns the private key to use' do
-      project = build_project do
+      job = build_job do
         private_key '/path/to/private/key'
       end
-      project.private_key.must_equal '/path/to/private/key'
+      job.private_key.must_equal '/path/to/private/key'
     end
 
     it 'allows encrypted values' do
       value = nil
-      build_project do
+      build_job do
         value = encrypted('XXXXX')
       end
       value.must_be_instance_of ElectricSheep::Metadata::Encrypted
     end
 
     it 'assigns a schedule' do
-      project = build_project do
+      job = build_job do
         schedule "hourly", past: "30"
       end
-      project.schedule.must_be_instance_of ElectricSheep::Metadata::Schedule::Hourly
+      job.schedule.must_be_instance_of ElectricSheep::Metadata::Schedule::Hourly
     end
 
     it 'appends a notifier' do
-      project = build_project do
+      job = build_job do
         notify via: "email"
       end
-      project.notifiers.first.must_be_instance_of ElectricSheep::Metadata::Notifier
-      project.notifiers.first.send(:agent).must_equal "email"
+      job.notifiers.first.must_be_instance_of ElectricSheep::Metadata::Notifier
+      job.notifiers.first.send(:agent).must_equal "email"
     end
 
     module ShellSpecs
@@ -137,14 +137,14 @@ describe ElectricSheep::Dsl do
     describe "adding a remote shell" do
 
       def build_shell(&block)
-        project = build_project do
+        job = build_job do
           opts = {as: "op"}
           remotely opts, &block
         end
-        @shell = project.queue.first
+        @shell = job.queue.first
       end
 
-      it "appends the shell to the project's queue" do
+      it "appends the shell to the job's queue" do
         build_shell
         @shell.must_be_instance_of ElectricSheep::Metadata::RemoteShell
         @shell.user.must_equal "op"
@@ -156,13 +156,13 @@ describe ElectricSheep::Dsl do
     describe "adding a local shell" do
 
       def build_shell(&block)
-        project = build_project do
+        job = build_job do
           locally &block
         end
-        @shell = project.queue.first
+        @shell = job.queue.first
       end
 
-      it "appends the shell to the project's queue" do
+      it "appends the shell to the job's queue" do
         build_shell
         @shell.must_be_instance_of ElectricSheep::Metadata::Shell
       end
@@ -172,11 +172,11 @@ describe ElectricSheep::Dsl do
 
     def self.describe_transport(type)
       describe "adding a #{type}" do
-        it "appends the transport to the project's queue" do
-          project = build_project do
+        it "appends the transport to the job's queue" do
+          job = build_job do
             send type, to: 'some-host', using: :scp
           end
-          transport = project.queue.first
+          transport = job.queue.first
           transport.must_be_instance_of ElectricSheep::Metadata::Transport
           transport.action.must_equal type
         end

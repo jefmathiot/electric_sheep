@@ -27,7 +27,7 @@ host "backup-store", hostname: "127.0.0.1",
 ###############################################################################
 ##
 
-project "failing-project" do
+job "failing-job" do
   private_key private_key
   resource "database", name: "controldb", host: "main-host"
   remotely as: "vagrant" do
@@ -37,7 +37,7 @@ project "failing-project" do
   move to: "localhost", using: "scp", as: "vagrant"
 end
 
-project "successful-project" do
+job "successful-job" do
   private_key private_key
   resource "database", name: "controldb", host: "main-host"
 

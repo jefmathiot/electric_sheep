@@ -27,7 +27,7 @@ host "backup-store", hostname: "127.0.0.1",
 ###############################################################################
 ##
 
-project "unknown-command" do
+job "unknown-command" do
   unknown
 end
 

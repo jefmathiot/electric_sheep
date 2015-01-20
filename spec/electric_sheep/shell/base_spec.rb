@@ -1,14 +1,14 @@
 require 'spec_helper'
 
 describe ElectricSheep::Shell::Base do
-  [:host, :project, :logger, :input].each do |var|
+  [:host, :job, :logger, :input].each do |var|
     let(var) do
       mock
     end
   end
 
   let(:shell) do
-    subject.new(host, project, input, logger).tap do |shell|
+    subject.new(host, job, input, logger).tap do |shell|
       shell.instance_variable_set(:@interactor, mock)
     end
   end
@@ -45,7 +45,7 @@ describe ElectricSheep::Shell::Base do
       id: 'second', type: 'fake'
     )
     shell.interactor.expects(:in_session).in_sequence(seq).yields
-    metadata.expects(:pipelined).with(input, project).in_sequence(seq).
+    metadata.expects(:pipelined).with(input, job).in_sequence(seq).
       multiple_yields [first, input], [second, input]
     [first, second].each do |cmd_metadata|
       cmd_metadata.stubs(:agent_klazz).returns(FakeCommand)

@@ -19,8 +19,8 @@ module ElectricSheep
       @config.hosts.add id, options
     end
 
-    def project(id, options={}, &block)
-      @config.add ProjectDsl.new( @config, id, options, &block ).project
+    def job(id, options={}, &block)
+      @config.add JobDsl.new( @config, id, options, &block ).job
     end
 
     def working_directory(dir)
@@ -55,12 +55,12 @@ module ElectricSheep
 
     end
 
-    class ProjectDsl < AbstractDsl
+    class JobDsl < AbstractDsl
 
-      returning :project
+      returning :job
 
       def build(config, id, options, &block)
-        @subject = Metadata::Project.new(options.merge(id: id))
+        @subject = Metadata::Job.new(options.merge(id: id))
       end
 
       def remotely(options, &block)
