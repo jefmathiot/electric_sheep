@@ -51,10 +51,6 @@ describe ElectricSheep::Metadata::Job do
     job.starts_with.must_equal resource
   end
 
-  it 'uses the default private key' do
-    subject.new.private_key.must_equal File.expand_path('~/.ssh/id_rsa')
-  end
-
   it 'overrides the private key' do
     job = subject.new
     '/path/to/private/key'.tap do |key|

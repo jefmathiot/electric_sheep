@@ -18,7 +18,7 @@ module ElectricSheep
       end
 
       def private_key
-        @private_key || File.expand_path('~/.ssh/id_rsa')
+        @private_key
       end
 
       def notifier(metadata)
