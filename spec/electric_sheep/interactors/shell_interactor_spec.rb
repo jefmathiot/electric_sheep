@@ -17,12 +17,13 @@ describe ElectricSheep::Interactors::ShellInteractor do
 
   describe 'executing a command' do
 
-    def expects_execution(cmd, out=nil, err=nil)
-      POSIX::Spawn::Child.stubs(:new).returns(child=mock)
-      child.stubs(:out).returns(out)
-      child.stubs(:err).returns(err)
-      child.expects(:status).returns(err ? 2:0)
-      logger.expects(:debug).with(cmd)
+    def expects_execution(cmd, out='', err='')
+      logger.stubs(:debug)
+      ElectricSheep::Spawn.expects(:exec).with(cmd, logger).returns({
+        out: out,
+        err: err,
+        exit_status: err ? 2 : 0
+      })
       if err
         proc{interactor.exec(cmd)}.must_raise RuntimeError
       else
@@ -34,11 +35,10 @@ describe ElectricSheep::Interactors::ShellInteractor do
     end
 
     it 'returns the out, err and exit status' do
-      logger.expects(:debug).with('Output')
       expects_execution 'ls', "Output", "Error"
     end
 
-    it 'doesnt log unless out, err and exit status' do
+    it 'doesnt raise unless out, err and exit status' do
       expects_execution 'ls'
     end
 
