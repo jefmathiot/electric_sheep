@@ -1,6 +1,9 @@
 require 'spec_helper'
 
 describe ElectricSheep::Crypto do
+end
+
+describe ElectricSheep::Crypto::OpenSSL do
 
   def encode64s(string)
     Base64.encode64(string).gsub /\n/, ''
@@ -31,8 +34,8 @@ describe ElectricSheep::Crypto do
         pem_lines
       end
 
-      let(:session) do
-        ::Session::Sh.any_instance
+      let(:spawn) do
+        ElectricSheep::Spawn
       end
 
       let(:key_file) {
@@ -42,28 +45,25 @@ describe ElectricSheep::Crypto do
         end
       }
 
-      def expects_conversion
-        session.expects(:execute).
+      def expects_conversion(status)
+        spawn.expects(:exec).
           with("ssh-keygen -f #{key_file.path} -e -m pem").
-          yields exec_result, nil
+          returns({out: exec_result, err: "An error", exit_status: status})
       end
 
       it 'encrypts the plain text' do
-        session.expects(:exit_status).returns 0
-        expects_conversion
+        expects_conversion(0)
         expects_encryption
       end
 
       it 'raises if it where unable to convert key' do
-        session.expects(:exit_status).returns 1
-        expects_conversion
+        expects_conversion(1)
         ->{subject.encrypt('PLAIN', key_file.path)}.must_raise RuntimeError,
           /Unable to convert key file/
       end
 
       it 'raises if key is not public' do
-        session.expects(:exit_status).returns 0
-        expects_conversion
+        expects_conversion(0)
         expects_encryption(false)
       end
 
