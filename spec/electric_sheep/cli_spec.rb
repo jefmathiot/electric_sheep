@@ -83,7 +83,8 @@ describe ElectricSheep::CLI do
 
       ensure_verbosity do
         expects_evaluator
-        subject.new([], config: 'Sheepfile', job: 'some-job', verbose: true).work
+        subject.new([], config: 'Sheepfile', job: 'some-job', verbose: true).
+          work
       end
 
       concise do
@@ -115,7 +116,8 @@ describe ElectricSheep::CLI do
   describe 'encrypting plain text' do
 
     it 'encrypts secrets' do
-      ElectricSheep::Crypto.open_ssl.expects(:encrypt).with('SECRET', '/some/key').
+      ElectricSheep::Crypto.open_ssl.expects(:encrypt).
+        with('SECRET', '/some/key').
         returns('CIPHER')
       STDOUT.expects(:puts).with("CIPHER")
       subject.new([], key: '/some/key').encrypt('SECRET')
@@ -123,7 +125,8 @@ describe ElectricSheep::CLI do
 
     concise do
       ensure_exception_handling do
-        ElectricSheep::Crypto.open_ssl.expects(:encrypt).with('SECRET', '/some/key').
+        ElectricSheep::Crypto.open_ssl.expects(:encrypt).
+          with('SECRET', '/some/key').
           raises(Exception.new('fail'))
         subject.new([], key: '/some/key').encrypt('SECRET')
       end
