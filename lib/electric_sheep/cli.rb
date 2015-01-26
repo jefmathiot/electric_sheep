@@ -51,7 +51,7 @@ module ElectricSheep
 
     def encrypt(secret)
       rescued(true) do
-        logger.info Crypto.encrypt(secret, options[:key])
+        STDOUT.puts Crypto.open_ssl.encrypt(secret, options[:key])
       end
     end
 

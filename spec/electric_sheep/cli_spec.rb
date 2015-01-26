@@ -114,17 +114,16 @@ describe ElectricSheep::CLI do
 
   describe 'encrypting plain text' do
 
+    it 'encrypts secrets' do
+      ElectricSheep::Crypto.open_ssl.expects(:encrypt).with('SECRET', '/some/key').
+        returns('CIPHER')
+      STDOUT.expects(:puts).with("CIPHER")
+      subject.new([], key: '/some/key').encrypt('SECRET')
+    end
+
     concise do
-
-      it 'encrypts secrets' do
-        ElectricSheep::Crypto.expects(:encrypt).with('SECRET', '/some/key').
-          returns('CIPHER')
-        logger.expects(:info).with("CIPHER")
-        subject.new([], key: '/some/key').encrypt('SECRET')
-      end
-
       ensure_exception_handling do
-        ElectricSheep::Crypto.expects(:encrypt).with('SECRET', '/some/key').
+        ElectricSheep::Crypto.open_ssl.expects(:encrypt).with('SECRET', '/some/key').
           raises(Exception.new('fail'))
         subject.new([], key: '/some/key').encrypt('SECRET')
       end
