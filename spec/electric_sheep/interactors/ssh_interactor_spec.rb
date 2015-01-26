@@ -75,20 +75,22 @@ describe ElectricSheep::Interactors::SshInteractor do
 
     it 'uses the host key if specified' do
       host.expects(:private_key).returns('key_rsa')
-      subject.new(host, job, 'user').send(:private_key).must_equal 'key_rsa'
+      subject.new(host, job, 'user').send(:private_key).
+        must_equal File.expand_path('key_rsa')
     end
 
     it 'falls back to the job key' do
       host.expects(:private_key).returns(nil)
       job.expects(:private_key).returns('key_rsa')
-      subject.new(host, job, 'user').send(:private_key).must_equal 'key_rsa'
+      subject.new(host, job, 'user').send(:private_key).
+      must_equal File.expand_path('key_rsa')
     end
 
     it 'falls back to the default key' do
       host.expects(:private_key).returns(nil)
       job.expects(:private_key).returns(nil)
-      subject.new(host, job, 'user').send(:private_key).must_equal File.
-        expand_path('~/.ssh/id_rsa')
+      subject.new(host, job, 'user').send(:private_key).
+      must_equal File.expand_path('~/.ssh/id_rsa')
     end
 
   end

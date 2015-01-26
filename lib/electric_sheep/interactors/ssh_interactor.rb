@@ -73,8 +73,8 @@ module ElectricSheep
       end
 
       def private_key
-        @host.private_key || @job.private_key ||
-          File.expand_path('~/.ssh/id_rsa')
+        key = @host.private_key || @job.private_key || '~/.ssh/id_rsa'
+        File.expand_path(key)
       end
 
       def copy_paths(source, target, context, directory, &block)
