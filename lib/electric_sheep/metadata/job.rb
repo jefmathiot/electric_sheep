@@ -6,19 +6,12 @@ module ElectricSheep
 
       option :id, required: true
       option :description
+      option :private_key
 
       attr_reader :schedule, :starts_with
 
       def start_with!(resource)
         @starts_with = resource
-      end
-
-      def use_private_key!(key)
-        @private_key=key
-      end
-
-      def private_key
-        @private_key
       end
 
       def notifier(metadata)

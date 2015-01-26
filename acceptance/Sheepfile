@@ -26,63 +26,53 @@ host "backup-store", hostname: "127.0.0.1",
 
 ###############################################################################
 ## SCP
-job "scp-move-local-to-remote" do
-  private_key private_key
+job "scp-move-local-to-remote", private_key: private_key do
   resource "file", path: dummy
   move to: "main-host", using: "scp", as: "vagrant"
 end
 
-job "scp-fail" do
-  private_key private_key
+job "scp-fail", private_key: private_key do
   resource "file", path: 'tmp/fail.file'
   move to: "main-host", using: "scp", as: "vagrant"
 end
 
-job "scp-copy-local-to-remote" do
-  private_key private_key
+job "scp-copy-local-to-remote", private_key: private_key do
   resource "file", path: dummy
   copy to: "main-host", using: "scp", as: "vagrant"
 end
 
-job "scp-copy-remote-to-local" do
-  private_key private_key
+job "scp-copy-remote-to-local", private_key: private_key do
   resource "file", path: "dummy.file", host: "main-host"
   copy to: "localhost", using: "scp", as: "vagrant"
 end
 
-job "scp-move-remote-to-local" do
-  private_key private_key
+job "scp-move-remote-to-local", private_key: private_key do
   resource "file", path: "dummy.file", host: "main-host"
   move to: "localhost", using: "scp", as: "vagrant"
 end
 
-job "scp-copy-and-move" do
-  private_key private_key
+job "scp-copy-and-move", private_key: private_key do
   resource "file", path: dummy
   copy to: "main-host", using: "scp", as: "vagrant"
   move to: "backup-store", using: "scp", as: "vagrant"
 end
 
-job "scp-move-directory-local-to-remote" do
-  private_key private_key
+job "scp-move-directory-local-to-remote", private_key: private_key do
   resource "directory", path: dummy_directory
   move to: "main-host", using: "scp", as: "vagrant"
 end
 
-job "scp-copy-directory-local-to-remote" do
-  private_key private_key
+job "scp-copy-directory-local-to-remote", private_key: private_key do
   resource "directory", path: dummy_directory
   copy to: "main-host", using: "scp", as: "vagrant"
 end
 
-job "scp-move-directory-remote-to-local" do
-  private_key private_key
+job "scp-move-directory-remote-to-local", private_key: private_key do
   resource "directory", path: "dummy-directory", host: "main-host"
   move to: "localhost", using: "scp", as: "vagrant"
 end
 
-job "scp-copy-directory-remote-to-local" do
-  private_key private_key
+job "scp-copy-directory-remote-to-local", private_key: private_key do
   resource "directory", path: "dummy-directory", host: "main-host"
   copy to: "localhost", using: "scp", as: "vagrant"
 end
@@ -116,24 +106,21 @@ end
 
 ###############################################################################
 ## TarGz
-job "tar-gz-file" do
-  private_key private_key
+job "tar-gz-file", private_key: private_key do
   resource "file", path: "dummy.file", host: "main-host"
   remotely as: "vagrant" do
     tar_gz
   end
 end
 
-job "tar-gz-directory" do
-  private_key private_key
+job "tar-gz-directory", private_key: private_key do
   resource "file", path: "dummy-directory", host: "main-host"
   remotely as: "vagrant" do
     tar_gz
   end
 end
 
-job "tar-gz-unknown-file" do
-  private_key private_key
+job "tar-gz-unknown-file", private_key: private_key do
   resource "file", path: "unknown-file", host: "main-host"
   remotely as: "vagrant" do
     tar_gz
@@ -142,8 +129,7 @@ end
 
 ###############################################################################
 ## MongoDB Dump
-job "mongodb-dump" do
-  private_key private_key
+job "mongodb-dump", private_key: private_key do
   resource "database", name: "controldb", host: "main-host"
 
   remotely as: "vagrant" do
@@ -152,16 +138,14 @@ job "mongodb-dump" do
   move to: "localhost", using: "scp", as: "vagrant"
 end
 
-job "mongodb-dump-auth-fail" do
-  private_key private_key
+job "mongodb-dump-auth-fail", private_key: private_key do
   resource "database", name: "controldb", host: "main-host"
   remotely as: "vagrant" do
     mongodb_dump user: "fail_user", password: "incorrect"
   end
 end
 
-job "mongodb-dump-unknown-db-fail" do
-  private_key private_key
+job "mongodb-dump-unknown-db-fail", private_key: private_key do
   resource "database", name: "unknown", host: "main-host"
   remotely as: "vagrant" do
     mongodb_dump
@@ -170,8 +154,7 @@ end
 
 ###############################################################################
 ## MySQL Dump
-job "mysql-dump" do
-  private_key private_key
+job "mysql-dump", private_key: private_key do
   resource "database", name: "controldb", host: "main-host"
   remotely as: "vagrant" do
     mysql_dump user: "operator", password: "pseudorandom"
@@ -179,16 +162,14 @@ job "mysql-dump" do
   move to: "localhost", using: "scp", as: "vagrant"
 end
 
-job "mysql-dump-unknown-db-fail" do
-  private_key private_key
+job "mysql-dump-unknown-db-fail", private_key: private_key do
   resource "database", name: "unknown", host: "main-host"
   remotely as: "vagrant" do
     mysql_dump user: "operator", password: "pseudorandom"
   end
 end
 
-job "mysql-dump-auth-fail" do
-  private_key private_key
+job "mysql-dump-auth-fail", private_key: private_key do
   resource "database", name: "controldb", host: "main-host"
   remotely as: "vagrant" do
     mysql_dump user: "fail_user", password: "incorrect"
@@ -197,8 +178,7 @@ end
 
 ###############################################################################
 ## PostgreSQL Dump
-job "postgresql-dump" do
-  private_key private_key
+job "postgresql-dump", private_key: private_key do
   resource "database", name: "controldb", host: "main-host"
   remotely as: "vagrant" do
     postgresql_dump user: "operator", password: "pseudorandom", login_host: "localhost"
@@ -206,8 +186,7 @@ job "postgresql-dump" do
   move to: "localhost", using: "scp", as: "vagrant"
 end
 
-job "postgresql-dump-sudo" do
-  private_key private_key
+job "postgresql-dump-sudo", private_key: private_key do
   resource "database", name: "controldb", host: "main-host"
   remotely as: "vagrant" do
     postgresql_dump sudo_as: "postgres"
@@ -215,16 +194,14 @@ job "postgresql-dump-sudo" do
   move to: "localhost", using: "scp", as: "vagrant"
 end
 
-job "postgresql-dump-unknown-db-fail" do
-  private_key private_key
+job "postgresql-dump-unknown-db-fail", private_key: private_key do
   resource "database", name: "unknown", host: "main-host"
   remotely as: "vagrant" do
     postgresql_dump user: "operator", password: "pseudorandom", login_host: "localhost"
   end
 end
 
-job "postgresql-dump-auth-fail" do
-  private_key private_key
+job "postgresql-dump-auth-fail", private_key: private_key do
   resource "database", name: "controldb", host: "main-host"
   remotely as: "vagrant" do
     postgresql_dump user: "fail_user", password: "incorrect", login_host: "localhost"

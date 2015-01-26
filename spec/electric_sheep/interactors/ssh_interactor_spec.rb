@@ -112,7 +112,7 @@ describe ElectricSheep::Interactors::SshInteractor do
     end
 
     before do
-      ElectricSheep::Crypto.expects(:get_key).
+      ElectricSheep::Crypto.open_ssl.expects(:get_key).
         with('/path/to/private/key', :private).
         returns(pk = mock)
       pk.expects(:export).returns('SECRET')

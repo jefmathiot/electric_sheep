@@ -74,13 +74,6 @@ describe ElectricSheep::Dsl do
       job.starts_with.must_be_instance_of ElectricSheep::Resources::Database
     end
 
-    it 'assigns the private key to use' do
-      job = build_job do
-        private_key '/path/to/private/key'
-      end
-      job.private_key.must_equal '/path/to/private/key'
-    end
-
     it 'allows encrypted values' do
       value = nil
       build_job do

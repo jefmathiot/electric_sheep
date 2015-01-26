@@ -12,7 +12,7 @@ describe ElectricSheep::Metadata::Job do
   end
 
   it{
-    defines_options :id, :description
+    defines_options :id, :description, :private_key
     requires :id
   }
 
@@ -49,14 +49,6 @@ describe ElectricSheep::Metadata::Job do
     job = subject.new
     job.start_with!(resource = mock)
     job.starts_with.must_equal resource
-  end
-
-  it 'overrides the private key' do
-    job = subject.new
-    '/path/to/private/key'.tap do |key|
-      job.use_private_key! key
-      job.private_key.must_equal key
-    end
   end
 
   it 'uses its id as the default name' do

@@ -94,10 +94,6 @@ module ElectricSheep
         @subject.start_with! resource_klass.new(options)
       end
 
-      def private_key(path)
-        @subject.use_private_key! File.expand_path(path)
-      end
-
       def schedule(type, options={})
         Metadata::Schedule.const_get(type.capitalize).tap do |klazz|
           @subject.schedule! klazz.new(options)
