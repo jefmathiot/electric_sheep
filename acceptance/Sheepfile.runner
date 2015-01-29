@@ -5,13 +5,13 @@
 if File.basename(Dir.pwd)=='tmp'
   # Cucumber features
   working_directory File.expand_path('./')
-  private_key=File.join('../', 'acceptance', 'id_rsa')
+  ssh_key=File.join('../', 'acceptance', 'id_rsa')
   dummy= File.expand_path('dummy.file')
   dummy_directory= File.expand_path('dummy-directory')
 else
   # Manual run
   working_directory File.expand_path("tmp")
-  private_key='./acceptance/id_rsa'
+  ssh_key='./acceptance/id_rsa'
   dummy= File.expand_path('tmp/dummy.file')
   dummy_directory= File.expand_path('tmp/dummy-directory')
 end
@@ -27,8 +27,7 @@ host "backup-store", hostname: "127.0.0.1",
 ###############################################################################
 ##
 
-job "failing-job" do
-  private_key private_key
+job "failing-job", private_key: ssh_key do
   resource "database", name: "controldb", host: "main-host"
   remotely as: "vagrant" do
     mysql_dump user: "unknown_user", password: "xxx"
@@ -37,13 +36,10 @@ job "failing-job" do
   move to: "localhost", using: "scp", as: "vagrant"
 end
 
-job "successful-job" do
-  private_key private_key
+job "successful-job", private_key: ssh_key do
   resource "database", name: "controldb", host: "main-host"
-
   remotely as: "vagrant" do
     mongodb_dump
   end
   move to: "localhost", using: "scp", as: "vagrant"
 end
-
