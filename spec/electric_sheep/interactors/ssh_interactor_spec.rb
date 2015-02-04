@@ -116,8 +116,10 @@ describe ElectricSheep::Interactors::SshInteractor do
         with('/path/to/private/key', :private).
         returns(pk = mock)
       pk.expects(:export).returns('SECRET')
+      options={port: 22, auth_methods: ["publickey"], key_data: 'SECRET',
+        keys_only: true}
       Net::SSH.expects(:start).
-        with('host.tld', 'johndoe', port: 22, key_data: 'SECRET', keys_only: true).
+        with('host.tld', 'johndoe', options).
         returns( connection )
       user = 'johndoe'
       job.expects(:private_key).returns('/path/to/private/key')
