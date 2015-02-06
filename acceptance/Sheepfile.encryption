@@ -1,0 +1,42 @@
+# Local working directory
+if File.basename(Dir.pwd)=='tmp'
+  # Cucumber features
+  working_directory File.expand_path('./')
+  ssh_key=File.join('../', 'acceptance', 'id_rsa')
+  gpg_public_key = File.join('../', 'acceptance', 'public_key.gpg')
+  gpg_private_key = File.join('../', 'acceptance', 'private_key.gpg')
+  dummy= File.expand_path('dummy.file')
+  dummy_directory= File.expand_path('dummy-directory')
+else
+  # Manual run
+  working_directory File.expand_path("tmp")
+  ssh_key='./acceptance/id_rsa'
+  gpg_public_key = File.join('./acceptance', 'public_key.gpg')
+  gpg_private_key = File.join('./acceptance', 'private_key.gpg')
+  dummy= File.expand_path('tmp/dummy.file')
+  dummy_directory= File.expand_path('tmp/dummy-directory')
+end
+
+encrypted_option=<<-EOF
+hQEMA5gb42cxCFIzAQf/VhL1Cs9e1J6KD8uViUH76bRPYO73oS7I7c+M1+Wo6F/+oRDfOeifSJ2U5nHB
+DuVMEJOR7Vqhhzxj5Neg+jrbOrmFtEtVV6y9xqzeHsB8liT2nc5Df1HAvHZ4ga+/SVzAK49/noAglriw
+jmVodSae5hhxkTVJh2t6+Tpb1uwLepiZhbxczJ9zku7/KBp3tzPH9U9SCHVhiP5icl9p92ydVdi/lCfb
+soklCPhZKlPK1Ck+FUrxzTX3RqG+7lEXu00SGQJncQhSqu/09cVO9h5qHfT3A3HqtmaxyslagrZGDFMq
+3YQC4eeyTmFvj1kOBi1DKOkV3YKUHqKla9cyeSZymdJHAbvldJa2opaZxXJlKUQEuTU/2c+Era2WpQZr
+RtAW7BP8kmpN1uFVzbTFossvXL9K7xtAFwjyhknANGk6jaK8YRMiEn7e3y0==qDcj
+EOF
+
+encrypt with: gpg_public_key
+decrypt with: gpg_private_key
+
+host "main-host", hostname: "127.0.0.1",
+  ssh_port: 2222,
+  working_directory: "/tmp/acceptance",
+  private_key: ssh_key
+
+job "empty-job" do
+  resource "database", name: "controldb", host: "main-host"
+  remotely as: "vagrant" do
+    mysql_dump user: "operator", password: encrypted(encrypted_option)
+  end
+end
