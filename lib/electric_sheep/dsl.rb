@@ -27,8 +27,16 @@ module ElectricSheep
       @config.hosts.localhost.working_directory=dir
     end
 
-    def defaults_for(options)
+    def defaults_for(options={})
       Agents::Register.set_defaults_for(options)
+    end
+
+    def encrypt(options={})
+      @config.encryption_options=Metadata::EncryptOptions.new(options)
+    end
+
+    def decrypt(options={})
+      @config.decryption_options=Metadata::EncryptOptions.new(options)
     end
 
     class AbstractDsl
@@ -50,7 +58,7 @@ module ElectricSheep
       end
 
       def encrypted(value)
-        Metadata::Encrypted.new(value)
+        Metadata::Encrypted.new(@config.decryption_options, value)
       end
 
     end
@@ -64,7 +72,7 @@ module ElectricSheep
       end
 
       def remotely(options, &block)
-        @subject.add RemoteShellDsl.new( @config, options, &block).shell
+        @subject.add RemoteShellDsl.new(@config, options, &block).shell
       end
 
       def locally(&block)

@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe ElectricSheep::Dsl do
+
   before do
     @config = ElectricSheep::Config.new
     @dsl = ElectricSheep::Dsl.new(@config)
@@ -49,6 +50,15 @@ describe ElectricSheep::Dsl do
     options={command: 'id'}
     ElectricSheep::Agents::Register.expects(:set_defaults_for).with(options)
     @dsl.defaults_for options
+  end
+
+  [:encrypt, :decrypt].each do |verb|
+
+    it 'allows the definition of encryption options' do
+      @dsl.send verb, with: path='/some/public/key'
+      @config.send("#{verb}ion_options").with.must_equal path
+    end
+
   end
 
   describe "registering a job" do
