@@ -3,6 +3,7 @@ module ElectricSheep
     include Queue
 
     attr_reader :hosts
+    attr_accessor :encryption_options, :decryption_options
 
     def initialize
       @hosts = Metadata::Hosts.new
