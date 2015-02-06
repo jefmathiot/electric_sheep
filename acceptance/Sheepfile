@@ -1,6 +1,3 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
-
 # Local working directory
 if File.basename(Dir.pwd)=='tmp'
   # Cucumber features

@@ -1,6 +1,3 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
-
 if File.basename(Dir.pwd)=='tmp'
   # Cucumber features
   ssh_key=File.join('../', 'acceptance', 'id_rsa')

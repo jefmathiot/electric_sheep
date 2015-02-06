@@ -1,6 +1,3 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
-
 # Local working directory
 if File.basename(Dir.pwd)=='tmp'
   # Cucumber features
@@ -15,6 +12,7 @@ else
   dummy= File.expand_path('tmp/dummy.file')
   dummy_directory= File.expand_path('tmp/dummy-directory')
 end
+
 
 host "main-host", hostname: "127.0.0.1",
   ssh_port: 2222,
