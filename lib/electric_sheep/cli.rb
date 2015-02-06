@@ -47,11 +47,18 @@ module ElectricSheep
 
     desc "encrypt SECRET", "Encrypt SECRET using the provided public key"
     option :key, aliases: %w(-k), required: true
+    option :standard_armor, aliases: %w(-a), type: :boolean, default: false
     logging_options
 
     def encrypt(secret)
       rescued(true) do
-        STDOUT.puts Crypto.open_ssl.encrypt(secret, options[:key])
+        cipher = Crypto.gpg.string
+        STDOUT.puts cipher.encrypt(
+          options[:key],
+          secret,
+          ascii: true,
+          compact: !options[:standard_armor]
+        )
       end
     end
 

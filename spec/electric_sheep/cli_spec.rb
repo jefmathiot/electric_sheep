@@ -115,20 +115,36 @@ describe ElectricSheep::CLI do
 
   describe 'encrypting plain text' do
 
+    before do
+      ElectricSheep::Crypto.gpg.expects(:string).returns(encryptor)
+    end
+
+    let(:encryptor) do
+      mock
+    end
+
     it 'encrypts secrets' do
-      ElectricSheep::Crypto.open_ssl.expects(:encrypt).
-        with('SECRET', '/some/key').
-        returns('CIPHER')
+      encryptor.expects(:encrypt).
+      with('/some/key', 'SECRET', ascii: true, compact: true).
+      returns('CIPHER')
       STDOUT.expects(:puts).with("CIPHER")
-      subject.new([], key: '/some/key').encrypt('SECRET')
+      subject.new([], key: '/some/key', standard_armor: false).encrypt('SECRET')
+    end
+
+    it 'disables the compact output' do
+      encryptor.expects(:encrypt).
+      with('/some/key', 'SECRET', ascii: true, compact: false).
+      returns('CIPHER')
+      STDOUT.expects(:puts).with("CIPHER")
+      subject.new([], key: '/some/key', standard_armor: true).encrypt('SECRET')
     end
 
     concise do
       ensure_exception_handling do
-        ElectricSheep::Crypto.open_ssl.expects(:encrypt).
-          with('SECRET', '/some/key').
+        encryptor.expects(:encrypt).
+          with('/some/key', 'SECRET', ascii: true, compact: true).
           raises(Exception.new('fail'))
-        subject.new([], key: '/some/key').encrypt('SECRET')
+        subject.new([], key: '/some/key', standard_armor: false).encrypt('SECRET')
       end
     end
 
