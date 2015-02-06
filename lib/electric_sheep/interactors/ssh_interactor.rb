@@ -68,7 +68,7 @@ module ElectricSheep
           @user,
           port: @host.ssh_port,
           auth_methods: %w(publickey),
-          key_data: Crypto.open_ssl.get_key(private_key, :private).export,
+          key_data: PrivateKey.get_key(private_key, :private).export,
           keys_only: true
         )
       end
@@ -106,6 +106,47 @@ module ElectricSheep
           File.basename(source)
         )
       end
+
+      class PrivateKey
+
+        class << self
+          def get_key(keyfile, type)
+            ::OpenSSL::PKey::RSA.new(read_keyfile(keyfile)).tap do |key|
+              raise "Not a #{type} key: #{keyfile}" unless key.send("#{type}?")
+            end
+          end
+
+          private
+          def read_keyfile(keyfile)
+            keyfile=File.expand_path(keyfile)
+            raise "Key file not found #{keyfile}" unless File.exists?(keyfile)
+            key = File.read(keyfile)
+            return openssh_to_pem(keyfile) if openssh?(key)
+            return key if pem?(key)
+            raise "Key file format not supported"
+          end
+
+          def openssh_to_pem(keyfile)
+            result = Spawn.exec("ssh-keygen -f #{keyfile} -e -m pem")
+            unless result[:exit_status] == 0
+              raise "Unable to convert key file #{keyfile} to PEM: " +
+              result[:err]
+            end
+            result[:out]
+          end
+
+          def pem?(key)
+            key =~ /\A-----BEGIN RSA (PUBLIC|PRIVATE) KEY-----/
+          end
+
+          def openssh?(key)
+            key =~ /\Assh-rsa /
+          end
+        end
+
+      end
+
     end
+
   end
 end

@@ -112,7 +112,7 @@ describe ElectricSheep::Interactors::SshInteractor do
     end
 
     before do
-      ElectricSheep::Crypto.open_ssl.expects(:get_key).
+      ElectricSheep::Interactors::SshInteractor::PrivateKey.expects(:get_key).
         with('/path/to/private/key', :private).
         returns(pk = mock)
       pk.expects(:export).returns('SECRET')
@@ -294,4 +294,86 @@ describe ElectricSheep::Interactors::SshInteractor do
     ensure_scp :directory, :upload
 
   end
+
+end
+
+describe ElectricSheep::Interactors::SshInteractor::PrivateKey do
+
+  describe "getting a key from the file system" do
+
+    def create_keyfile(name, contents)
+      Tempfile.new(name).tap do |f|
+        f.write contents
+        f.close
+      end
+    end
+
+    let(:ssh_keyfile) { create_keyfile('ssh-key', 'ssh-rsa XXXXXXX') }
+    let(:pem_keyfile) { create_keyfile('ssh-key', pem_lines) }
+    let(:not_a_keyfile) { create_keyfile('not-a-key', '¯\_(ツ)_/¯') }
+
+    let(:pem_lines){
+      "-----BEGIN RSA PUBLIC KEY-----\n" +
+      "XXXXXX\n" +
+      "-----END RSA PUBLIC KEY-----"
+    }
+
+    let(:spawn) do
+      ElectricSheep::Spawn
+    end
+
+    def expects_open_ssl(check)
+      OpenSSL::PKey::RSA.expects(:new).with(pem_lines).returns(key = mock)
+      key.expects(check).returns(true)
+      key
+    end
+
+    it "raises if the key is of the wrong type" do
+      subject.expects(:read_keyfile).with(path='/path/to/key').
+        returns(keyfile=mock)
+      OpenSSL::PKey::RSA.expects(:new).with(keyfile).returns(key=mock)
+      key.expects(:private?).returns(false)
+      ex = ->{ subject.get_key(path, :private) }.must_raise RuntimeError,
+        /^Not a private key/
+    end
+
+    it 'raises if keyfile is not found' do
+      ->{ subject.get_key('not/a/key', :private) }.must_raise RuntimeError,
+        /^Key file not found/
+    end
+
+    describe 'with an SSH key' do
+
+      def expects_conversion(status)
+        spawn.expects(:exec).
+          with("ssh-keygen -f #{ssh_keyfile.path} -e -m pem").
+          returns({out: pem_lines, err: "An error", exit_status: status})
+      end
+
+      it 'converts the key to the PEM format' do
+        expects_conversion(0)
+        key = expects_open_ssl(:public?)
+        subject.get_key(ssh_keyfile.path, :public).must_equal key
+      end
+
+      it 'raises if it was unable to convert to PEM' do
+        expects_conversion(1)
+        ->{ subject.get_key(ssh_keyfile.path, :private) }.must_raise RuntimeError,
+          /Unable to convert key file/
+      end
+
+    end
+
+    it 'uses a key in the PEM format without converting it' do
+      key = expects_open_ssl(:public?)
+      subject.get_key(pem_keyfile.path, :public).must_equal key
+    end
+
+    it 'raises if the key format is unknown' do
+      ->{ subject.get_key( not_a_keyfile, :whatever ) }.must_raise RuntimeError,
+        /Key file format not supported/
+    end
+
+  end
+
 end
