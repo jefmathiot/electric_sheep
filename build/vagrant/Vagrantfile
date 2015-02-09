@@ -27,7 +27,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision :shell, privileged: true, inline: <<-SCRIPT
     set -e
     apt-get update
-    apt-get install -y ruby git ruby-dev build-essential autoconf zlib1g-dev
+    apt-get install -y gnupg ruby git ruby-dev build-essential autoconf zlib1g-dev
     gem install bundler --no-rdoc --no-ri
     gem install omnibus --no-rdoc --no-ri
     git config --global user.email "humans@electricsheep.io"
