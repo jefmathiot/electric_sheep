@@ -18,7 +18,14 @@ describe ElectricSheep::Notifiers::Email do
       report=mock.tap{|m| m.stubs(:stack).returns([])}
       p.stubs(:report).returns(report)
       p.stubs(:last_product).returns(resource)
+      p.stubs(:private).returns('private/key')
     end
+  }
+
+  let(:encrypted){
+      mock.tap{
+        |m| m.expects(:decrypt).with(job.private_key).returns('value')
+      }
   }
 
   let(:metadata){
@@ -27,7 +34,7 @@ describe ElectricSheep::Notifiers::Email do
       from: 'from@host.tld',
       to: 'to@host.tld',
       using: :test,
-      with: {'an_option' => 'value'}
+      with: {'an_option' => 'value', 'encrypted_option' => encrypted}
     )
   }
   let(:logger){ mock }
@@ -69,12 +76,12 @@ describe ElectricSheep::Notifiers::Email do
     end
   end
 
-  it 'symbolizes delivery options' do
+  it 'handles delivery options' do
     msg=mock
-    msg.expects(:delivery_method).with(:test, {an_option: 'value'})
+    msg.expects(:delivery_method).
+      with(:test, {an_option: 'value', encrypted_option: 'value'})
     msg.expects(:deliver)
     notifier.send(:deliver, msg)
   end
-
 
 end
