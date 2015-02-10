@@ -6,6 +6,7 @@ Please notice we'll use semantic versioning as of 1.0.0.
 
 ## 0.3.0 - 2015-02-10
 
+* Deprecated the `project` DSL noun in favor of the `job` one
 * Deprecated the `private_key` DSL method in favor of the `private_key` option
 * Deprecated encryption of secrets and credentials using OpenSSL (OpenSSL keys
   are still in use for SSH/SCP, though)
