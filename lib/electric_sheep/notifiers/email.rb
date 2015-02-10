@@ -64,7 +64,7 @@ module ElectricSheep
       def handle_options(options)
         if options
           options.reduce({}) do |h, (k, v)|
-            v=v.decrypt(@job.private_key) if v.respond_to?(:decrypt)
+            v=v.decrypt if v.respond_to?(:decrypt)
             h[k.to_sym]=v
             h
           end

@@ -18,13 +18,12 @@ describe ElectricSheep::Notifiers::Email do
       report=mock.tap{|m| m.stubs(:stack).returns([])}
       p.stubs(:report).returns(report)
       p.stubs(:last_product).returns(resource)
-      p.stubs(:private).returns('private/key')
     end
   }
 
   let(:encrypted){
       mock.tap{
-        |m| m.expects(:decrypt).with(job.private_key).returns('value')
+        |m| m.expects(:decrypt).returns('value')
       }
   }
 

@@ -22,7 +22,6 @@ describe ElectricSheep::Command do
       command.shell.must_equal shell
     end
 
-
     it 'stats the input and performs' do
       command.expects(:stat!).with(resource)
       command.expects(:perform!).returns(output=mock)
@@ -39,8 +38,7 @@ describe ElectricSheep::Command do
     # TODO Move to an agent spec
     it 'decrypts options' do
       metadata.expects(:some_option).returns(encrypted = mock)
-      job.expects(:private_key).returns('/path/to/private/key')
-      encrypted.expects(:decrypt).with('/path/to/private/key').returns('VALUE')
+      encrypted.expects(:decrypt).returns('VALUE')
       command.send(:option, :some_option).must_equal 'VALUE'
     end
 
