@@ -13,3 +13,4 @@ Please notice we'll use semantic versioning as of 1.0.0.
 * Added GPG support for encryption and decryption of secrets
 * Added the `decrypt` verb to the DSL
 * Removed all authentication methods except `publickey` for SSH and SCP
+* Fixed #5 (`encrypted` does not work outside jobs)
