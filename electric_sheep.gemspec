@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = ElectricSheep::VERSION
   spec.authors       = [
                         "Benoit Anselme",
-                        "Sylvain Didier"
+                        "Sylvain Didier",
                         "Patrice Izzo",
                         "Jef Mathiot",
                         "Fabrice Nourisson",
