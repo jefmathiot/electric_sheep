@@ -161,7 +161,7 @@ describe ElectricSheep::CLI do
     def expects_startup(method, master_options, config_file=nil, workers=nil)
       expects_evaluator(config_file || 'Sheepfile')
       expects_control(method,
-        {config: config, workers: workers}.merge(master_options),
+        {config: config, workers: workers, daemon: nil}.merge(master_options)
       )
     end
 
@@ -193,6 +193,11 @@ describe ElectricSheep::CLI do
         it 'overrides the maximum number of workers' do
           expects_startup("#{action}!", {workers: 2})
           subject.new([], config: 'Sheepfile', workers: 2).send(action)
+        end
+
+        it 'overrides the daemon option' do
+          expects_startup("#{action}!", {daemon: true})
+          subject.new([], config: 'Sheepfile', daemon: true).send(action)
         end
 
       end
