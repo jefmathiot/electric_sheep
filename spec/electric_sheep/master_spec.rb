@@ -33,6 +33,16 @@ describe ElectricSheep::Master do
         subject.new(nil, '/path/to/pid').read_pidfile.must_be_nil
       end
 
+      it 'deletes the pidfile' do
+        subject.new(nil, pidfile.path).delete_pidfile
+        File.exists?(pidfile.path).must_equal false
+      end
+
+      it 'does not attempt to delete a missing pidfile' do
+        subject.new(nil, nil).delete_pidfile
+        subject.new(nil, '/path/to/pid').delete_pidfile
+      end
+
       class TestSpawner < ElectricSheep::Master::ProcessSpawner
 
         def test(banner=nil)
@@ -43,15 +53,17 @@ describe ElectricSheep::Master do
 
       describe TestSpawner do
 
-        let(:pidfile_path){ File.expand_path('tmp/test_spawner.pid') }
+        let(:pidfile2){
+          Tempfile.new('pidfile').tap(&:close)
+        }
 
         after do
-          File.delete(pidfile_path) if File.exists?(pidfile_path)
+          pidfile2.unlink
         end
 
         it 'writes the pidfile' do
-          subject.new( logger, pidfile_path ).test
-          File.read( pidfile_path ).must_equal "9999\n"
+          subject.new( logger, pidfile2 ).test
+          File.read( pidfile2 ).must_equal "9999\n"
         end
 
         it 'logs the banner' do
@@ -61,7 +73,7 @@ describe ElectricSheep::Master do
 
         it 'does nothing' do
           subject.new( logger ).test
-          File.exists?(pidfile_path).must_equal false
+          File.read(pidfile2).must_equal ""
         end
 
       end
