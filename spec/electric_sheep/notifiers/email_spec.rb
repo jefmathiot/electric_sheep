@@ -21,13 +21,19 @@ describe ElectricSheep::Notifiers::Email do
     end
   }
 
+  let(:encrypted){
+      mock.tap{
+        |m| m.expects(:decrypt).returns('value')
+      }
+  }
+
   let(:metadata){
     ElectricSheep::Metadata::Notifier.new(
       agent: 'email',
       from: 'from@host.tld',
       to: 'to@host.tld',
       using: :test,
-      with: {'an_option' => 'value'}
+      with: {'an_option' => 'value', 'encrypted_option' => encrypted}
     )
   }
   let(:logger){ mock }
@@ -69,12 +75,12 @@ describe ElectricSheep::Notifiers::Email do
     end
   end
 
-  it 'symbolizes delivery options' do
+  it 'handles delivery options' do
     msg=mock
-    msg.expects(:delivery_method).with(:test, {an_option: 'value'})
+    msg.expects(:delivery_method).
+      with(:test, {an_option: 'value', encrypted_option: 'value'})
     msg.expects(:deliver)
     notifier.send(:deliver, msg)
   end
-
 
 end

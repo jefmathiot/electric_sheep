@@ -52,7 +52,7 @@ module ElectricSheep
 
       def deliver(msg)
         # Mail expects option keys as symbols
-        msg.delivery_method option(:using), symbolize(option(:with))
+        msg.delivery_method option(:using), handle_options(option(:with))
         msg.deliver
       end
 
@@ -61,9 +61,10 @@ module ElectricSheep
           "notifiers/email"
       end
 
-      def symbolize(options)
+      def handle_options(options)
         if options
           options.reduce({}) do |h, (k, v)|
+            v=v.decrypt if v.respond_to?(:decrypt)
             h[k.to_sym]=v
             h
           end

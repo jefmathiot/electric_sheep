@@ -7,7 +7,16 @@ module ElectricSheep
       end
     end
 
+    module Encrypted
+
+      def encrypted(value)
+        Metadata::Encrypted.new(@config.decryption_options, value)
+      end
+
+    end
+
     include RaiseOnMethodMissing
+    include Encrypted
 
     attr_reader :config
 
@@ -42,6 +51,7 @@ module ElectricSheep
     class AbstractDsl
 
       include RaiseOnMethodMissing
+      include Encrypted
 
       class << self
         def returning(property)
@@ -55,10 +65,6 @@ module ElectricSheep
         @config = args.first
         build *args
         instance_eval &block if block_given?
-      end
-
-      def encrypted(value)
-        Metadata::Encrypted.new(@config.decryption_options, value)
       end
 
     end

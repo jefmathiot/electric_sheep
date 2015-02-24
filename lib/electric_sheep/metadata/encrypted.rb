@@ -7,7 +7,7 @@ module ElectricSheep
         @cipher_text = cipher_text
       end
 
-      def decrypt(keyfile)
+      def decrypt
         Crypto.gpg.string.decrypt(@options.with, @cipher_text)
       end
 

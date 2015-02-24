@@ -8,7 +8,7 @@ module ElectricSheep
     protected
     def option(name)
       option = @metadata.send(name)
-      return option.decrypt(@job.private_key) if option.respond_to?(:decrypt)
+      return option.decrypt if option.respond_to?(:decrypt)
       option
     end
 

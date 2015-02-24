@@ -52,6 +52,11 @@ describe ElectricSheep::Dsl do
     @dsl.defaults_for options
   end
 
+  it 'allows encrypted values' do
+    value = @dsl.encrypted('XXXXX')
+    value.must_be_instance_of ElectricSheep::Metadata::Encrypted
+  end
+
   [:encrypt, :decrypt].each do |verb|
 
     it 'allows the definition of encryption options' do

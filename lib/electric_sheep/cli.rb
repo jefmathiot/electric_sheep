@@ -46,8 +46,10 @@ module ElectricSheep
     end
 
     desc "encrypt SECRET", "Encrypt SECRET using the provided public key"
-    option :key, aliases: %w(-k), required: true
-    option :standard_armor, aliases: %w(-a), type: :boolean, default: false
+    option :key, aliases: %w(-k), required: true,
+      desc: "The GPG public key"
+    option :standard_armor, aliases: %w(-a), type: :boolean, default: false,
+      desc: "Output the standard ASCII-armored"
     logging_options
 
     def encrypt(secret)
@@ -62,7 +64,9 @@ module ElectricSheep
       end
     end
 
-    desc "start", "Start a master process in the background"
+    desc "start", "Start a master process"
+    option :daemon, aliases: %w(-d), type: :boolean, default: false,
+      desc: "Place processes in the background"
     startup_options
     def start
       launch_master(:start!)
@@ -117,7 +121,12 @@ module ElectricSheep
 
     def launch_master(method)
       rescued(true) do
-        master(config: configuration, workers: options[:workers]).send(method)
+        opts = {
+          config: configuration,
+          workers: options[:workers],
+          daemon: options[:daemon]
+        }
+        master(opts).send(method)
       end
     end
 
