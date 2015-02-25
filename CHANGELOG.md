@@ -2,16 +2,20 @@
 
 Please notice we'll use semantic versioning as of 1.0.0.
 
-## 0.4.0 (Unreleased)
+## 0.5.0 - Unreleased
+
+## 0.4.0 - 2015-02-25
 
 ### Added
 
 * Added a `--daemon` option to start the master in the background.
+* Added a Docker image.
 
 ### Changed
 
 * Changed the default startup mode which does not place the master process in
   the background anymore.
+* In default startup mode, the master does not write its pid to a file anymore.
 
 ## 0.3.0 - 2015-02-10
 
