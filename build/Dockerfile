@@ -1,9 +1,12 @@
-FROM ubuntu:trusty
-MAINTAINER ServeBox ElectricSheep.io <humans@electricsheep.io>
+FROM ubuntu:14.04
+MAINTAINER ServeBox / ElectricSheep.IO <humans@electricsheep.io>
 
-WORKDIR /electricsheep
+RUN apt-get update  && apt-get install -y \
+  gnupg
 
-RUN mkdir /electricsheep/pkg
-ADD pkg/electric-sheep-ubuntu_0.2.1-1_amd64.deb /electricsheep/pkg/electric-sheep-ubuntu_0.2.1-1_amd64.deb
+ADD pkg/electric-sheep-docker.deb /tmp/electric-sheep-docker.deb
+RUN dpkg -i /tmp/electric-sheep-docker.deb
 
-RUN dpkg -i /electricsheep/pkg/electric-sheep-ubuntu_0.2.1-1_amd64.deb
+WORKDIR /electric_sheep
+
+ENTRYPOINT ["electric_sheep"]
