@@ -55,7 +55,7 @@ module ElectricSheep
         master = DaemonSpawner.new(@logger, @pidfile)
         worker = DaemonSpawner.new(@logger)
       else
-        master = InlineSpawner.new(@logger, @pidfile)
+        master = InlineSpawner.new(@logger)
         worker = ForkSpawner.new(@logger)
       end
       @spawners = struct.new(master, worker)

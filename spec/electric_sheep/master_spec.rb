@@ -148,18 +148,21 @@ describe ElectricSheep::Master do
   end
 
   it 'spawns master inline and forks children' do
-    subject.new(daemon: false).tap do |master|
+    subject.new(daemon: false, pidfile: 'pid').tap do |master|
       master.spawners.master.
         must_be_instance_of ElectricSheep::Master::InlineSpawner
+      master.spawners.master.instance_variable_get(:@pidfile).must_be_nil
       master.spawners.worker.
         must_be_instance_of ElectricSheep::Master::ForkSpawner
     end
   end
 
   it 'spawns all processes as daemons' do
-    subject.new(daemon: true).tap do |master|
+    subject.new(daemon: true, pidfile: 'pid').tap do |master|
       master.spawners.master.
         must_be_instance_of ElectricSheep::Master::DaemonSpawner
+      master.spawners.master.instance_variable_get(:@pidfile).
+        must_equal File.expand_path('pid')
       master.spawners.worker.
         must_be_instance_of ElectricSheep::Master::DaemonSpawner
     end
