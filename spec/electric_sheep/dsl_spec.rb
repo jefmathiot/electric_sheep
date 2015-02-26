@@ -19,20 +19,20 @@ describe ElectricSheep::Dsl do
   end
 
   describe ElectricSheep::Dsl::AbstractDsl do
-      it "raises an error on method missing" do
-        -> {
-          ElectricSheep::Dsl::AbstractDsl.new.orphan_method
-        }.must_raise ElectricSheep::SheepException
-      end
+    it "raises an error on method missing" do
+      -> {
+        ElectricSheep::Dsl::AbstractDsl.new.orphan_method
+      }.must_raise ElectricSheep::SheepException
+    end
   end
 
   describe ElectricSheep::Dsl::JobDsl do
-      it "raises an error on class unknown" do
-        err = -> {
-          ElectricSheep::Dsl::JobDsl.new(@config,nil,{}).resource('Unknown')
-        }.must_raise ElectricSheep::SheepException
-        err.message.must_equal "Resource 'Unknown' in Sheepfile is undefined"
-      end
+    it "raises an error on class unknown" do
+      err = -> {
+        ElectricSheep::Dsl::JobDsl.new(@config,nil,{}).resource('Unknown')
+      }.must_raise ElectricSheep::SheepException
+      err.message.must_equal "Resource 'Unknown' in Sheepfile is undefined"
+    end
   end
 
   it "makes hosts available" do
@@ -193,6 +193,13 @@ describe ElectricSheep::Dsl do
 
     describe_transport :move
     describe_transport :copy
+
+    it "appends an encryptor to the job's queue" do
+      job = build_job do
+        encrypt
+      end
+      job.queue.first.must_be_instance_of ElectricSheep::Metadata::Encryptor
+    end
 
   end
 

@@ -114,6 +114,10 @@ module ElectricSheep
         end
       end
 
+      def encrypt
+        @subject.add Metadata::Encryptor.new
+      end
+
       private
       def transport(action, options)
         options[:agent]=options.delete(:using)
