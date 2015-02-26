@@ -16,13 +16,11 @@ module ElectricSheep
     end
 
     def file_system_resource(type, host, opts={})
-      Resources.const_get(type.to_s.camelize).new(
-      {
-        extension: input.respond_to?(:extension) && input.extension || nil,
-        basename: input.basename,
-        host: host
-      }.merge(opts)
-      ).tap do |resource|
+      Resources.const_get(type.to_s.camelize).new({
+          extension: input.respond_to?(:extension) && input.extension || nil,
+          basename: input.basename,
+          host: host
+        }.merge(opts)).tap do |resource|
         resource.timestamp!(input)
       end
     end
