@@ -194,13 +194,6 @@ describe ElectricSheep::Dsl do
     describe_transport :move
     describe_transport :copy
 
-    it "appends an encryptor to the job's queue" do
-      job = build_job do
-        encrypt
-      end
-      job.queue.first.must_be_instance_of ElectricSheep::Metadata::Encryptor
-    end
-
   end
 
 end

@@ -29,9 +29,12 @@ module ElectricSheep
     end
 
     def stat!(resource)
-      resource.stat!(send("stat_#{resource.type}", resource)) if resource.stat.size.nil?
+      if resource.stat.size.nil?
+        resource.stat!(send("stat_#{resource.type}", resource))
+      end
       rescue Exception => e
-        logger.debug "Unable to stat resource of type #{resource.type}: #{e.message}"
+        logger.
+          debug "Unable to stat resource of type #{resource.type}: #{e.message}"
     end
 
     module ClassMethods

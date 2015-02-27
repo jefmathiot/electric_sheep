@@ -20,11 +20,16 @@ module ElectricSheep
 
         BASE_COMMAND='gpg --batch'.freeze
 
+        def initialize(executor)
+          @executor = executor
+        end
+
         private
+
         def exec(cmd)
-          result = Spawn.exec cmd
+          result = @executor.exec cmd
           if result[:exit_status] != 0
-            raise "GPG command failed to complete \"#{cmd}\": #{result[:err]}"
+            raise "Command failed to complete \"#{cmd}\": #{result[:err]}"
           end
           result[:out]
         end
@@ -41,27 +46,30 @@ module ElectricSheep
         end
 
         def with_keyring(keyfile, &block)
+          output = nil
           # Using the block form to ensure the directory will be removed
-          Dir.mktmpdir do |homedir|
+          Helpers::FSUtil.tempdir(@executor) do |homedir|
             cmd = "#{BASE_COMMAND} --homedir #{homedir}"
             import_key(cmd, keyfile)
-            yield cmd
+            output = yield cmd
           end
+          output
         end
 
         def import_key(cmd, keyfile)
           exec "#{cmd} --import #{keyfile}"
         end
 
-        def with_content_file(text)
-          content = Tempfile.new('encryptor-content')
-          begin
-            content.write text
-            content.close
-            yield content.path
-          ensure
-            content.close
-            content.unlink
+        def expand_path(path)
+          Helpers::FSUtil.expand_path(@executor, path)
+        end
+
+        def with_content_file(text, &block)
+          # Using the block form to ensure the file will be removed
+          Helpers::FSUtil.tempfile(@executor) do |path|
+            exec "echo \"#{shell_safe(text)}\" > #{path} && " +
+              "chmod 0700 #{path}"
+            yield path
           end
         end
 
@@ -100,8 +108,8 @@ module ElectricSheep
 
         private
         def perform(action, keyfile, source, output, &block)
-          keyfile, source = File.expand_path(keyfile), File.expand_path(source)
-          File.expand_path(output).tap do |path|
+          keyfile, source = expand_path(keyfile), expand_path(source)
+          expand_path(output).tap do |path|
             wrap(action, keyfile, source, path, &block)
           end
         end
@@ -127,7 +135,7 @@ module ElectricSheep
         end
 
         def perform(action, keyfile, input, &block)
-          keyfile = File.expand_path(keyfile)
+          keyfile = expand_path(keyfile)
           output = nil
           with_content_file(input) do |source|
             output = wrap(action, keyfile, source, nil, &block)
@@ -138,7 +146,7 @@ module ElectricSheep
         private
         def expand(cipher_text)
           return cipher_text if cipher_text =~ /^#{PGP_ARMOR_HEADER}/
-          "#{PGP_ARMOR_HEADER}\n\n#{cipher_text}\n##{PGP_ARMOR_FOOTER}"
+          "#{PGP_ARMOR_HEADER}\n\n#{cipher_text}\n#{PGP_ARMOR_FOOTER}"
         end
 
         def compact(cipher_text)
@@ -151,12 +159,12 @@ module ElectricSheep
 
       class << self
 
-        def file
-          FileEncryptor.new
+        def file(executor)
+          FileEncryptor.new(executor)
         end
 
-        def string
-          StringEncryptor.new
+        def string(executor)
+          StringEncryptor.new(executor)
         end
 
       end

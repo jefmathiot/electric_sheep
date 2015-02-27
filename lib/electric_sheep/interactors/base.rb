@@ -32,7 +32,7 @@ module ElectricSheep
       def close ; end
 
       def delete!(resource)
-        exec "rm -rf #{expand_path(resource.path)}"
+        Helpers::FSUtil.delete! self, expand_path(resource.path)
       end
 
     end

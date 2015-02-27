@@ -37,7 +37,7 @@ module ElectricSheep
             working_directory,
             shell_safe(@job.id.downcase)
           )
-          @job_directory=@interactor.exec("echo \"#{directory}\"")[:out]
+          @job_directory=FSUtil.expand_path(@interactor, directory)
         end
         @job_directory
       end

@@ -54,7 +54,7 @@ module ElectricSheep
 
     def encrypt(secret)
       rescued(true) do
-        cipher = Crypto.gpg.string
+        cipher = Crypto.gpg.string(Spawn)
         STDOUT.puts cipher.encrypt(
           options[:key],
           secret,

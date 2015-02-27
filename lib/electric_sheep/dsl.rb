@@ -114,10 +114,6 @@ module ElectricSheep
         end
       end
 
-      def encrypt
-        @subject.add Metadata::Encryptor.new
-      end
-
       private
       def transport(action, options)
         options[:agent]=options.delete(:using)
@@ -132,6 +128,12 @@ module ElectricSheep
 
       def build(config, options={}, &block)
         @subject = new_shell(options)
+      end
+
+      def encrypt(options={})
+        key = @config.encryption_options.option(:with)
+        opts = {agent: 'encrypt', public_key: key}.merge(options)
+        @subject.add Metadata::Command.new(opts)
       end
 
       def method_missing(method, *args, &block)
