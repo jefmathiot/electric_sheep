@@ -5,21 +5,33 @@ if File.basename(Dir.pwd)=='tmp'
   ssh_key=File.join('../', 'acceptance', 'id_rsa')
   gpg_public_key = File.join('../', 'acceptance', 'public_key.gpg')
   dummy= File.expand_path('dummy.file')
-  dummy_directory= File.expand_path('dummy-directory')
 else
   # Manual run
   working_directory File.expand_path("tmp")
   ssh_key='./acceptance/id_rsa'
   gpg_public_key = File.join('./acceptance', 'public_key.gpg')
   dummy= File.expand_path('tmp/dummy.file')
-  dummy_directory= File.expand_path('tmp/dummy-directory')
 end
 
 encrypt with: gpg_public_key
 
-job "encrypt-file-locally", private_key: ssh_key do
+host "main-host", hostname: "127.0.0.1",
+  ssh_port: 2222,
+  working_directory: "/tmp/acceptance",
+  private_key: ssh_key
+
+
+job "encrypt-file-locally" do
   resource "file", path: dummy
   locally do
     encrypt
   end
+end
+
+job "encrypt-file-remotely" do
+  resource "file", path: 'dummy.file', host: "main-host"
+  remotely as: "vagrant" do
+    encrypt
+  end
+  copy to: "localhost", using: "scp", as: "vagrant"
 end

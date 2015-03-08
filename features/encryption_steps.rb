@@ -28,7 +28,7 @@ Then(/^everything goes well$/) do
   # Do nothing, the previous step fails on error
 end
 
-Then(/^the local file should have been encrypted$/) do
+Then(/^the file should have been encrypted$/) do
   filename = File.basename(Dir.glob("tmp/#{@job}/dummy-*.gpg").first)
   @encrypted_file = "#{@job}/#{filename}"
   check_file_content @encrypted_file, 'SECRET', false
@@ -41,6 +41,15 @@ Then(/^I should be able to decrypt it back$/) do
   args << " #{@encrypted_file}"
   args << " #{output.path}"
   step "I successfully run `bundle exec #{electric_sheep} decrypt #{args}`"
-  check_file_content output.path, 'SECRET', true
+  check_file_content output.path, "SECRET\n", true
   output.unlink
+end
+
+Given(/^a local file containing private data$/) do
+  @resource_name = "dummy.file"
+  write_file(@resource_name, "SECRET\n")
+end
+
+Given(/^a remote file containing private data in the job "(.*?)"$/) do |job|
+  step "a remote file containing \"SECRET\" in the job \"#{job}\""
 end
