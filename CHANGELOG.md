@@ -7,6 +7,7 @@ Please notice we'll use semantic versioning as of 1.0.0.
 ### Added
 
 * Added an `encrypt` command to encrypt backup files using GPG
+* Added a `decrypt` CLI command to decrypt backup files using GPG
 
 ## 0.4.0 - 2015-02-25
 
