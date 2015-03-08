@@ -125,16 +125,16 @@ describe ElectricSheep::CLI do
 
     it 'encrypts secrets' do
       encryptor.expects(:encrypt).
-      with('/some/key', 'SECRET', ascii: true, compact: true).
-      returns('CIPHER')
+        with('/some/key', 'SECRET', ascii: true, compact: true).
+        returns('CIPHER')
       STDOUT.expects(:puts).with("CIPHER")
       subject.new([], key: '/some/key', standard_armor: false).encrypt('SECRET')
     end
 
     it 'disables the compact output' do
       encryptor.expects(:encrypt).
-      with('/some/key', 'SECRET', ascii: true, compact: false).
-      returns('CIPHER')
+        with('/some/key', 'SECRET', ascii: true, compact: false).
+        returns('CIPHER')
       STDOUT.expects(:puts).with("CIPHER")
       subject.new([], key: '/some/key', standard_armor: true).encrypt('SECRET')
     end
@@ -148,6 +148,14 @@ describe ElectricSheep::CLI do
       end
     end
 
+  end
+
+  it 'decrypts a file' do
+    ElectricSheep::Crypto.gpg.expects(:file).with(::ElectricSheep::Spawn).
+      returns(encryptor = mock)
+    encryptor.expects(:decrypt).
+      with('/some/key', '/some/input', '/some/output')
+    subject.new([], key: '/some/key').decrypt('/some/input', '/some/output')
   end
 
   describe 'controlling the master process' do

@@ -64,6 +64,19 @@ module ElectricSheep
       end
     end
 
+
+    desc "decrypt INPUT OUTPUT", "Decrypt the encrypted INPUT file to OUTPUT " +
+      "using the provided private key"
+    option :key, aliases: %w(-k), required: true,
+      desc: "The GPG private key"
+    logging_options
+    def decrypt(input, output)
+      rescued(true) do
+        cipher = Crypto.gpg.file(Spawn)
+        cipher.decrypt(options[:key], input, output)
+      end
+    end
+
     desc "start", "Start a master process"
     option :daemon, aliases: %w(-d), type: :boolean, default: false,
       desc: "Place processes in the background"
