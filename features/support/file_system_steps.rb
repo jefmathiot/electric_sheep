@@ -3,6 +3,11 @@ Given(/^a local file$/) do
   step "a 102400 byte file named \"#{@resource_name}\""
 end
 
+Given(/^a local file containing private data$/) do
+  @resource_name = "dummy.file"
+  write_file(@resource_name, "SECRET")
+end
+
 Given(/^a local directory containing multiple files$/) do
   @resource_name="dummy-directory"
   step "a directory named \"#{@resource_name}\""

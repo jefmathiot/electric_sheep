@@ -1,0 +1,25 @@
+# Local working directory
+if File.basename(Dir.pwd)=='tmp'
+  # Cucumber features
+  working_directory File.expand_path('./')
+  ssh_key=File.join('../', 'acceptance', 'id_rsa')
+  gpg_public_key = File.join('../', 'acceptance', 'public_key.gpg')
+  dummy= File.expand_path('dummy.file')
+  dummy_directory= File.expand_path('dummy-directory')
+else
+  # Manual run
+  working_directory File.expand_path("tmp")
+  ssh_key='./acceptance/id_rsa'
+  gpg_public_key = File.join('./acceptance', 'public_key.gpg')
+  dummy= File.expand_path('tmp/dummy.file')
+  dummy_directory= File.expand_path('tmp/dummy-directory')
+end
+
+encrypt with: gpg_public_key
+
+job "encrypt-file-locally", private_key: ssh_key do
+  resource "file", path: dummy
+  locally do
+    encrypt
+  end
+end
