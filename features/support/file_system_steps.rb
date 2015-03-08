@@ -27,14 +27,18 @@ Given(/^a remote file$/) do
   step "a 102400 byte file named \"#{@resource_name}\""
 end
 
-Given(/^a remote file in the job "(.*?)"$/) do |job|
+Given(/^a remote file containing "(.*?)" in the job "(.*?)"$/) do |content, job|
   @job = job
   "/tmp/acceptance/#{job}".tap do |job_directory|
     @resource_name="#{job_directory}/dummy.file"
     ssh_run_simple("mkdir -p #{job_directory}")
-    ssh_run_simple("echo 'content' >> #{@resource_name}")
+    ssh_run_simple("echo '#{content}' >> #{@resource_name}")
   end
   assert_remote_file_exists? @resource_name
+end
+
+Given(/^a remote file in the job "(.*?)"$/) do |job|
+  step "a remote file containing \"content\" in the job \"#{job}\""
 end
 
 Given(/^a remote directory containing multiple files in the job "(.*?)"$/) do |job|

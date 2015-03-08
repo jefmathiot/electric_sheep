@@ -54,13 +54,26 @@ module ElectricSheep
 
     def encrypt(secret)
       rescued(true) do
-        cipher = Crypto.gpg.string
+        cipher = Crypto.gpg.string(Spawn)
         STDOUT.puts cipher.encrypt(
           options[:key],
           secret,
           ascii: true,
           compact: !options[:standard_armor]
         )
+      end
+    end
+
+
+    desc "decrypt INPUT OUTPUT", "Decrypt the encrypted INPUT file to OUTPUT " +
+      "using the provided private key"
+    option :key, aliases: %w(-k), required: true,
+      desc: "The GPG private key"
+    logging_options
+    def decrypt(input, output)
+      rescued(true) do
+        cipher = Crypto.gpg.file(Spawn)
+        cipher.decrypt(options[:key], input, output)
       end
     end
 

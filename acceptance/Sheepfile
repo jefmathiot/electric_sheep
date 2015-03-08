@@ -23,7 +23,7 @@ host "backup-store", hostname: "127.0.0.1",
 
 ###############################################################################
 ## SCP
-  job "scp-move-local-to-remote", private_key: ssh_key do
+job "scp-move-local-to-remote", private_key: ssh_key do
   resource "file", path: dummy
   move to: "main-host", using: "scp", as: "vagrant"
 end

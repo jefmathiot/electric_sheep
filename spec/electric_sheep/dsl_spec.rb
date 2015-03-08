@@ -19,20 +19,20 @@ describe ElectricSheep::Dsl do
   end
 
   describe ElectricSheep::Dsl::AbstractDsl do
-      it "raises an error on method missing" do
-        -> {
-          ElectricSheep::Dsl::AbstractDsl.new.orphan_method
-        }.must_raise ElectricSheep::SheepException
-      end
+    it "raises an error on method missing" do
+      -> {
+        ElectricSheep::Dsl::AbstractDsl.new.orphan_method
+      }.must_raise ElectricSheep::SheepException
+    end
   end
 
   describe ElectricSheep::Dsl::JobDsl do
-      it "raises an error on class unknown" do
-        err = -> {
-          ElectricSheep::Dsl::JobDsl.new(@config,nil,{}).resource('Unknown')
-        }.must_raise ElectricSheep::SheepException
-        err.message.must_equal "Resource 'Unknown' in Sheepfile is undefined"
-      end
+    it "raises an error on class unknown" do
+      err = -> {
+        ElectricSheep::Dsl::JobDsl.new(@config,nil,{}).resource('Unknown')
+      }.must_raise ElectricSheep::SheepException
+      err.message.must_equal "Resource 'Unknown' in Sheepfile is undefined"
+    end
   end
 
   it "makes hosts available" do
@@ -123,7 +123,19 @@ describe ElectricSheep::Dsl do
       end
 
       included do
+
+        it "adds an encryption command" do
+          @config.expects(:encryption_options).returns(opts = mock)
+          opts.expects(:option).with(:with).returns('public/key')
+          build_shell do
+            encrypt
+          end
+          @shell.queue.first.agent.must_equal 'encrypt'
+          @shell.queue.first.send(:option, :public_key).must_equal 'public/key'
+        end
+
         describe "adding a command" do
+
           def build_command(options={})
             build_shell do
               do_nothing options
@@ -138,6 +150,7 @@ describe ElectricSheep::Dsl do
           end
 
         end
+
       end
 
     end

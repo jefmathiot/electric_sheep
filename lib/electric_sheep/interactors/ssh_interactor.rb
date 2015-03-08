@@ -99,10 +99,9 @@ module ElectricSheep
       end
 
       def tmpdir(source, target)
-        t = Time.now.strftime("%Y%m%d")
         File.join(
           File.dirname(target),
-          "tmp#{t}-#{$$}-#{rand(0x100000000).to_s(36)}",
+          Helpers::FSUtil.tempname,
           File.basename(source)
         )
       end

@@ -130,6 +130,12 @@ module ElectricSheep
         @subject = new_shell(options)
       end
 
+      def encrypt(options={})
+        key = @config.encryption_options.option(:with)
+        opts = {agent: 'encrypt', public_key: key}.merge(options)
+        @subject.add Metadata::Command.new(opts)
+      end
+
       def method_missing(method, *args, &block)
         if Agents::Register.command(method)
           opts = {agent: method}.merge(args.first || {})

@@ -31,7 +31,8 @@ describe ElectricSheep::Commands::Compression::TarGz do
             "#{File.basename(input.path)} 1>&2"
           ]
           cmds << "rm -rf #{input.path}" if delete_source
-          shell.expects(:expand_path).at_least(1).with(input.path).returns(input.path)
+          shell.expects(:expand_path).at_least(1).with(input.path).
+            returns(input.path)
           expects_stat(input_type, input, 4096)
           ensure_execution(*cmds)
           input.transient?.must_equal true if delete_source

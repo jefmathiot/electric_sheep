@@ -15,5 +15,5 @@ Feature: Use encrypted secrets
 
   Scenario: Use encrypted credentials
     Given Electric Sheep has access to a valid private key
-    When I tell the sheep to work on configuration "Sheepfile.encryption"
+    When I tell the sheep to work on configuration "Sheepfile.secrets"
     Then everything goes well
