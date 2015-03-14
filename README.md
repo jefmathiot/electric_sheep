@@ -1,6 +1,6 @@
-# Electric Sheep IO
+# ElectricSheep.IO
 
-An (hopefully) simple tool to execute backup tasks and copy archives offsite.
+A (hopefully) simple tool to execute backup tasks and copy archives offsite.
 It's designed to operate from an utility machine over the network using SSH
 connections and eliminate the need for configuration and scripting on the target
 hosts.
@@ -21,4 +21,3 @@ See [the documentation](http://electricsheepio.readme.io)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
-
