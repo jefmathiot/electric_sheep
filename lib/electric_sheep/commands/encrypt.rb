@@ -1,9 +1,10 @@
 module ElectricSheep
   module Commands
-    class Encrypt
 
+    class Encrypt
       include Command
       include Helpers::ShellSafe
+      include DeleteSource
 
       register as: "encrypt"
 
@@ -16,6 +17,7 @@ module ElectricSheep
             input_path = shell.expand_path(input.path)
             output_path = shell.expand_path(output.path)
             Crypto.gpg.file(shell).encrypt(keyfile, input_path, output_path)
+            delete_source!(input_path)
           end
         end
       end
@@ -41,5 +43,6 @@ module ElectricSheep
       end
 
     end
+
   end
 end

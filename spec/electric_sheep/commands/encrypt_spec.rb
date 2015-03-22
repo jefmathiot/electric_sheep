@@ -27,29 +27,44 @@ describe ElectricSheep::Commands::Encrypt do
       returns(exit_status: status, out: "ARMORED ASCII")
   end
 
+  class << self
+
+    def ensure_encryption(delete_source = false)
+
+      suffix = delete_source ? " and removes input" : ""
+
+      it "encrypts the provided input#{suffix}" do
+        metadata.stubs(:public_key).returns('/path/to/key')
+        metadata.stubs(:delete_source).returns(delete_source)
+        shell.expects(:expand_path).at_least(1).with(input.path).
+          returns(input.path)
+        # Initial steps
+        expects_stat(:file, input, 4096)
+        logger.expects(:info).in_sequence(seq).with("Encrypting \"file\"")
+        # Key copy
+        expects_key_conversion
+
+        # Final call
+        gpg.expects(:file).with(shell).returns(encryptor = mock)
+        encryptor.expects(:encrypt).with('/tmp/keyfile', input.path, output_path)
+
+        cmds = ["echo \"ARMORED ASCII\" > /tmp/ascii"]
+        cmds << "gpg --batch --dearmor < /tmp/ascii > /tmp/keyfile"
+        cmds << "rm -rf #{input.path}" if delete_source
+        ensure_execution(*cmds)
+      end
+    end
+
+  end
+
   executing do
     let(:output_name){ "file-20140605-040302" }
     let(:output_ext){ ".gpg" }
     let(:output_type){:file}
     let(:input){ file("/tmp/file") }
 
-    it 'encrypts the provided input' do
-      metadata.stubs(:public_key).returns('/path/to/key')
-      shell.expects(:expand_path).at_least(1).with(input.path).
-        returns(input.path)
-      # Initial steps
-      expects_stat(:file, input, 4096)
-      logger.expects(:info).in_sequence(seq).with("Encrypting \"file\"")
-      # Key copy
-      expects_key_conversion
-      cmds = ["echo \"ARMORED ASCII\" > /tmp/ascii"]
-      cmds << "gpg --batch --dearmor < /tmp/ascii > /tmp/keyfile"
-      # Final call
-      gpg.expects(:file).with(shell).returns(encryptor = mock)
-      encryptor.expects(:encrypt).with('/tmp/keyfile', input.path, output_path)
-      ensure_execution(*cmds)
-    end
-
+    ensure_encryption
+    ensure_encryption(true)
   end
 
   it 'raises when unable to convert public key to the ASCII-armored format' do
