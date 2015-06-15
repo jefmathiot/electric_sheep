@@ -1,11 +1,10 @@
 module ElectricSheep
   module Rescueable
-
     def logger
-      raise "Undefined logger, please override"
+      fail 'Undefined logger, please override'
     end
 
-    def rescued(fail_on_error = false, &block)
+    def rescued(fail_on_error = false, &_)
       yield
       false
       rescue Exception => ex
@@ -14,6 +13,5 @@ module ElectricSheep
         Kernel.exit 1 if fail_on_error
         true
     end
-
   end
 end

@@ -26,7 +26,6 @@ module ElectricSheep
       def failed?
         status == :failed
       end
-
     end
   end
 end

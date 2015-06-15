@@ -3,7 +3,7 @@ module ElectricSheep
     class Base
       include Options
 
-      def initialize(opts={})
+      def initialize(opts = {})
         @options = opts
       end
 
@@ -15,7 +15,7 @@ module ElectricSheep
         self.class.options
       end
 
-      def validate(config)
+      def validate(_config)
         options.each do |option, opts|
           ensure_present(option) if opts[:required]
         end
@@ -30,7 +30,7 @@ module ElectricSheep
         end
       end
 
-      def respond_to?(method, include_all=false)
+      def respond_to?(method, include_all = false)
         option?(method) || super
       end
 
@@ -45,22 +45,18 @@ module ElectricSheep
       protected
 
       def ensure_present(opt)
-        if option(opt).nil?
-          errors.add(opt, "Option #{opt} is required")
-        end
+        errors.add(opt, "Option #{opt} is required") if option(opt).nil?
       end
-
     end
 
     class Errors
-
       def initialize
         @errors = {}.with_indifferent_access
       end
 
-      def add(option, message, caused_by=Errors.new)
+      def add(option, message, caused_by = Errors.new)
         @errors[option] ||= []
-        @errors[option] << {message: message, caused_by: caused_by}
+        @errors[option] << { message: message, caused_by: caused_by }
       end
 
       def [](option)
@@ -70,8 +66,6 @@ module ElectricSheep
       def empty?
         @errors.empty?
       end
-
     end
-
   end
 end

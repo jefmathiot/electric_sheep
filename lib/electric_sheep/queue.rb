@@ -1,6 +1,5 @@
 module ElectricSheep
   module Queue
-
     delegate :size, to: :queue
 
     def add(item)

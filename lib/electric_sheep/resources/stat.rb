@@ -5,8 +5,8 @@ module ElectricSheep
 
       attr_accessor :size
 
-      def initialize(size=nil)
-        @size=size
+      def initialize(size = nil)
+        @size = size
       end
 
       def humanize

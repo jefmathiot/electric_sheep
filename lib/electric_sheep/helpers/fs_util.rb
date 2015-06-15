@@ -1,20 +1,18 @@
 module ElectricSheep
   module Helpers
     module FSUtil
-
       class << self
-
-        TMPDIR = "/tmp".freeze
+        TMPDIR = '/tmp'.freeze
 
         def tempname
-          t = Time.now.strftime("%Y%m%d")
-          "tmp#{t}-#{$$}-#{rand(0x100000000).to_s(36)}"
+          t = Time.now.strftime('%Y%m%d')
+          "tmp#{t}-#{$PID}-#{rand(0x100000000).to_s(36)}"
         end
 
         def tempdir(executor, &block)
           path = expand_path(executor, File.join(TMPDIR, tempname))
           output = executor.exec("mkdir -p #{path} && chmod 0700 #{path}")
-          raise "Unable to create tempdir" if output[:exit_status] != 0
+          fail 'Unable to create tempdir' if output[:exit_status] != 0
           yield_path(executor, path, &block)
         end
 
@@ -32,7 +30,8 @@ module ElectricSheep
         end
 
         private
-        def yield_path(executor, path, &block)
+
+        def yield_path(executor, path, &_)
           if block_given?
             begin
               yield path
@@ -42,9 +41,7 @@ module ElectricSheep
           end
           path
         end
-
       end
-
     end
   end
 end

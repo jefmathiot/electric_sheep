@@ -4,21 +4,17 @@ require 'fileutils'
 
 module ElectricSheep
   module Crypto
-
     class << self
-
       def gpg
         GPG
       end
-
     end
 
     module GPG
-
       module Encryptor
         include Helpers::ShellSafe
 
-        BASE_COMMAND='gpg --batch'.freeze
+        BASE_COMMAND = 'gpg --batch'.freeze
 
         def initialize(executor)
           @executor = executor
@@ -29,23 +25,21 @@ module ElectricSheep
         def exec(cmd)
           result = @executor.exec cmd
           if result[:exit_status] != 0
-            raise "Command failed to complete \"#{cmd}\": #{result[:err]}"
+            fail "Command failed to complete \"#{cmd}\": #{result[:err]}"
           end
           result[:out]
         end
 
         def keyid(keyfile)
-          keylist = exec "#{BASE_COMMAND} --with-colons --fixed-list-mode " +
-            "--keyid-format 0xlong #{keyfile}"
+          keylist = exec "#{BASE_COMMAND} --with-colons --fixed-list-mode " \
+                         "--keyid-format 0xlong #{keyfile}"
           keylist.split(/\n+/).each do |line|
-            if line =~ /^(pub|sec):/
-              return line.split(':')[4]
-            end
+            return line.split(':')[4] if line =~ /^(pub|sec):/
           end
-          raise "Unable to retrieve key info for #{keyfile}"
+          fail "Unable to retrieve key info for #{keyfile}"
         end
 
-        def with_keyring(keyfile, &block)
+        def with_keyring(keyfile, &_)
           output = nil
           # Using the block form to ensure the directory will be removed
           Helpers::FSUtil.tempdir(@executor) do |homedir|
@@ -64,11 +58,11 @@ module ElectricSheep
           Helpers::FSUtil.expand_path(@executor, path)
         end
 
-        def with_content_file(text, &block)
+        def with_content_file(text, &_)
           # Using the block form to ensure the file will be removed
           Helpers::FSUtil.tempfile(@executor) do |path|
-            exec "echo \"#{shell_safe(text)}\" > #{path} && " +
-              "chmod 0700 #{path}"
+            exec "echo \"#{shell_safe(text)}\" > #{path} && " \
+                 "chmod 0700 #{path}"
             yield path
           end
         end
@@ -81,7 +75,7 @@ module ElectricSheep
           options[:ascii] == true ? ' --armor' : ''
         end
 
-        def wrap(action, keyfile, source, output = nil, &block)
+        def wrap(action, keyfile, source, output = nil, &_)
           with_keyring(keyfile) do |cmd|
             cmd << yield if block_given?
             cmd << command_options(action, keyfile)
@@ -90,46 +84,46 @@ module ElectricSheep
             exec wrapper
           end
         end
-
       end
 
       class FileEncryptor
         include Encryptor
 
-        def encrypt(keyfile, source, output, options={})
+        def encrypt(keyfile, source, output, options = {})
           perform(:encrypt, keyfile, source, output) do
             ascii_armor(options)
           end
         end
 
-        def decrypt(keyfile, source, output, options={})
+        def decrypt(keyfile, source, output, _options = {})
           perform(:decrypt, keyfile, source, output)
         end
 
         private
+
         def perform(action, keyfile, source, output, &block)
-          keyfile, source = expand_path(keyfile), expand_path(source)
+          keyfile = expand_path(keyfile)
+          source = expand_path(source)
           expand_path(output).tap do |path|
             wrap(action, keyfile, source, path, &block)
           end
         end
-
       end
 
       class StringEncryptor
         include Encryptor
 
-        PGP_ARMOR_HEADER="-----BEGIN PGP MESSAGE-----".freeze
-        PGP_ARMOR_FOOTER="-----END PGP MESSAGE-----".freeze
+        PGP_ARMOR_HEADER = '-----BEGIN PGP MESSAGE-----'.freeze
+        PGP_ARMOR_FOOTER = '-----END PGP MESSAGE-----'.freeze
 
-        def encrypt(keyfile, plain_text, options={})
+        def encrypt(keyfile, plain_text, options = {})
           output = perform(:encrypt, keyfile, plain_text) do
             ascii_armor(options)
           end
           options[:compact] ? compact(output) : output
         end
 
-        def decrypt(keyfile, cipher_text, options={})
+        def decrypt(keyfile, cipher_text, _options = {})
           cipher_text = expand(cipher_text)
           perform(:decrypt, keyfile, cipher_text)
         end
@@ -144,6 +138,7 @@ module ElectricSheep
         end
 
         private
+
         def expand(cipher_text)
           return cipher_text if cipher_text =~ /^#{PGP_ARMOR_HEADER}/
           "#{PGP_ARMOR_HEADER}\n\n#{cipher_text}\n#{PGP_ARMOR_FOOTER}"
@@ -151,14 +146,12 @@ module ElectricSheep
 
         def compact(cipher_text)
           return cipher_text unless cipher_text =~ /^#{PGP_ARMOR_HEADER}/
-          cipher_text.gsub(/-----(BEGIN|END) PGP MESSAGE-----/, '').
-            split(/\n+/).join
+          cipher_text.gsub(/-----(BEGIN|END) PGP MESSAGE-----/, '')
+            .split(/\n+/).join
         end
-
       end
 
       class << self
-
         def file(executor)
           FileEncryptor.new(executor)
         end
@@ -166,10 +159,7 @@ module ElectricSheep
         def string(executor)
           StringEncryptor.new(executor)
         end
-
       end
-
     end
-
   end
 end

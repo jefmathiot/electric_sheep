@@ -20,7 +20,7 @@ describe ElectricSheep::Agents::Register do
       end
 
       it "allows assignment of default options for #{type}" do
-        subject.set_defaults_for(type => 'fake', an_option: 'value')
+        subject.assign_defaults_for(type => 'fake', an_option: 'value')
         subject.defaults_for(type, 'fake').must_equal({'an_option' => 'value'})
       end
 
@@ -28,7 +28,7 @@ describe ElectricSheep::Agents::Register do
 
     it "raises when assigning defaults for an unknown #{type}" do
       options=
-      ex = ->{ subject.set_defaults_for({type => 'xxxx'}) }.
+      ex = ->{ subject.assign_defaults_for({type => 'xxxx'}) }.
         must_raise RuntimeError
       ex.message.must_equal "Can't assign default options for the unknown " +
         "#{type} xxxx"

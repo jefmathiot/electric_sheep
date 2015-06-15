@@ -1,7 +1,5 @@
 module ElectricSheep
   module Metadata
-    class Notifier < Agent
-
-    end
+    class Notifier < Agent; end
   end
 end

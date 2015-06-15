@@ -1,6 +1,5 @@
 module ElectricSheep
   module Runner
-
     class SingleRun
       include Rescueable
 
@@ -8,31 +7,36 @@ module ElectricSheep
       attr_reader :logger
 
       def initialize(config, logger, job)
-        @config=config
-        @logger=logger
-        @job=job
+        @config = config
+        @logger = logger
+        @job = job
       end
 
       def run!
-        has_been_rescued = rescued do
-          @logger.info "Executing \"#{job.name}\""
-          job.pipelined(job.starts_with) do |step, input|
-            send("execute_#{executable_type(step)}", job, input, step)
-          end
-        end
+        has_been_rescued = rescue_job
         notify(job)
         return false if has_been_rescued
-        @logger.info "job \"#{job.name}\" completed in %.3f seconds" %
-          job.execution_time.round(3)
+        @logger.info format("job \"#{job.name}\" completed in %.3f seconds",
+                            job.execution_time.round(3))
         true
       end
 
       private
+
       def notify(job)
         job.notifiers.each do |metadata|
           rescued do
-            metadata.agent_klazz.
-              new(job, @config.hosts, logger, metadata).notify!
+            metadata.agent_klazz
+              .new(job, @config.hosts, logger, metadata).notify!
+          end
+        end
+      end
+
+      def rescue_job
+        rescued do
+          @logger.info "Executing \"#{job.name}\""
+          job.pipelined(job.starts_with) do |step, input|
+            send("execute_#{executable_type(step)}", job, input, step)
           end
         end
       end
@@ -60,18 +64,16 @@ module ElectricSheep
       end
 
       def execute_transport(job, input, metadata)
-        transport = metadata.agent_klazz.
-          new(job, @logger, @config.hosts, input, metadata)
+        klazz = metadata.agent_klazz
+        transport = klazz.new(job, @logger, @config.hosts, input, metadata)
         metadata.monitored do
           transport.run!
         end
         return transport.output, transport.product
       end
-
     end
 
     class Inline
-
       def initialize(options)
         @config = options[:config]
         @logger = options[:logger]
@@ -87,30 +89,29 @@ module ElectricSheep
       end
 
       protected
+
       def run_all!
-        failures=[]
+        failures = []
         @config.iterate do |job|
           failures << job.name unless run(job)
         end
-        if failures.count > 0
-          jobs=failures.map{ |p| "\"#{p}\""}.join(', ')
-          raise "Some jobs have failed: #{jobs}"
-        end
+        return unless failures.count > 0
+        jobs = failures.map { |p| "\"#{p}\"" }.join(', ')
+        fail "Some jobs have failed: #{jobs}"
       end
 
       def run_single!
-        job=@config.queue.find{|p|p.id==@job}
+        job = @config.queue.find { |p| p.id == @job }
         if job.nil?
-          raise "job \"#{@job}\" does not exist"
+          fail "job \"#{@job}\" does not exist"
         else
-          raise "job #{job.id} has failed" unless run(job)
+          fail "job #{job.id} has failed" unless run(job)
         end
       end
 
       def run(job)
         SingleRun.new(@config, @logger, job).run!
       end
-
     end
   end
 end

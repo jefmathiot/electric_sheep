@@ -3,7 +3,6 @@ require 'erb'
 module ElectricSheep
   module Notifiers
     class Template
-
       def initialize(type)
         # Trim mode omit newline for lines starting with <% and ending in %>
         @renderer = ERB.new(template(type), nil, '<>')
@@ -16,20 +15,20 @@ module ElectricSheep
       protected
 
       def template(type)
-        path=File.join(ElectricSheep.template_path, type)
+        path = File.join(ElectricSheep.template_path, type)
         path << '.erb'
-        raise "Unable to find template #{path}" unless File.exists?(path)
+        fail "Unable to find template #{path}" unless File.exist?(path)
         File.read path
       end
 
       class Binding
         def initialize(context)
-          @context=context
+          @context = context
         end
 
         def method_missing(m, *args, &block)
-          if @context.has_key?(m)
-           @context[m]
+          if @context.key?(m)
+            @context[m]
           else
             super
           end
@@ -50,7 +49,7 @@ module ElectricSheep
         def to_duration(seconds)
           minutes, seconds = seconds.divmod(60)
           hours, minutes = minutes.divmod(60)
-          "%dh%dm%ds" % [hours, minutes, seconds]
+          format '%dh%dm%ds', hours, minutes, seconds
         end
 
         def asset(path)
@@ -65,9 +64,7 @@ module ElectricSheep
         def get_binding
           binding
         end
-
       end
-
     end
   end
 end

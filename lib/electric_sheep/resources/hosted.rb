@@ -8,7 +8,6 @@ module ElectricSheep
       included do
         option :host, required: true
       end
-
     end
   end
 end

@@ -39,6 +39,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'guard-minitest', '~> 2.3', '>= 2.3.2'
   spec.add_development_dependency 'timecop', '~> 0.7', '>= 0.7.1'
   spec.add_development_dependency 'aruba', '~> 0.6', '>= 0.6.1'
+  spec.add_development_dependency 'rubocop', '~> 0.32', '>= 0.32.0'
 
   spec.add_dependency 'thor', '~> 0.19', '>= 0.19.1'
   spec.add_dependency 'colorize', '~> 0.7', '>= 0.7.3'

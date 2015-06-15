@@ -48,7 +48,7 @@ describe ElectricSheep::Dsl do
 
   it 'allows defaults for agents' do
     options={command: 'id'}
-    ElectricSheep::Agents::Register.expects(:set_defaults_for).with(options)
+    ElectricSheep::Agents::Register.expects(:assign_defaults_for).with(options)
     @dsl.defaults_for options
   end
 

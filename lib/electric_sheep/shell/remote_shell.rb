@@ -1,7 +1,6 @@
 module ElectricSheep
   module Shell
     class RemoteShell < Base
-
       def initialize(host, job, input, logger, user)
         super(host, job, input, logger)
         @user = user
@@ -17,11 +16,10 @@ module ElectricSheep
       end
 
       def perform!(metadata)
-        @logger.info "Starting a remote shell session for " +
+        @logger.info 'Starting a remote shell session for ' \
           "#{@user}@#{host.hostname} on port #{host.ssh_port}"
         super
       end
-
     end
   end
 end

@@ -11,7 +11,7 @@ module ElectricSheep
       end
 
       def options
-        unless agent_klazz.nil?
+        if agent_klazz
           agent_klazz.options.merge(super)
         else
           super
@@ -19,16 +19,14 @@ module ElectricSheep
       end
 
       def safe_option(name)
-        value=option(name)
-        if value && options[name][:secret]
-          return '****'
-        end
+        value = option(name)
+        return '****' if value && options[name][:secret]
         value
       end
 
       def option(name)
-        super || @options[:agent] && Agents::Register.
-          defaults_for(type, @options[:agent])[name]
+        super || @options[:agent] && Agents::Register
+          .defaults_for(type, @options[:agent])[name]
       end
 
       def agent_klazz
@@ -37,12 +35,11 @@ module ElectricSheep
       end
 
       private
-      def ensure_known_agent
-        if agent_klazz.nil?
-          errors.add(type.to_sym, "Unknown #{type} \"#{agent}\"")
-        end
-      end
 
+      def ensure_known_agent
+        return unless agent_klazz.nil?
+        errors.add(type.to_sym, "Unknown #{type} \"#{agent}\"")
+      end
     end
   end
 end

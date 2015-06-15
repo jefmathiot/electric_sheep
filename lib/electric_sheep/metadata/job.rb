@@ -21,7 +21,7 @@ module ElectricSheep
       def validate(config)
         queue.each do |step|
           unless step.validate(config)
-            errors.add(:base, "Invalid step #{step.to_s}", step.errors)
+            errors.add(:base, "Invalid step #{step}", step.errors)
           end
         end
         super
@@ -31,11 +31,10 @@ module ElectricSheep
         @schedule = schedule
       end
 
-      def on_schedule(&block)
-        if @schedule && @schedule.expired?
-          @schedule.update!
-          yield self
-        end
+      def on_schedule(&_)
+        return unless @schedule && @schedule.expired?
+        @schedule.update!
+        yield self
       end
 
       def name
@@ -45,7 +44,6 @@ module ElectricSheep
       def notifiers
         @notifiers ||= []
       end
-
     end
   end
 end

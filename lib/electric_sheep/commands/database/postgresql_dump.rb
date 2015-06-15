@@ -5,7 +5,7 @@ module ElectricSheep
         include Command
         include Helpers::ShellSafe
 
-        register as: "postgresql_dump"
+        register as: 'postgresql_dump'
 
         option :sudo_as
         option :user
@@ -13,8 +13,8 @@ module ElectricSheep
         option :password, secret: true
 
         def perform!
-          logger.info "Creating a dump of the \"#{input.basename}\" " +
-            "PostgreSQL database"
+          logger.info "Creating a dump of the \"#{input.basename}\" " \
+                      'PostgreSQL database'
           file_resource(host, extension: '.sql').tap do |dump|
             shell.exec cmd(dump)
           end
@@ -25,14 +25,15 @@ module ElectricSheep
         end
 
         private
+
         def cmd(dump)
-          login_options("pg_dump") + login_host_option +
+          login_options('pg_dump') + login_host_option +
             " -d #{shell_safe(input.name)} > #{shell.expand_path(dump.path)}"
         end
 
         def database_size_cmd(input)
-          login_options("psql") + login_host_option +
-            " -t -d #{shell_safe(input.name)}" +
+          login_options('psql') + login_host_option +
+            " -t -d #{shell_safe(input.name)}" \
             " -c \"#{database_size_query(input.name)}\""
         end
 
@@ -41,22 +42,21 @@ module ElectricSheep
         end
 
         def login_host_option
-          option(:login_host).nil? && "" ||
+          option(:login_host).nil? && '' ||
             " -h #{shell_safe(option(:login_host))}"
         end
 
         def login_options(cmd)
           if option(:password)
-            cmd="PGPASSWORD=#{shell_safe(option(:password))} #{cmd}"
+            cmd = "PGPASSWORD=#{shell_safe(option(:password))} #{cmd}"
           end
           if option(:sudo_as)
-            cmd="sudo -n -u #{shell_safe(option(:sudo_as))} #{cmd}"
+            cmd = "sudo -n -u #{shell_safe(option(:sudo_as))} #{cmd}"
           end
-          cmd << " --no-password" # Never prompt
+          cmd << ' --no-password' # Never prompt
           cmd << " -U #{shell_safe(option(:user))}" if option(:user)
           cmd
         end
-
       end
     end
   end

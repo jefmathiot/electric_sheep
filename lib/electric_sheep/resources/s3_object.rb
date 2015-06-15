@@ -7,8 +7,8 @@ module ElectricSheep
       option :bucket, required: true
       option :region
 
-      def initialize(opts={})
-        if path=opts.delete(:path)
+      def initialize(opts = {})
+        if (path = opts.delete(:path))
           opts.merge!(normalize_path(path))
         end
         super
@@ -23,7 +23,6 @@ module ElectricSheep
           [bucket, directory].compact.join('/'), region, :bucket
         )
       end
-
     end
   end
 end

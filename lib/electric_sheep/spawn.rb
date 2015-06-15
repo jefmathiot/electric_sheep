@@ -1,23 +1,30 @@
 require 'posix/spawn'
 
 module ElectricSheep
-
   module Spawn
+    class << self
+      def exec(cmd, logger = nil)
+        result = {}
+        child = POSIX::Spawn::Child.new(cmd)
+        result[:out] = child_output(child, logger)
+        result[:err] = child_error(child)
+        result[:exit_status] = child.status
+        result
+      end
 
-    def self.exec(cmd, logger=nil)
-      result = {out: '', err: ''}
-      child = POSIX::Spawn::Child.new(cmd)
-      unless child.out.nil?
-        result[:out] = child.out.chomp
-        logger.debug result[:out] if logger
+      private
+
+      def child_output(child, logger)
+        return '' if child.out.nil?
+        child.out.chomp.tap do |output|
+          logger.debug(output) if logger
+        end
       end
-      unless child.err.nil?
-        result[:err] = child.err.chomp
+
+      def child_error(child)
+        return '' if child.err.nil?
+        child.err.chomp
       end
-      result[:exit_status]=child.status
-      result
     end
-
   end
-
 end

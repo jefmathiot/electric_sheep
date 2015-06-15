@@ -19,6 +19,7 @@ module ElectricSheep
       end
 
       protected
+
       def name_items
         [basename].tap do |items|
           items << "-#{timestamp}" if timestamp?
@@ -26,19 +27,21 @@ module ElectricSheep
       end
 
       def normalize_path(path)
-        basename, extension = ::File.basename(path), nil
-        if respond_to?(:extension)
-          while (part=::File.extname(basename)) != ""
-            extension ||= ""
-            extension="#{part}#{extension}"
-            basename=::File.basename(basename, part)
-          end
-        end
-        names=Pathname.new(path).split
-        parent=names.first.to_s
-        {parent: parent, basename: basename, extension: extension}
+        split_name_parts(::File.basename(path))
+          .merge(parent: Pathname.new(path).split.first.to_s)
       end
 
+      def split_name_parts(basename)
+        extension = nil
+        if respond_to?(:extension)
+          while (part = ::File.extname(basename)) != ''
+            extension ||= ''
+            extension = "#{part}#{extension}"
+            basename = ::File.basename(basename, part)
+          end
+        end
+        { basename: basename, extension: extension }
+      end
     end
   end
 end

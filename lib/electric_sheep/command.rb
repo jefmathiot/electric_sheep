@@ -11,7 +11,7 @@ module ElectricSheep
       @job = job
       @logger = logger
       @shell = shell
-      @input=input
+      @input = input
       @metadata = metadata
     end
 
@@ -32,16 +32,15 @@ module ElectricSheep
       if resource.stat.size.nil?
         resource.stat!(send("stat_#{resource.type}", resource))
       end
-      rescue Exception => e
-        logger.
-          debug "Unable to stat resource of type #{resource.type}: #{e.message}"
+    rescue Exception => e
+      logger.debug 'Unable to stat resource of type ' \
+                   "#{resource.type}: #{e.message}"
     end
 
     module ClassMethods
-      def register(options={})
-        ElectricSheep::Agents::Register.register(options.merge(command: self))
+      def register(options = {})
+        ElectricSheep::Agents::Register.register options.merge(command: self)
       end
     end
-
   end
 end

@@ -4,20 +4,19 @@ module ElectricSheep
       include Pipe
       include Monitor
 
-      def initialize(options={})
+      def initialize(options = {})
         super
       end
 
       def validate(config)
         iterate do |command|
           unless command.validate(config)
-            errors.add(:base, "Invalid command \"#{command.agent}\"", command.errors)
+            errors.add :base, "Invalid command \"#{command.agent}\"",
+                       command.errors
           end
         end
         super
       end
-
-
     end
   end
 end

@@ -1,4 +1,3 @@
 module ElectricSheep
-  class SheepException < Exception
-  end
+  class SheepException < Exception; end
 end

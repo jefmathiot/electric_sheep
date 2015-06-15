@@ -1,7 +1,6 @@
 module ElectricSheep
   module Resources
     class Directory < FileSystem
-
       def file?
         false
       end
@@ -9,7 +8,6 @@ module ElectricSheep
       def directory?
         true
       end
-
     end
   end
 end

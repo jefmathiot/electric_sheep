@@ -1,0 +1,20 @@
+AllCops:
+  Include:
+    - Rakefile
+    - config.ru
+#  Exclude:
+Style/Documentation:
+  Enabled: false
+Style/AccessorMethodName:
+  # Due to ERB's get_binding
+  Exclude:
+    - 'lib/electric_sheep/notifiers/template.rb'
+Lint/RescueException:
+  Exclude:
+    - 'lib/electric_sheep/command.rb'
+    - 'lib/electric_sheep/metadata/monitor.rb'
+    - 'lib/electric_sheep/rescueable.rb'
+    - 'lib/electric_sheep/transport.rb'
+Style/RedundantReturn:
+  Exclude:
+    - 'lib/electric_sheep/runner.rb'

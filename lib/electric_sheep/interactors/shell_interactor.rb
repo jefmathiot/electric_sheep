@@ -11,8 +11,8 @@ module ElectricSheep
       end
 
       protected
-      def build_session ; end
 
+      def build_session; end
     end
   end
 end

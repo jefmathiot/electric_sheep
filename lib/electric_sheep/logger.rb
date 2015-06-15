@@ -5,7 +5,7 @@ module Lumberjack
   class Template
     alias_method :boring_call, :call
 
-    COLORS=[
+    COLORS = [
       :cyan,
       :green,
       :yellow,

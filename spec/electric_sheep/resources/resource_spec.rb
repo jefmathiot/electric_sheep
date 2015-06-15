@@ -41,7 +41,7 @@ describe ElectricSheep::Resources::Resource do
   end
 
   it 'is marked as transient' do
-    subject.new.transient?.must_equal false
+    subject.new.transient?.must_be_nil
     subject.new.transient!.transient?.must_equal true
   end
 end

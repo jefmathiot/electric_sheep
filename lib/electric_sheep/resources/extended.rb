@@ -9,10 +9,10 @@ module ElectricSheep
       end
 
       protected
+
       def name_items
         (super << extension)
       end
-
     end
   end
 end

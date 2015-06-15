@@ -10,7 +10,6 @@ module ElectricSheep
       def directory?
         false
       end
-
     end
   end
 end

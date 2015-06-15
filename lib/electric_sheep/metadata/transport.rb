@@ -13,7 +13,6 @@ module ElectricSheep
       def move?
         action == :move
       end
-
     end
   end
 end

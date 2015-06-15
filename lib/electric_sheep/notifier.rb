@@ -13,10 +13,9 @@ module ElectricSheep
     end
 
     module ClassMethods
-      def register(options={})
+      def register(options = {})
         ElectricSheep::Agents::Register.register(options.merge(notifier: self))
       end
     end
-
   end
 end

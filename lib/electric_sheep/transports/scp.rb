@@ -5,7 +5,7 @@ module ElectricSheep
     class SCP
       include Transport
 
-      register as: "scp"
+      register as: 'scp'
 
       option :as
 
@@ -21,7 +21,6 @@ module ElectricSheep
       def remote_resource
         send("#{input.type}_resource", host(option(:to)))
       end
-
     end
   end
 end

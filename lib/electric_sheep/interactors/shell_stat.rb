@@ -4,8 +4,8 @@ module ElectricSheep
       extend ActiveSupport::Concern
 
       included do
-        alias :stat_file :stat_filesystem
-        alias :stat_directory :stat_filesystem
+        alias_method :stat_file, :stat_filesystem
+        alias_method :stat_directory, :stat_filesystem
       end
 
       def stat_filesystem(resource)
@@ -15,7 +15,6 @@ module ElectricSheep
       def stat(resource)
         resource.stat.size || send("stat_#{resource.type}", resource)
       end
-
     end
   end
 end

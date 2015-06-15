@@ -6,7 +6,7 @@ module ElectricSheep
     class Email
       include Notifier
 
-      register as: "email"
+      register as: 'email'
 
       option :from, required: true
       option :to, required: true
@@ -30,20 +30,20 @@ module ElectricSheep
       protected
 
       def subject
-        job.successful? ? "Backup successful: #{job.name}" :
+        if job.successful?
+          "Backup successful: #{job.name}"
+        else
           "BACKUP FAILED: #{job.name}"
+        end
       end
 
       def html_body
-        html = preflight(Template.new('email.html').
-          render(
-            job: job,
-            assets_url: assets_url,
-            time: Time.now.getlocal,
-            timezone: Time.now.getlocal.zone,
-            hostname: `hostname`.chomp
-          )
-        )
+        preflight Template.new('email.html')
+          .render job: job,
+                  assets_url: assets_url,
+                  time: Time.now.getlocal,
+                  timezone: Time.now.getlocal.zone,
+                  hostname: `hostname`.chomp
       end
 
       def preflight(body)
@@ -57,20 +57,17 @@ module ElectricSheep
       end
 
       def assets_url
-        "http://assets.electricsheep.io/#{ElectricSheep::VERSION}/" +
-          "notifiers/email"
+        "http://assets.electricsheep.io/#{ElectricSheep::VERSION}/" \
+          'notifiers/email'
       end
 
       def handle_options(options)
-        if options
-          options.reduce({}) do |h, (k, v)|
-            v=v.decrypt if v.respond_to?(:decrypt)
-            h[k.to_sym]=v
-            h
-          end
+        return unless options
+        options.each_with_object({}) do |(k, v), h|
+          v = v.decrypt if v.respond_to?(:decrypt)
+          h[k.to_sym] = v
         end
       end
-
     end
   end
 end

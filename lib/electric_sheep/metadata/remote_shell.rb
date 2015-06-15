@@ -1,7 +1,6 @@
 module ElectricSheep
   module Metadata
     class RemoteShell < Shell
-
       option :host, required: true
       option :user, required: true
 
@@ -11,12 +10,11 @@ module ElectricSheep
       end
 
       protected
-      def ensure_known_host(config)
-        if host && config.hosts.get(host).nil?
-          errors.add(:host, "Unknown host with id #{host}")
-        end
-      end
 
+      def ensure_known_host(config)
+        return unless host && config.hosts.get(host).nil?
+        errors.add(:host, "Unknown host with id #{host}")
+      end
     end
   end
 end

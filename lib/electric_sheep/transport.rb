@@ -12,20 +12,8 @@ module ElectricSheep
     end
 
     def run!
-      local_interactor.in_session do
-        remote_interactor.in_session do
-          log_run
-          if input.local?
-            handling_input(local_interactor) do
-              remote_interactor.upload! input, output, local_interactor
-            end
-          else
-            handling_input(remote_interactor) do
-              remote_interactor.download! input, output, local_interactor
-            end
-          end
-          stat!(output, output.local? ? local_interactor : remote_interactor)
-        end
+      in_sessions do
+        input.local? ? perform_upload : perform_download
       end
       output
     end
@@ -35,28 +23,46 @@ module ElectricSheep
     end
 
     def output
-      @output ||= if input.local?
-        remote_resource
-      else
-        local_resource
-      end
+      @output ||= input.local? ? remote_resource : local_resource
     end
 
     protected
 
-    def handling_input(from, &block)
+    def in_sessions(&_)
+      local_interactor.in_session do
+        remote_interactor.in_session do
+          log_run
+          yield
+          stat!(output, output.local? ? local_interactor : remote_interactor)
+        end
+      end
+    end
+
+    def perform_upload
+      handling_input(local_interactor) do
+        remote_interactor.upload! input, output, local_interactor
+      end
+    end
+
+    def perform_download
+      handling_input(remote_interactor) do
+        remote_interactor.download! input, output, local_interactor
+      end
+    end
+
+    def handling_input(from, &_)
       stat!(input, from)
       yield
-      if move?
-        from.delete!(input)
-        input.transient!
-      end
+      return unless move?
+      from.delete!(input)
+      input.transient!
     end
 
     def stat!(resource, interactor)
       resource.stat! interactor.stat(resource)
     rescue Exception => e
-      logger.warn "Unable to stat resource of type #{resource.type}: #{e.message}"
+      logger.warn 'Unable to stat resource of type ' \
+        "#{resource.type}: #{e.message}"
     end
 
     def move?
@@ -64,7 +70,7 @@ module ElectricSheep
     end
 
     def log_run
-      logger.info "#{move? ? 'Moving' : 'Copying'} " +
+      logger.info "#{move? ? 'Moving' : 'Copying'} " \
         "#{input.name} to #{option(:to)} using #{option(:agent)}"
     end
 
@@ -79,11 +85,11 @@ module ElectricSheep
     end
 
     def remote_interactor
-      raise "Not implemented, please define #{self.class}#remote_interactor"
+      fail "Not implemented, please define #{self.class}#remote_interactor"
     end
 
     def remote_resource
-      raise "Not implemented, please define #{self.class}#remote_resource"
+      fail "Not implemented, please define #{self.class}#remote_resource"
     end
 
     def host(id)
@@ -91,12 +97,9 @@ module ElectricSheep
     end
 
     module ClassMethods
-      def register(options={})
-        ElectricSheep::Agents::Register.register(
-          options.merge(transport: self)
-        )
+      def register(options = {})
+        ElectricSheep::Agents::Register.register(options.merge(transport: self))
       end
     end
-
   end
 end

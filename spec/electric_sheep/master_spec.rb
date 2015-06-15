@@ -159,12 +159,12 @@ describe ElectricSheep::Master do
 
   it 'spawns all processes as daemons' do
     subject.new(daemon: true, pidfile: 'pid').tap do |master|
-      master.spawners.master.
-        must_be_instance_of ElectricSheep::Master::DaemonSpawner
-      master.spawners.master.instance_variable_get(:@pidfile).
-        must_equal File.expand_path('pid')
-      master.spawners.worker.
-        must_be_instance_of ElectricSheep::Master::DaemonSpawner
+      master.spawners.master
+        .must_be_instance_of ElectricSheep::Master::DaemonSpawner
+      master.spawners.master.instance_variable_get(:@pidfile)
+        .must_equal File.expand_path('pid')
+      master.spawners.worker
+        .must_be_instance_of ElectricSheep::Master::DaemonSpawner
     end
   end
 
@@ -294,7 +294,7 @@ describe ElectricSheep::Master do
 
   it 'traps the TERM signal' do
     master.expects(:trap).with(:TERM).yields
-    master.send(:should_stop?).must_equal false
+    master.send(:should_stop?).must_be_nil
     master.send(:trap_signals)
     master.send(:should_stop?).must_equal true
   end

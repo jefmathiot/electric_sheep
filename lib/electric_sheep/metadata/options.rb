@@ -8,7 +8,7 @@ module ElectricSheep
           @options ||= {}
         end
 
-        def option(name, opts={})
+        def option(name, opts = {})
           options[name] = opts
         end
 
@@ -18,6 +18,5 @@ module ElectricSheep
         end
       end
     end
-
   end
 end

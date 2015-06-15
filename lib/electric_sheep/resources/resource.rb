@@ -6,19 +6,19 @@ module ElectricSheep
       attr_reader :timestamp
 
       def timestamp?
-        !!@timestamp
+        @timestamp
       end
 
       def timestamp!(origin)
         if origin.timestamp?
-          @timestamp=origin.timestamp
+          @timestamp = origin.timestamp
         else
-          @timestamp=Time.now.utc.strftime('%Y%m%d-%H%M%S')
+          @timestamp = Time.now.utc.strftime('%Y%m%d-%H%M%S')
         end
       end
 
       def stat!(size)
-        @stat=Stat.new(size)
+        @stat = Stat.new(size)
         self
       end
 
@@ -35,14 +35,13 @@ module ElectricSheep
       end
 
       def transient!
-        @transient=true
+        @transient = true
         self
       end
 
       def transient?
-        !!@transient
+        @transient
       end
-
     end
   end
 end

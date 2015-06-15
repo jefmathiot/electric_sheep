@@ -7,9 +7,9 @@ module ElectricSheep
       include ShellSafe
 
       def initialize(host, job, interactor)
-        @host=host
-        @job=job
-        @interactor=interactor
+        @host = host
+        @job = job
+        @interactor = interactor
       end
 
       def mk_job_directory!
@@ -19,8 +19,8 @@ module ElectricSheep
       end
 
       def expand_path(path)
-        raise "job directory has not been created, please" +
-          " call mk_job_directory!" unless @job_directory
+        fail 'job directory has not been created, please' \
+             ' call mk_job_directory!' unless @job_directory
         return path if Pathname.new(path).absolute?
         File.join(job_directory, shell_safe(path))
       end
@@ -28,20 +28,16 @@ module ElectricSheep
       private
 
       def working_directory
-        @host.working_directory || "$HOME/.electric_sheep"
+        @host.working_directory || '$HOME/.electric_sheep'
       end
 
       def job_directory
         unless @job_directory
-          directory=File.join(
-            working_directory,
-            shell_safe(@job.id.downcase)
-          )
-          @job_directory=FSUtil.expand_path(@interactor, directory)
+          directory = File.join(working_directory, shell_safe(@job.id.downcase))
+          @job_directory = FSUtil.expand_path(@interactor, directory)
         end
         @job_directory
       end
-
     end
   end
 end

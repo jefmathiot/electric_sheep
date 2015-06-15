@@ -1,6 +1,5 @@
 module ElectricSheep
   module Commands
-
     module DeleteSource
       extend ActiveSupport::Concern
 
@@ -11,13 +10,10 @@ module ElectricSheep
       protected
 
       def delete_source!(input_path)
-        if option(:delete_source)
-          shell.exec "rm -rf #{input_path}"
-          input.transient!
-        end
+        return unless option(:delete_source)
+        shell.exec "rm -rf #{input_path}"
+        input.transient!
       end
-
     end
-
   end
 end
