@@ -164,7 +164,9 @@ describe ElectricSheep::Transports::S3 do
         end
       end
 
-      def ensure_transfer(action, to_dir, expanded_dir, local_resource)
+      def ensure_transfer(action, from_dir, to_dir, expanded_dir,
+        local_resource)
+        dummy(from_dir, from.path)
         local_interactor.expects(:expand_path).with(local_resource.path)
           .returns(File.join(expanded_dir, local_resource.path))
         interactor.send action, from, to, local_interactor
@@ -173,13 +175,13 @@ describe ElectricSheep::Transports::S3 do
 
       it 'downloads a file from the remote bucket' do
         from.stubs(:bucket).returns(bucket)
-        ensure_transfer(:download!, working_directory,
+        ensure_transfer(:download!, bucket_path, working_directory,
                         working_directory, to)
       end
 
       it 'uploads a file to the remote bucket' do
         to.stubs(:bucket).returns(bucket)
-        ensure_transfer(:upload!, bucket_path, tmp_directory,
+        ensure_transfer(:upload!, tmp_directory, bucket_path, tmp_directory,
                         from)
       end
 
