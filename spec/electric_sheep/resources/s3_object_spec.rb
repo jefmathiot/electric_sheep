@@ -5,10 +5,10 @@ describe ElectricSheep::Resources::S3Object do
   include Support::Files::Named
   include Support::Files::Extended
 
-  it {
+  it do
     defines_options :directory, :bucket, :region
     requires :bucket
-  }
+  end
 
   it 'is remote only' do
     subject.new.local?.must_equal false
@@ -23,7 +23,7 @@ describe ElectricSheep::Resources::S3Object do
   end
 
   it 'converts to a location' do
-    location=subject.new(
+    location = subject.new(
       bucket: 'my-bucket',
       directory: 'directory',
       region: 'us-east-1'
@@ -33,5 +33,4 @@ describe ElectricSheep::Resources::S3Object do
     location.location.must_equal 'us-east-1'
     location.type.must_equal :bucket
   end
-
 end

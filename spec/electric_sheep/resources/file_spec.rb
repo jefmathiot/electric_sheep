@@ -20,5 +20,4 @@ describe ElectricSheep::Resources::File do
       resource.parent.must_equal 'path/to'
     end
   end
-
 end

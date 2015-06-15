@@ -1,20 +1,18 @@
 require 'spec_helper'
 
 describe ElectricSheep::Metadata::Pipe do
-
-  PipeKlazz=Class.new do
+  PipeKlazz = Class.new do
     include ElectricSheep::Metadata::Pipe
   end
 
   describe PipeKlazz do
     [:item1, :item2, :resource, :start_location].each do |m|
-      let(m){mock}
+      let(m) { mock }
     end
 
-    let(:pipe){ subject.new }
+    let(:pipe) { subject.new }
 
     describe 'pipelining' do
-
       before do
         resource.expects(:to_location).returns(start_location)
       end
@@ -26,21 +24,20 @@ describe ElectricSheep::Metadata::Pipe do
       end
 
       it 'creates a report using the input and start location' do
-        ElectricSheep::Metadata::Pipe::Report.expects(:new).
-          with(resource, start_location).returns(report=mock)
+        ElectricSheep::Metadata::Pipe::Report.expects(:new)
+          .with(resource, start_location).returns(report = mock)
         pipe.pipelined(resource)
         pipe.report.must_equal report
       end
 
       it 'uses the parent report if provided' do
-        pipe.pipelined(resource, mock(report: parent_report=mock))
+        pipe.pipelined(resource, mock(report: parent_report = mock))
         pipe.report.must_equal parent_report
       end
 
       describe 'iterating through its queue' do
-
         [:products, :outputs, :resources].each do |array|
-          let(array){ [] }
+          let(array) { [] }
         end
 
         before do
@@ -54,7 +51,7 @@ describe ElectricSheep::Metadata::Pipe do
         def execute_pipeline
           pipe.pipelined(resource) do |item, resource|
             resources << resource
-            index = item==item1 ? 0 : 1
+            index = item == item1 ? 0 : 1
             [products[index], outputs[index]]
           end
         end
@@ -72,8 +69,8 @@ describe ElectricSheep::Metadata::Pipe do
 
         it 'reports' do
           [item1, item2].each_with_index do |item, i|
-            pipe.report.expects(:step).
-              with(item, products[i], outputs[i])
+            pipe.report.expects(:step)
+              .with(item, products[i], outputs[i])
           end
           execute_pipeline
         end
@@ -82,20 +79,16 @@ describe ElectricSheep::Metadata::Pipe do
           execute_pipeline
           pipe.last_product.must_equal products.last
         end
-
       end
-
     end
-
   end
 
   describe ElectricSheep::Metadata::Pipe::Report do
-
     [:resource, :start_location, :alt_location, :product].each do |m|
-      let(m){ mock }
+      let(m) { mock }
     end
 
-    let(:report){ subject.new(resource, start_location) }
+    let(:report) { subject.new(resource, start_location) }
 
     it 'appends the input resource and start location to the stack' do
       report.stack.first.location.must_equal start_location
@@ -111,17 +104,14 @@ describe ElectricSheep::Metadata::Pipe do
       report.stack.first.steps.size.must_equal 1
     end
 
-
     def assert_step(step, type, payload)
       step.type.must_equal type
       step.payload.must_equal payload
     end
 
-    let(:command){ ElectricSheep::Metadata::Command.new }
+    let(:command) { ElectricSheep::Metadata::Command.new }
 
     describe 'appending a command to the stack' do
-
-
       def step
         report.step(command, product, product)
       end
@@ -134,8 +124,8 @@ describe ElectricSheep::Metadata::Pipe do
         assert_step report.stack.first.steps.last, :resource, product
       end
 
-      # TODO Should we exclude that weird case ? It's not supposed to happen, as
-      # commands do not change resources locations
+      # TODO: Should we exclude that weird case ? It's not supposed to happen,
+      # as commands do not change resources locations
       it 'changes the location on the mainstream branch' do
         product.stubs(:to_location).returns(alt_location)
         step
@@ -145,12 +135,10 @@ describe ElectricSheep::Metadata::Pipe do
         assert_step report.stack.first.steps.last, :command, command
         assert_step report.stack.last.steps.first, :resource, product
       end
-
     end
 
     describe 'appending a transport to the stack' do
-
-      let(:transport){ ElectricSheep::Metadata::Transport.new }
+      let(:transport) { ElectricSheep::Metadata::Transport.new }
 
       def step(output)
         report.step(transport, product, output)
@@ -175,8 +163,7 @@ describe ElectricSheep::Metadata::Pipe do
       end
 
       describe 'forking' do
-
-        let(:output){ mock.tap{ |m| m.stubs(:to_location).returns(mock) } }
+        let(:output) { mock.tap { |m| m.stubs(:to_location).returns(mock) } }
 
         it 'doesnt restart' do
           step(output)
@@ -185,7 +172,7 @@ describe ElectricSheep::Metadata::Pipe do
         end
 
         it 'restarts to the reference resource' do
-          next_resource=mock(to_location: output.to_location)
+          next_resource = mock(to_location: output.to_location)
           step(output)
           report.step(command, next_resource, next_resource)
           report.stack.size.must_equal 4
@@ -194,14 +181,10 @@ describe ElectricSheep::Metadata::Pipe do
           assert_step report.stack.last.steps[1], :command, command
           assert_step report.stack.last.steps.last, :resource, next_resource
         end
-
       end
-
     end
 
-
     describe ElectricSheep::Metadata::Pipe::Report::WrapperStep do
-
       it 'initializes with empty steps' do
         subject.new(start_location, 'branch').tap do |step|
           step.location.must_equal start_location
@@ -211,19 +194,18 @@ describe ElectricSheep::Metadata::Pipe do
       end
 
       it 'uses provided steps if any' do
-        subject.new(nil, nil, steps=[mock, mock]).
-          steps.must_equal steps
+        subject.new(nil, nil, steps = [mock, mock])
+          .steps.must_equal steps
       end
 
       describe 'with steps' do
-
         [:command, :transport, :resource].each do |m|
-          let(m){ ElectricSheep::Metadata::Pipe::Report::SimpleStep.new(m) }
+          let(m) { ElectricSheep::Metadata::Pipe::Report::SimpleStep.new(m) }
         end
 
-        let(:wrapper){
+        let(:wrapper) do
           subject.new(nil, nil, [command, transport, resource])
-        }
+        end
 
         it 'filters resources' do
           wrapper.resources.must_equal [resource]
@@ -232,11 +214,7 @@ describe ElectricSheep::Metadata::Pipe do
         it 'filters agents' do
           wrapper.agents.must_equal [command, transport]
         end
-
       end
-
     end
-
   end
-
 end

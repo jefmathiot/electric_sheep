@@ -11,12 +11,11 @@ describe ElectricSheep::Resources::FileSystem do
   end
 
   it 'is local when localhost' do
-    subject.new(host: ElectricSheep::Metadata::Localhost.new).local?.must_equal true
+    subject.new(host: ElectricSheep::Metadata::Localhost.new)
+      .local?.must_equal true
   end
 
   it 'is remote when not localhost' do
     subject.new(host: ElectricSheep::Metadata::Host.new).remote?.must_equal true
   end
-
-
 end

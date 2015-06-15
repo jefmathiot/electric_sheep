@@ -4,7 +4,7 @@ describe ElectricSheep::Config do
   include Support::Queue
 
   def queue_items
-    ([0]*2).map do
+    ([0] * 2).map do
       ElectricSheep::Metadata::Job.new
     end
   end
@@ -16,5 +16,4 @@ describe ElectricSheep::Config do
   it 'initializes an empty hosts' do
     @config.hosts.must_be_instance_of ElectricSheep::Metadata::Hosts
   end
-
 end

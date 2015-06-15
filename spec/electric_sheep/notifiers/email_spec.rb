@@ -13,31 +13,31 @@ describe ElectricSheep::Notifiers::Email do
     end
   end
 
-  let(:job){
+  let(:job) do
     ElectricSheep::Metadata::Job.new(id: 'some-job').tap do |p|
-      report=mock.tap{|m| m.stubs(:stack).returns([])}
+      report = mock.tap { |m| m.stubs(:stack).returns([]) }
       p.stubs(:report).returns(report)
       p.stubs(:last_product).returns(resource)
     end
-  }
+  end
 
-  let(:encrypted){
-      mock.tap{
-        |m| m.expects(:decrypt).returns('value')
-      }
-  }
+  let(:encrypted) do
+    mock.tap do |m|
+      m.expects(:decrypt).returns('value')
+    end
+  end
 
-  let(:metadata){
+  let(:metadata) do
     ElectricSheep::Metadata::Notifier.new(
       agent: 'email',
       from: 'from@host.tld',
       to: 'to@host.tld',
       using: :test,
-      with: {'an_option' => 'value', 'encrypted_option' => encrypted}
+      with: { 'an_option' => 'value', 'encrypted_option' => encrypted }
     )
-  }
-  let(:logger){ mock }
-  let(:hosts){ ElectricSheep::Metadata::Hosts.new }
+  end
+  let(:logger) { mock }
+  let(:hosts) { ElectricSheep::Metadata::Hosts.new }
 
   let(:notifier) do
     subject.new(
@@ -48,13 +48,13 @@ describe ElectricSheep::Notifiers::Email do
     )
   end
 
-  it{
+  it do
     defines_options :from, :to, :using, :with
-    # TODO requires :from, :to, :using
-  }
+    # TODO: requires :from, :to, :using
+  end
 
   it 'should have registered as the "email" notifier' do
-    ElectricSheep::Agents::Register.notifier("email").must_equal subject
+    ElectricSheep::Agents::Register.notifier('email').must_equal subject
   end
 
   {
@@ -70,17 +70,16 @@ describe ElectricSheep::Notifiers::Email do
         delivery.to.must_equal [metadata.to]
         delivery.subject.must_equal subject
         # Could we ensure preflight has been done without this kind of hack ?
-        delivery.html_part.body.to_s.wont_match /\.headerContent/
+        delivery.html_part.body.to_s.wont_match(/\.headerContent/)
       end
     end
   end
 
   it 'handles delivery options' do
-    msg=mock
-    msg.expects(:delivery_method).
-      with(:test, {an_option: 'value', encrypted_option: 'value'})
+    msg = mock
+    msg.expects(:delivery_method)
+      .with(:test, an_option: 'value', encrypted_option: 'value')
     msg.expects(:deliver)
     notifier.send(:deliver, msg)
   end
-
 end

@@ -16,7 +16,6 @@ module Support
           @queue.size.must_equal @items.size
         end
 
-
         it 'iterates through items' do
           times = 0
           @queue.iterate do |item|
@@ -25,7 +24,6 @@ module Support
           end
           times.must_equal @items.size
         end
-
       end
     end
   end

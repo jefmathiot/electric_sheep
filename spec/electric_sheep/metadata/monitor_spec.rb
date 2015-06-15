@@ -6,7 +6,6 @@ describe ElectricSheep::Metadata::Monitor do
   end
 
   describe MonitorKlazz do
-
     it 'benchmarks the execution time' do
       monitor = subject.new
       monitor.monitored do
@@ -16,16 +15,16 @@ describe ElectricSheep::Metadata::Monitor do
     end
 
     it 'returns whatever the provided block returned' do
-      subject.new.monitored{'whatever'}.must_equal 'whatever'
+      subject.new.monitored { 'whatever' }.must_equal 'whatever'
     end
 
     it 'handles exceptions gracefully' do
       monitor = subject.new
-      ex = ->{
+      ex = lambda do
         monitor.monitored do
-          raise "An exception"
+          fail 'An exception'
         end
-      }.must_raise RuntimeError
+      end.must_raise RuntimeError
       ex.message.must_equal 'An exception'
       monitor.status.must_equal :failed
       monitor.failed?.must_equal true
@@ -37,10 +36,9 @@ describe ElectricSheep::Metadata::Monitor do
     end
 
     it '\o/' do
-      monitor=subject.new
-      monitor.monitored{}
+      monitor = subject.new
+      monitor.monitored {}
       monitor.successful?.must_equal true
     end
-
   end
 end

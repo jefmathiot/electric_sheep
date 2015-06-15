@@ -11,10 +11,10 @@ describe ElectricSheep::Metadata::Job do
     ]
   end
 
-  it{
+  it do
     defines_options :id, :description, :private_key
     requires :id
-  }
+  end
 
   describe 'validating' do
     let(:step) do
@@ -28,19 +28,20 @@ describe ElectricSheep::Metadata::Job do
     end
 
     it 'adds child steps errors' do
-      step.expects(:validate).with(instance_of(ElectricSheep::Config)).
-        returns(false)
-      expects_validation_error(job, :base, "Invalid step", ElectricSheep::Config.new)
+      step.expects(:validate).with(instance_of(ElectricSheep::Config))
+        .returns(false)
+      expects_validation_error(job, :base, 'Invalid step',
+                               ElectricSheep::Config.new)
     end
 
     it 'validates' do
-      step.expects(:validate).with(instance_of(ElectricSheep::Config)).
-        returns(true)
+      step.expects(:validate).with(instance_of(ElectricSheep::Config))
+        .returns(true)
       job.validate(ElectricSheep::Config.new).must_equal true
     end
   end
 
-  it "initializes" do
+  it 'initializes' do
     job = subject.new(id: 'some-job')
     job.id.must_equal 'some-job'
   end
@@ -56,17 +57,19 @@ describe ElectricSheep::Metadata::Job do
   end
 
   it 'uses its description and id' do
-    subject.new(id: 'job-name', description: 'Description').name.
-      must_equal 'Description (job-name)'
+    subject.new(id: 'job-name', description: 'Description').name
+      .must_equal 'Description (job-name)'
   end
 
   describe 'on inspecting schedule' do
-
-    def scheduled(expired, updates, &block)
-      schedule=mock(expired?: expired).tap{|s| s.expects(:update!).send(updates)}
-      job, called=subject.new.tap{|p| p.schedule!(schedule) }, nil
+    def scheduled(expired, updates, &_block)
+      schedule = mock(expired?: expired).tap do |s|
+        s.expects(:update!).send(updates)
+      end
+      job = subject.new.tap { |p| p.schedule!(schedule) }
+      called = nil
       job.on_schedule do
-        called=true
+        called = true
       end
       yield called if block_given?
       job
@@ -78,22 +81,23 @@ describe ElectricSheep::Metadata::Job do
 
     it 'yields on expiry' do
       scheduled(true, :once) do |called|
-        called.must_equal true, "Block should have been called"
+        called.must_equal true, 'Block should have been called'
       end
     end
 
     it 'does not yield if schedule has not expired' do
       scheduled(false, :never) do |called|
-        called.must_be_nil "Block should not have been called"
+        called.must_be_nil 'Block should not have been called'
       end
     end
 
     it 'does not yield if it is not scheduled' do
-      job, called=subject.new, nil
+      job = subject.new
+      called = nil
       job.on_schedule do
-        called=true
+        called = true
       end
-      called.must_be_nil "Block should not have been called"
+      called.must_be_nil 'Block should not have been called'
     end
 
     it 'appends a notifier' do
@@ -103,7 +107,5 @@ describe ElectricSheep::Metadata::Job do
         job.notifiers.size.must_equal 1
       end
     end
-
   end
-
 end

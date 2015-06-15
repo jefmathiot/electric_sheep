@@ -1,17 +1,15 @@
 require 'spec_helper'
 
 describe ElectricSheep::Command do
-
   CommandKlazz = Class.new do
     include ElectricSheep::Command
   end
 
   [:job, :logger, :shell, :resource, :metadata].each do |m|
-    let(m){ mock }
+    let(m) { mock }
   end
 
   describe CommandKlazz do
-
     let(:command) do
       subject.new(job, logger, shell, resource, metadata)
     end
@@ -24,18 +22,18 @@ describe ElectricSheep::Command do
 
     it 'stats the input and performs' do
       command.expects(:stat!).with(resource)
-      command.expects(:perform!).returns(output=mock)
+      command.expects(:perform!).returns(output = mock)
       command.expects(:stat!).with(output)
       command.run!.must_equal output
     end
 
-    # TODO Move to an agent spec
+    # TODO: Move to an agent spec
     it 'extracts options from metadata' do
       metadata.expects(:some_option).returns('VALUE')
       command.send(:option, :some_option).must_equal 'VALUE'
     end
 
-    # TODO Move to an agent spec
+    # TODO: Move to an agent spec
     it 'decrypts options' do
       metadata.expects(:some_option).returns(encrypted = mock)
       encrypted.expects(:decrypt).returns('VALUE')
@@ -54,11 +52,8 @@ describe ElectricSheep::Command do
     end
 
     it 'exposes its shell host' do
-      shell.expects(:host).returns(host=mock)
+      shell.expects(:host).returns(host = mock)
       command.send(:host).must_equal host
     end
-
   end
-
-
 end

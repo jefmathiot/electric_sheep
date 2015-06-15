@@ -16,18 +16,14 @@ describe ElectricSheep::Interactors::ShellInteractor do
   end
 
   describe 'executing a command' do
-
-    def expects_execution(cmd, out='', err='')
+    def expects_execution(cmd, out = '', err = '')
       logger.stubs(:debug)
-      ElectricSheep::Spawn.expects(:exec).with(cmd, logger).returns({
-        out: out,
-        err: err,
-        exit_status: err ? 2 : 0
-      })
+      ElectricSheep::Spawn.expects(:exec).with(cmd, logger)
+        .returns(out: out, err: err, exit_status: err ? 2 : 0)
       if err
-        proc{interactor.exec(cmd)}.must_raise RuntimeError
+        proc { interactor.exec(cmd) }.must_raise RuntimeError
       else
-        result=interactor.exec(cmd)
+        result = interactor.exec(cmd)
         result[:out].must_equal out || ''
         result[:err].must_equal err || ''
         result[:exit_status].must_equal 0
@@ -35,22 +31,20 @@ describe ElectricSheep::Interactors::ShellInteractor do
     end
 
     it 'returns the out, err and exit status' do
-      expects_execution 'ls', "Output", "Error"
+      expects_execution 'ls', 'Output', 'Error'
     end
 
     it 'doesnt raise unless out, err and exit status' do
       expects_execution 'ls'
     end
-
   end
 
   it 'deletes a resource' do
-    resource=mock(path: 'resource')
-    cmd='rm -rf /path/to/resource'
-    interactor.expects(:expand_path).with('resource').
-      returns('/path/to/resource')
+    resource = mock(path: 'resource')
+    cmd = 'rm -rf /path/to/resource'
+    interactor.expects(:expand_path).with('resource')
+      .returns('/path/to/resource')
     interactor.expects(:exec).with(cmd)
     interactor.delete!(resource)
   end
-
 end

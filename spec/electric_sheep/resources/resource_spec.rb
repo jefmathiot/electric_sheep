@@ -3,10 +3,10 @@ require 'spec_helper'
 describe ElectricSheep::Resources::Resource do
   include Support::Options
 
-  let(:origin){ mock }
+  let(:origin) { mock }
 
   it 'uses original timestamp if any' do
-    ts=Time.now.utc.strftime('%Y%m%d-%H%M%S')
+    ts = Time.now.utc.strftime('%Y%m%d-%H%M%S')
     origin.expects(:timestamp?).returns(true)
     origin.expects(:timestamp).returns(ts)
     subject.new.tap do |resource|

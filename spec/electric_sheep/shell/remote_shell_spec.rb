@@ -13,8 +13,8 @@ describe ElectricSheep::Shell::RemoteShell do
   end
 
   it 'initializes an interactor and cache it' do
-    ElectricSheep::Interactors::SshInteractor.expects(:new).
-      with(host, job, 'johndoe', logger).once.returns(interactor=mock)
+    ElectricSheep::Interactors::SshInteractor.expects(:new)
+      .with(host, job, 'johndoe', logger).once.returns(interactor = mock)
     2.times do
       shell.send(:interactor).must_equal interactor
     end
@@ -25,7 +25,8 @@ describe ElectricSheep::Shell::RemoteShell do
     shell.send(:interactor).expects(:in_session) # Don't mock "super"
     host.expects(:hostname).returns('some-host')
     host.expects(:ssh_port).returns(22)
-    logger.expects(:info).with("Starting a remote shell session for johndoe@some-host on port 22")
-    shell.perform!(metadata=mock)
+    logger.expects(:info).with('Starting a remote shell session for ' \
+      'johndoe@some-host on port 22')
+    shell.perform!(mock)
   end
 end

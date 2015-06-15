@@ -4,10 +4,10 @@ describe ElectricSheep::Metadata::Transport do
   include Support::Hosts
   include Support::Options
 
-  it{
+  it do
     defines_options :action, :agent, :to
     requires :action, :agent, :to
-  }
+  end
 
   it 'describes a copy' do
     subject.new(action: :copy).tap do |subject|
@@ -23,14 +23,14 @@ describe ElectricSheep::Metadata::Transport do
     end
   end
 
-  it{
-    expects_validation_error( subject.new(agent: 'foo'), :transport,
-      'Unknown transport "foo"')
-  }
-
-  it 'resolves the agent class' do
-    ElectricSheep::Agents::Register.expects(:transport).with('foo').returns(Object)
-    subject.new(agent: 'foo').agent_klazz.must_equal Object
+  it do
+    expects_validation_error(subject.new(agent: 'foo'), :transport,
+                             'Unknown transport "foo"')
   end
 
+  it 'resolves the agent class' do
+    ElectricSheep::Agents::Register.expects(:transport).with('foo')
+      .returns(Object)
+    subject.new(agent: 'foo').agent_klazz.must_equal Object
+  end
 end

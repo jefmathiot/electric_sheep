@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe ElectricSheep do
-
   it 'provides the path to the gem installation' do
     subject.gem_path.must_equal `pwd`.chomp
   end
@@ -15,7 +14,6 @@ describe ElectricSheep do
   end
 
   describe 'providing the revision hash' do
-
     before do
       subject.instance_variable_set(:@sha, nil)
     end
@@ -43,7 +41,6 @@ describe ElectricSheep do
       GitRev::Sha.any_instance.expects(:short).raises 'An exception'
       subject.git_revision.must_equal '-------'
     end
-
   end
 
   it 'merges the version and git revision' do
@@ -51,5 +48,4 @@ describe ElectricSheep do
     subject.expects(:git_revision).returns('0000000')
     subject.revision.must_equal '0.0.0 0000000'
   end
-
 end

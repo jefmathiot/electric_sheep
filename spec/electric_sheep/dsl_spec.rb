@@ -1,11 +1,10 @@
 require 'spec_helper'
 
 describe ElectricSheep::Dsl do
-
   before do
     @config = ElectricSheep::Config.new
     @dsl = ElectricSheep::Dsl.new(@config)
-    @dsl.host "some-host", hostname: "some-host.tld", description: "Some host"
+    @dsl.host 'some-host', hostname: 'some-host.tld', description: 'Some host'
   end
 
   def check_properties(obj, expected)
@@ -14,31 +13,31 @@ describe ElectricSheep::Dsl do
     end
   end
 
-  it "raises an error on method missing" do
+  it 'raises an error on method missing' do
     -> { @dsl.orphan_method }.must_raise ElectricSheep::SheepException
   end
 
   describe ElectricSheep::Dsl::AbstractDsl do
-    it "raises an error on method missing" do
-      -> {
+    it 'raises an error on method missing' do
+      lambda do
         ElectricSheep::Dsl::AbstractDsl.new.orphan_method
-      }.must_raise ElectricSheep::SheepException
+      end.must_raise ElectricSheep::SheepException
     end
   end
 
   describe ElectricSheep::Dsl::JobDsl do
-    it "raises an error on class unknown" do
-      err = -> {
-        ElectricSheep::Dsl::JobDsl.new(@config,nil,{}).resource('Unknown')
-      }.must_raise ElectricSheep::SheepException
+    it 'raises an error on class unknown' do
+      err = lambda do
+        ElectricSheep::Dsl::JobDsl.new(@config, nil, {}).resource('Unknown')
+      end.must_raise ElectricSheep::SheepException
       err.message.must_equal "Resource 'Unknown' in Sheepfile is undefined"
     end
   end
 
-  it "makes hosts available" do
+  it 'makes hosts available' do
     (host = @config.hosts.get('some-host')).wont_be_nil
-    check_properties host, id: "some-host", hostname: "some-host.tld",
-      description: "Some host"
+    check_properties host, id: 'some-host', hostname: 'some-host.tld',
+                           description: 'Some host'
   end
 
   it 'defines the local working directory' do
@@ -47,7 +46,7 @@ describe ElectricSheep::Dsl do
   end
 
   it 'allows defaults for agents' do
-    options={command: 'id'}
+    options = { command: 'id' }
     ElectricSheep::Agents::Register.expects(:assign_defaults_for).with(options)
     @dsl.defaults_for options
   end
@@ -58,28 +57,25 @@ describe ElectricSheep::Dsl do
   end
 
   [:encrypt, :decrypt].each do |verb|
-
     it 'allows the definition of encryption options' do
-      @dsl.send verb, with: path='/some/public/key'
+      @dsl.send verb, with: path = '/some/public/key'
       @config.send("#{verb}ion_options").with.must_equal path
     end
-
   end
 
-  describe "registering a job" do
-
-    def build_job(options={}, &block)
+  describe 'registering a job' do
+    def build_job(options = {}, &block)
       @dsl.job 'some-job', options, &block
       @config.queue.first
     end
 
-    it "appends the job to the configuration" do
-      job = build_job(description: "Some random job") do
+    it 'appends the job to the configuration' do
+      job = build_job(description: 'Some random job') do
         resource :database, name: 'mydb'
       end
       job.wont_be_nil
-      job.id.must_equal "some-job"
-      job.description.must_equal "Some random job"
+      job.id.must_equal 'some-job'
+      job.description.must_equal 'Some random job'
     end
 
     it 'sets the initial resource' do
@@ -99,17 +95,17 @@ describe ElectricSheep::Dsl do
 
     it 'assigns a schedule' do
       job = build_job do
-        schedule "hourly", past: "30"
+        schedule 'hourly', past: '30'
       end
       job.schedule.must_be_instance_of ElectricSheep::Metadata::Schedule::Hourly
     end
 
     it 'appends a notifier' do
       job = build_job do
-        notify via: "email"
+        notify via: 'email'
       end
       job.notifiers.first.must_be_instance_of ElectricSheep::Metadata::Notifier
-      job.notifiers.first.send(:agent).must_equal "email"
+      job.notifiers.first.send(:agent).must_equal 'email'
     end
 
     module ShellSpecs
@@ -119,12 +115,10 @@ describe ElectricSheep::Dsl do
         include ElectricSheep::Command
 
         register as: 'do_nothing'
-
       end
 
       included do
-
-        it "adds an encryption command" do
+        it 'adds an encryption command' do
           @config.expects(:encryption_options).returns(opts = mock)
           opts.expects(:option).with(:with).returns('public/key')
           build_shell do
@@ -134,9 +128,8 @@ describe ElectricSheep::Dsl do
           @shell.queue.first.send(:option, :public_key).must_equal 'public/key'
         end
 
-        describe "adding a command" do
-
-          def build_command(options={})
+        describe 'adding a command' do
+          def build_command(options = {})
             build_shell do
               do_nothing options
             end
@@ -148,18 +141,14 @@ describe ElectricSheep::Dsl do
             @command.must_be_instance_of ElectricSheep::Metadata::Command
             @command.agent.must_equal :do_nothing
           end
-
         end
-
       end
-
     end
 
-    describe "adding a remote shell" do
-
+    describe 'adding a remote shell' do
       def build_shell(&block)
         job = build_job do
-          opts = {as: "op"}
+          opts = { as: 'op' }
           remotely opts, &block
         end
         @shell = job.queue.first
@@ -168,17 +157,16 @@ describe ElectricSheep::Dsl do
       it "appends the shell to the job's queue" do
         build_shell
         @shell.must_be_instance_of ElectricSheep::Metadata::RemoteShell
-        @shell.user.must_equal "op"
+        @shell.user.must_equal 'op'
       end
 
       include ShellSpecs
     end
 
-    describe "adding a local shell" do
-
+    describe 'adding a local shell' do
       def build_shell(&block)
         job = build_job do
-          locally &block
+          locally(&block)
         end
         @shell = job.queue.first
       end
@@ -206,7 +194,5 @@ describe ElectricSheep::Dsl do
 
     describe_transport :move
     describe_transport :copy
-
   end
-
 end

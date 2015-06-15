@@ -8,12 +8,10 @@ describe ElectricSheep::Metadata::CryptoOptions do
   end
 
   describe OptionsKlazz do
-
-    it {
+    it do
       defines_options :with
       requires :with
-    }
-
+    end
   end
 end
 

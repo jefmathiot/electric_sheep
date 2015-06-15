@@ -18,5 +18,4 @@ describe ElectricSheep::Resources::Directory do
       resource.parent.must_equal 'path/to'
     end
   end
-
 end

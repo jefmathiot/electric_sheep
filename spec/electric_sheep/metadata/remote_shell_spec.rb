@@ -5,9 +5,8 @@ describe ElectricSheep::Metadata::RemoteShell do
   include Support::Options
   include Support::Hosts
 
-  it{
+  it do
     defines_options :user
     requires :user
-  }
-
+  end
 end

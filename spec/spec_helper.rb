@@ -10,7 +10,7 @@ SimpleCov.start do
   add_filter '/spec/'
 end
 
-ENV['ELECTRIC_SHEEP_ENV']='test'
+ENV['ELECTRIC_SHEEP_ENV'] = 'test'
 
 require 'electric_sheep'
 require 'minitest'

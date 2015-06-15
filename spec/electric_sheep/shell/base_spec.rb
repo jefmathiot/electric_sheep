@@ -13,7 +13,7 @@ describe ElectricSheep::Shell::Base do
     end
   end
 
-  let(:seq){sequence('shell')}
+  let(:seq) { sequence('shell') }
 
   it 'delegates path expansion to interactor' do
     shell.interactor.expects(:expand_path).with('some/path')
@@ -37,20 +37,20 @@ describe ElectricSheep::Shell::Base do
   end
 
   it 'performs the queue of commands' do
-    metadata=ElectricSheep::Metadata::Shell.new
-    first=metadata.add ElectricSheep::Metadata::Command.new(
+    metadata = ElectricSheep::Metadata::Shell.new
+    first = metadata.add ElectricSheep::Metadata::Command.new(
       id: 'first', type: 'fake'
     )
-    second=metadata.add ElectricSheep::Metadata::Command.new(
+    second = metadata.add ElectricSheep::Metadata::Command.new(
       id: 'second', type: 'fake'
     )
     shell.interactor.expects(:in_session).in_sequence(seq).yields
-    metadata.expects(:pipelined).with(input, job).in_sequence(seq).
-      multiple_yields [first, input], [second, input]
+    metadata.expects(:pipelined).with(input, job).in_sequence(seq)
+      .multiple_yields [first, input], [second, input]
     [first, second].each do |cmd_metadata|
       cmd_metadata.stubs(:agent_klazz).returns(FakeCommand)
-      ElectricSheep::Metadata::Command.any_instance.expects(:monitored).
-        in_sequence(seq).yields
+      ElectricSheep::Metadata::Command.any_instance.expects(:monitored)
+        .in_sequence(seq).yields
       FakeCommand.any_instance.tap do |cmd|
         cmd.expects(:run!).in_sequence(seq).returns(input)
       end

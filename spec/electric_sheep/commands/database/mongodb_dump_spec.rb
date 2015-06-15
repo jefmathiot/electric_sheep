@@ -4,31 +4,29 @@ require 'json'
 describe ElectricSheep::Commands::Database::MongoDBDump do
   include Support::Command
 
-  it{
-    defines_options :user, :password
-  }
+  it { defines_options :user, :password }
 
-  ensure_registration "mongodb_dump"
+  ensure_registration 'mongodb_dump'
 
   def expects_log
     logger.expects(:info).in_sequence(seq).with(
-      "Creating a dump of the \"$MyDatabase\" MongoDB database"
+      'Creating a dump of the "$MyDatabase" MongoDB database'
     )
   end
 
-  def expects_db_stat(creds='')
+  def expects_db_stat(creds = '')
     shell.expects(:exec).in_sequence(seq).with(
       "mongo \\$MyDatabase #{creds}--quiet --eval 'printjson(db.stats())'"
-    ).returns(out: {'storageSize' => 4096}.to_json)
+    ).returns(out: { 'storageSize' => 4096 }.to_json)
   end
 
   executing do
-    let(:output_name){ "$MyDatabase-20140605-040302" }
-    let(:output_type){:directory}
-    let(:database){
+    let(:output_name) { '$MyDatabase-20140605-040302' }
+    let(:output_type) { :directory }
+    let(:database) do
       ElectricSheep::Resources::Database.new name: '$MyDatabase'
-    }
-    let(:input){ database }
+    end
+    let(:input) { database }
 
     it 'executes the backup command' do
       metadata.stubs(:user).returns(nil)
@@ -42,13 +40,11 @@ describe ElectricSheep::Commands::Database::MongoDBDump do
     it 'appends credentials to the command' do
       metadata.stubs(:user).returns('$operator')
       metadata.stubs(:password).returns('$secret')
-      creds="-u \\$operator -p \\$secret "
+      creds = '-u \\$operator -p \\$secret '
       expects_db_stat(creds)
       ensure_execution(
         "mongodump -d \\$MyDatabase -o #{output_path} #{creds}&> /dev/null"
       )
     end
-
   end
-
 end
