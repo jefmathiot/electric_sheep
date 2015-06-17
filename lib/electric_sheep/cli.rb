@@ -163,6 +163,14 @@ module ElectricSheep
       puts ElectricSheep.revision
     end
 
+    desc 'hostkeys', 'Retrieve the SSH hosts public keys and cache them'
+    run_options
+    option :yes,
+           aliases: %w(-y), type: :boolean,
+           desc: 'Don\'t ask for confirmation before updating the key cache'
+    def hostkeys
+    end
+
     default_task :work
 
     protected

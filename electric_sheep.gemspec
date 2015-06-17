@@ -53,5 +53,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'premailer', '~> 1.8', '>= 1.8.2'
   spec.add_dependency 'posix-spawn', '~> 0.3', '>= 0.3.9'
   spec.add_dependency 'git_rev', '~> 0.1', '>= 0.1.0'
+  spec.add_dependency 'table_print', '~> 1.5', '>= 1.5.3'
 
 end
