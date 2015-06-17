@@ -21,10 +21,6 @@ module ElectricSheep
       @config = config
     end
 
-    def ssh(options = {})
-      @config.ssh_options = Metadata::EncryptOptions.new(options)
-    end
-
     def host(id, options = {})
       @config.hosts.add id, options
     end
