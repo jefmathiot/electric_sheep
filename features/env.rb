@@ -87,4 +87,3 @@ Before do
   FileUtils.rm_rf "#{`echo $HOME`.strip}/.electric_sheep/working-directories"
   @aruba_timeout_seconds = 10
 end
-

@@ -17,8 +17,9 @@ module ElectricSheep
 
     attr_reader :config
 
-    def initialize(config)
+    def initialize(config, evaluator)
       @config = config
+      @evaluator = evaluator
     end
 
     def host(id, options = {})
@@ -43,6 +44,10 @@ module ElectricSheep
 
     def decrypt(options = {})
       @config.decryption_options = Metadata::EncryptOptions.new(options)
+    end
+
+    def load(path)
+      @evaluator.load(@config, path)
     end
 
     class AbstractDsl

@@ -8,6 +8,7 @@ Please notice we'll use semantic versioning as of 1.0.0.
 
 * Added an `encrypt` command to encrypt backup files using GPG.
 * Added a `decrypt` CLI command to decrypt backup files using GPG.
+* Added a `load` DSL verb to load external Sheepfiles - enhancement [#7](https://github.com/servebox/electric_sheep/issues/7).
 
 ## 0.4.0 - 2015-02-25
 

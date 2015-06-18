@@ -1,0 +1,41 @@
+# Local working directory
+if File.basename(Dir.pwd)=='tmp'
+  # Cucumber features
+  working_directory File.expand_path('./')
+  ssh_key=File.join('../', 'acceptance', 'id_rsa')
+  dummy= File.expand_path('dummy.file')
+  dummy_directory= File.expand_path('dummy-directory')
+else
+  # Manual run
+  working_directory File.expand_path("tmp")
+  ssh_key='./acceptance/id_rsa'
+  dummy= File.expand_path('tmp/dummy.file')
+  dummy_directory= File.expand_path('tmp/dummy-directory')
+end
+
+###############################################################################
+## S3
+job "s3-move-local-to-remote" do
+  resource "file", path: dummy
+  move to: "my-bucket/my-job", using: "s3"
+end
+
+job "s3-copy-local-to-remote" do
+  resource "file", path: dummy
+  copy to: "my-bucket/my-job", using: "s3"
+end
+
+job "s3-move-remote-to-local" do
+  resource "s3_object", bucket: "my-bucket", path: "my-job/dummy.file"
+  move to: "localhost", using: "s3"
+end
+
+job "s3-copy-remote-to-local" do
+  resource "s3_object", bucket: "my-bucket", path: "my-job/dummy.file"
+  copy to: "localhost", using: "s3"
+end
+
+job "s3-fail" do
+  resource "file", path: dummy
+  move to: "my-bucket/my-job", using: "s3"
+end

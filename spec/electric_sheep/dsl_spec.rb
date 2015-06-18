@@ -1,11 +1,9 @@
 require 'spec_helper'
 
 describe ElectricSheep::Dsl do
-  before do
-    @config = ElectricSheep::Config.new
-    @dsl = ElectricSheep::Dsl.new(@config)
-    @dsl.host 'some-host', hostname: 'some-host.tld', description: 'Some host'
-  end
+  let(:config) { ElectricSheep::Config.new }
+  let(:evaluator) { mock }
+  let(:dsl) { ElectricSheep::Dsl.new(config, evaluator) }
 
   def check_properties(obj, expected)
     expected.each do |key, value|
@@ -14,13 +12,13 @@ describe ElectricSheep::Dsl do
   end
 
   it 'raises an error on method missing' do
-    -> { @dsl.orphan_method }.must_raise ElectricSheep::SheepException
+    -> { dsl.foo_method }.must_raise ElectricSheep::SheepException
   end
 
   describe ElectricSheep::Dsl::AbstractDsl do
     it 'raises an error on method missing' do
       lambda do
-        ElectricSheep::Dsl::AbstractDsl.new.orphan_method
+        ElectricSheep::Dsl::AbstractDsl.new.foo_method
       end.must_raise ElectricSheep::SheepException
     end
   end
@@ -28,45 +26,51 @@ describe ElectricSheep::Dsl do
   describe ElectricSheep::Dsl::JobDsl do
     it 'raises an error on class unknown' do
       err = lambda do
-        ElectricSheep::Dsl::JobDsl.new(@config, nil, {}).resource('Unknown')
+        ElectricSheep::Dsl::JobDsl.new(config, nil, {}).resource('Unknown')
       end.must_raise ElectricSheep::SheepException
       err.message.must_equal "Resource 'Unknown' in Sheepfile is undefined"
     end
   end
 
   it 'makes hosts available' do
-    (host = @config.hosts.get('some-host')).wont_be_nil
+    dsl.host 'some-host', hostname: 'some-host.tld', description: 'Some host'
+    (host = config.hosts.get('some-host')).wont_be_nil
     check_properties host, id: 'some-host', hostname: 'some-host.tld',
                            description: 'Some host'
   end
 
+  it 'loads an external Sheepfile or directory' do
+    evaluator.expects(:load).with(config, 'external/Sheepfile')
+    dsl.load 'external/Sheepfile'
+  end
+
   it 'defines the local working directory' do
-    @dsl.working_directory '/local/directory'
-    @config.hosts.localhost.working_directory.must_equal '/local/directory'
+    dsl.working_directory '/local/directory'
+    config.hosts.localhost.working_directory.must_equal '/local/directory'
   end
 
   it 'allows defaults for agents' do
     options = { command: 'id' }
     ElectricSheep::Agents::Register.expects(:assign_defaults_for).with(options)
-    @dsl.defaults_for options
+    dsl.defaults_for options
   end
 
   it 'allows encrypted values' do
-    value = @dsl.encrypted('XXXXX')
+    value = dsl.encrypted('XXXXX')
     value.must_be_instance_of ElectricSheep::Metadata::Encrypted
   end
 
   [:encrypt, :decrypt].each do |verb|
     it 'allows the definition of encryption options' do
-      @dsl.send verb, with: path = '/some/public/key'
-      @config.send("#{verb}ion_options").with.must_equal path
+      dsl.send verb, with: path = '/some/public/key'
+      config.send("#{verb}ion_options").with.must_equal path
     end
   end
 
   describe 'registering a job' do
     def build_job(options = {}, &block)
-      @dsl.job 'some-job', options, &block
-      @config.queue.first
+      dsl.job 'some-job', options, &block
+      config.queue.first
     end
 
     it 'appends the job to the configuration' do
@@ -119,7 +123,7 @@ describe ElectricSheep::Dsl do
 
       included do
         it 'adds an encryption command' do
-          @config.expects(:encryption_options).returns(opts = mock)
+          config.expects(:encryption_options).returns(opts = mock)
           opts.expects(:option).with(:with).returns('public/key')
           build_shell do
             encrypt
