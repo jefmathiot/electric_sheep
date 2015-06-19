@@ -62,11 +62,14 @@ describe ElectricSheep::Metadata::Job do
   end
 
   describe 'on inspecting schedule' do
-    def scheduled(expired, updates, &_block)
-      schedule = mock(expired?: expired).tap do |s|
-        s.expects(:update!).send(updates)
+    def scheduled(updates, *expired, &_block)
+      job = subject.new
+      expired.each do |expires|
+        mock(expired?: expires).tap do |s|
+          s.expects(:update!).send(updates)
+          job.schedule!(s)
+        end
       end
-      job = subject.new.tap { |p| p.schedule!(schedule) }
       called = nil
       job.on_schedule do
         called = true
@@ -75,18 +78,20 @@ describe ElectricSheep::Metadata::Job do
       job
     end
 
-    it 'expose its schedule' do
-      scheduled(true, :once).schedule.wont_be_nil
+    it 'expose its schedules' do
+      job = subject.new
+      2.times { job.schedule!(mock) }
+      job.schedules.length.must_equal 2
     end
 
     it 'yields on expiry' do
-      scheduled(true, :once) do |called|
+      scheduled(:once, false, true) do |called|
         called.must_equal true, 'Block should have been called'
       end
     end
 
     it 'does not yield if schedule has not expired' do
-      scheduled(false, :never) do |called|
+      scheduled(:never, false, false) do |called|
         called.must_be_nil 'Block should not have been called'
       end
     end
@@ -99,13 +104,13 @@ describe ElectricSheep::Metadata::Job do
       end
       called.must_be_nil 'Block should not have been called'
     end
+  end
 
-    it 'appends a notifier' do
-      subject.new.tap do |job|
-        job.notifiers.size.must_equal 0
-        job.notifier mock
-        job.notifiers.size.must_equal 1
-      end
+  it 'appends a notifier' do
+    subject.new.tap do |job|
+      job.notifiers.size.must_equal 0
+      job.notifier mock
+      job.notifiers.size.must_equal 1
     end
   end
 end

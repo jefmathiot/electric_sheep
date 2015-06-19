@@ -100,8 +100,11 @@ describe ElectricSheep::Dsl do
     it 'assigns a schedule' do
       job = build_job do
         schedule 'hourly', past: '30'
+        schedule 'daily', at: '00:01'
       end
-      job.schedule.must_be_instance_of ElectricSheep::Metadata::Schedule::Hourly
+      job.schedules.size.must_equal 2
+      job.schedules.first
+        .must_be_instance_of ElectricSheep::Metadata::Schedule::Hourly
     end
 
     it 'appends a notifier' do
