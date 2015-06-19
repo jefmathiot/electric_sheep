@@ -53,5 +53,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'premailer', '~> 1.8', '>= 1.8.2'
   spec.add_dependency 'posix-spawn', '~> 0.3', '>= 0.3.9'
   spec.add_dependency 'git_rev', '~> 0.1', '>= 0.1.0'
+  spec.add_dependency 'parse-cron', '~> 0.1', '>= 0.1.4'
 
 end

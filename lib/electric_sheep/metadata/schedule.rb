@@ -1,3 +1,5 @@
+require 'parse-cron'
+
 module ElectricSheep
   module Metadata
     module Schedule
@@ -76,6 +78,15 @@ module ElectricSheep
 
         def adjust(time, day)
           time.change(day: [day.to_i, days_in_month(time)].min)
+        end
+      end
+
+      class Cron < Base
+        option :expression, required: true
+
+        def update!
+          @parser ||= CronParser.new(expression)
+          @scheduled_at = @parser.next(Time.now)
         end
       end
     end
