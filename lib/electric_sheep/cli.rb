@@ -66,7 +66,7 @@ module ElectricSheep
 
       def stop
         rescued(true) do
-          master.stop!
+          master(daemon: true).stop!
         end
       end
 

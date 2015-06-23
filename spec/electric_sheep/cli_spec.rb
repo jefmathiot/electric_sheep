@@ -195,12 +195,12 @@ describe ElectricSheep::CLI do
 
         describe 'stopping' do
           it 'stops the master' do
-            expects_control(:stop!)
+            expects_control(:stop!, daemon: true)
             subject.new([]).stop
           end
 
           it 'overrides the path to pidfile' do
-            expects_control(:stop!, pidfile: '/tmp/es.lock')
+            expects_control(:stop!, pidfile: '/tmp/es.lock', daemon: true)
             subject.new([], pidfile: '/tmp/es.lock').stop
           end
         end
@@ -216,7 +216,7 @@ describe ElectricSheep::CLI do
 
         describe 'stopping' do
           ensure_verbosity(:file) do
-            expects_control(:stop!)
+            expects_control(:stop!, daemon: true)
             subject.new([], verbose: true).stop
           end
         end
