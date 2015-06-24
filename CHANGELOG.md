@@ -2,7 +2,9 @@
 
 Please notice we'll use semantic versioning as of 1.0.0.
 
-## 0.5.0 - Unreleased
+## 0.6.0 - Unreleased
+
+## 0.5.0 - 2015-06-24
 
 ### Added
 
