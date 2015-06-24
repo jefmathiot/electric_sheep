@@ -6,7 +6,7 @@ module ElectricSheep
 
         def tempname
           t = Time.now.strftime('%Y%m%d')
-          "tmp#{t}-#{$PID}-#{rand(0x100000000).to_s(36)}"
+          "tmp#{t}-#{Process.pid}-#{rand(0x100000000).to_s(36)}"
         end
 
         def tempdir(executor, &block)
