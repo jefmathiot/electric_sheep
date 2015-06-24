@@ -25,7 +25,7 @@ Given(/^Electric Sheep has access to a valid private key$/) do
 end
 
 Then(/^everything goes well$/) do
-  # Do nothing, the previous step fails on error
+  step "the exit status should be 0"
 end
 
 Then(/^the file should have been encrypted$/) do
