@@ -11,7 +11,7 @@ describe ElectricSheep::Metadata::Agent do
   class AgentKlazz < ElectricSheep::Metadata::Agent
     option :secret, secret: true
     option :public
-    option :default
+    option :foobar, default: 'local'
   end
 
   describe AgentKlazz do
@@ -29,13 +29,26 @@ describe ElectricSheep::Metadata::Agent do
       agent.type.must_equal 'agent_klazz'
     end
 
-    it 'fetches default values for options' do
-      ElectricSheep::Agents::Register.expects(:defaults_for)
-        .with('agent_klazz', 'id').returns(default: 'value')
-      subject.new(agent: 'id').option(:default).must_equal 'value'
+    describe 'fetching default values' do
+      before do
+        ElectricSheep::Agents::Register.stubs(:agent_klazz).with('id')
+          .returns(nil)
+      end
+
+      it 'fetches a globally defined default value for option' do
+        ElectricSheep::Agents::Register.expects(:defaults_for)
+          .with('agent_klazz', 'id').returns(foobar: 'value')
+        subject.new(agent: 'id').option(:foobar).must_equal 'value'
+      end
+
+      it 'prefers a default a locally defined default value for option' do
+        ElectricSheep::Agents::Register.expects(:defaults_for)
+          .returns({})
+        subject.new(agent: 'id').option(:foobar).must_equal 'local'
+      end
     end
 
-    it do
+    it 'does not validate unless the agent is known' do
       ElectricSheep::Agents::Register.stubs(:agent_klazz).with('foo')
         .returns(nil)
       expects_validation_error(subject.new(agent: 'foo'), :agent_klazz,

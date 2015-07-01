@@ -11,10 +11,6 @@ module ElectricSheep
         @errors ||= Errors.new
       end
 
-      def options
-        self.class.options
-      end
-
       def validate(_config)
         options.each do |option, opts|
           ensure_present(option) if opts[:required]
@@ -32,14 +28,6 @@ module ElectricSheep
 
       def respond_to?(method, include_all = false)
         option?(method) || super
-      end
-
-      def option(name)
-        @options[name]
-      end
-
-      def option?(method)
-        options.include?(method)
       end
 
       protected

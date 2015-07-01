@@ -24,17 +24,24 @@ module ElectricSheep
         value
       end
 
-      def option(name)
-        super || @options[:agent] && Agents::Register
-          .defaults_for(type, @options[:agent])[name]
-      end
-
       def agent_klazz
         # Use the instance variable to avoid stack level too deep
         @options[:agent] && Agents::Register.send(type, @options[:agent])
       end
 
+      protected
+
+      def fetch_option(name)
+        explicit_option(name) || register_default_option(name) ||
+          default_option(name)
+      end
+
       private
+
+      def register_default_option(name)
+        @options[:agent] && Agents::Register
+          .defaults_for(type, @options[:agent])[name]
+      end
 
       def ensure_known_agent
         return unless agent_klazz.nil?
