@@ -86,7 +86,7 @@ describe ElectricSheep::Crypto::GPG do
     def expects_tempfile(contents)
       ElectricSheep::Helpers::FSUtil.expects(:tempfile).with(executor)
         .yields('/temp/file')
-      cmd = "echo \"#{contents}\" > #{tempfile} && chmod 0700 #{tempfile}"
+      cmd = "echo #{contents} > #{tempfile} && chmod 0700 #{tempfile}"
       executor.expects(:exec).with(cmd).returns(exit_status: 0)
     end
 

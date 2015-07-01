@@ -2,12 +2,17 @@
 
 Please notice we'll use semantic versioning as of 1.0.0.
 
-## 0.5.0 - Unreleased
+## 0.6.0 - Unreleased
+
+## 0.5.0 - 2015-06-24
 
 ### Added
 
 * Added an `encrypt` command to encrypt backup files using GPG.
 * Added a `decrypt` CLI command to decrypt backup files using GPG.
+* Added a `load` DSL verb to load external Sheepfiles - enhancement [#7](https://github.com/servebox/electric_sheep/issues/7).
+* Allow multiple schedules of the same job - enhancement [#10](https://github.com/servebox/electric_sheep/issues/10).
+* Added support for Cron expressions in scheduling - enhancement [#11](https://github.com/servebox/electric_sheep/issues/11).
 
 ## 0.4.0 - 2015-02-25
 

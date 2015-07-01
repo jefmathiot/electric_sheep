@@ -1,0 +1,37 @@
+# Local working directory
+if File.basename(Dir.pwd)=='tmp'
+  # Cucumber features
+  working_directory File.expand_path('./')
+  ssh_key=File.join('../', 'acceptance', 'id_rsa')
+  dummy= File.expand_path('dummy.file')
+  dummy_directory= File.expand_path('dummy-directory')
+else
+  # Manual run
+  working_directory File.expand_path("tmp")
+  ssh_key='./acceptance/id_rsa'
+  dummy= File.expand_path('tmp/dummy.file')
+  dummy_directory= File.expand_path('tmp/dummy-directory')
+end
+
+###############################################################################
+## TarGz
+job "tar-gz-file", private_key: ssh_key do
+  resource "file", path: "dummy.file", host: "main-host"
+  remotely as: "vagrant" do
+    tar_gz
+  end
+end
+
+job "tar-gz-directory", private_key: ssh_key do
+  resource "file", path: "dummy-directory", host: "main-host"
+  remotely as: "vagrant" do
+    tar_gz
+  end
+end
+
+job "tar-gz-unknown-file", private_key: ssh_key do
+  resource "file", path: "unknown-file", host: "main-host"
+  remotely as: "vagrant" do
+    tar_gz
+  end
+end

@@ -7,7 +7,7 @@ module ElectricSheep
       end
 
       def decrypt
-        Crypto.gpg.string.decrypt(@options.with, @cipher_text)
+        Crypto.gpg.string(Spawn).decrypt(@options.with, @cipher_text)
       end
     end
   end

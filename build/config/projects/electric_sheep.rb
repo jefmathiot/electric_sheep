@@ -12,7 +12,7 @@ build_iteration 1
 
 build_platform = ohai['platform']
 
-override 'ruby', version: "2.2.0"
+override 'ruby', version: "2.2.1"
 override 'rubygems', version: "2.4.5"
 
 # creates required build directories

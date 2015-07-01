@@ -1,0 +1,67 @@
+# Local working directory
+if File.basename(Dir.pwd)=='tmp'
+  # Cucumber features
+  working_directory File.expand_path('./')
+  ssh_key=File.join('../', 'acceptance', 'id_rsa')
+  dummy= File.expand_path('dummy.file')
+  dummy_directory= File.expand_path('dummy-directory')
+else
+  # Manual run
+  working_directory File.expand_path("tmp")
+  ssh_key='./acceptance/id_rsa'
+  dummy= File.expand_path('tmp/dummy.file')
+  dummy_directory= File.expand_path('tmp/dummy-directory')
+end
+
+###############################################################################
+## SCP
+job "scp-move-local-to-remote", private_key: ssh_key do
+  resource "file", path: dummy
+  move to: "main-host", using: "scp", as: "vagrant"
+end
+
+job "scp-fail", private_key: ssh_key do
+  resource "file", path: 'tmp/fail.file'
+  move to: "main-host", using: "scp", as: "vagrant"
+end
+
+job "scp-copy-local-to-remote", private_key: ssh_key do
+  resource "file", path: dummy
+  copy to: "main-host", using: "scp", as: "vagrant"
+end
+
+job "scp-copy-remote-to-local", private_key: ssh_key do
+  resource "file", path: "dummy.file", host: "main-host"
+  copy to: "localhost", using: "scp", as: "vagrant"
+end
+
+job "scp-move-remote-to-local", private_key: ssh_key do
+  resource "file", path: "dummy.file", host: "main-host"
+  move to: "localhost", using: "scp", as: "vagrant"
+end
+
+job "scp-copy-and-move", private_key: ssh_key do
+  resource "file", path: dummy
+  copy to: "main-host", using: "scp", as: "vagrant"
+  move to: "backup-store", using: "scp", as: "vagrant"
+end
+
+job "scp-move-directory-local-to-remote", private_key: ssh_key do
+  resource "directory", path: dummy_directory
+  move to: "main-host", using: "scp", as: "vagrant"
+end
+
+job "scp-copy-directory-local-to-remote", private_key: ssh_key do
+  resource "directory", path: dummy_directory
+  copy to: "main-host", using: "scp", as: "vagrant"
+end
+
+job "scp-move-directory-remote-to-local", private_key: ssh_key do
+  resource "directory", path: "dummy-directory", host: "main-host"
+  move to: "localhost", using: "scp", as: "vagrant"
+end
+
+job "scp-copy-directory-remote-to-local", private_key: ssh_key do
+  resource "directory", path: "dummy-directory", host: "main-host"
+  copy to: "localhost", using: "scp", as: "vagrant"
+end

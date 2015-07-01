@@ -8,7 +8,7 @@ module ElectricSheep
       option :description
       option :private_key
 
-      attr_reader :schedule, :starts_with
+      attr_reader :starts_with
 
       def start_with!(resource)
         @starts_with = resource
@@ -28,12 +28,18 @@ module ElectricSheep
       end
 
       def schedule!(schedule)
-        @schedule = schedule
+        schedules << schedule
+      end
+
+      def schedules
+        @schedules ||= []
       end
 
       def on_schedule(&_)
-        return unless @schedule && @schedule.expired?
-        @schedule.update!
+        return unless schedules.reduce(false) do |expired, schedule|
+          expired || schedule.expired?
+        end
+        schedules.map(&:update!)
         yield self
       end
 

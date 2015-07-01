@@ -61,7 +61,7 @@ module ElectricSheep
         def with_content_file(text, &_)
           # Using the block form to ensure the file will be removed
           Helpers::FSUtil.tempfile(@executor) do |path|
-            exec "echo \"#{shell_safe(text)}\" > #{path} && " \
+            exec "echo #{shell_safe(text)} > #{path} && " \
                  "chmod 0700 #{path}"
             yield path
           end

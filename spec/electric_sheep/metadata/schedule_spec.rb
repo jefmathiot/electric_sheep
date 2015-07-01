@@ -111,4 +111,15 @@ describe ElectricSheep::Metadata::Schedule do
       expects_scheduled_at({}, Time.local(2014, 2, 1, 0, 0, 0))
     end
   end
+
+  describe ElectricSheep::Metadata::Schedule::Cron do
+    include Support::Options
+
+    it { defines_options :expression }
+
+    it 'parses the expression' do
+      expects_scheduled_at({ expression: '* * * * *' },
+                           Time.local(2014, 1, 1, 1, 1, 0))
+    end
+  end
 end
