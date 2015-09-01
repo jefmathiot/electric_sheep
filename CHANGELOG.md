@@ -4,6 +4,10 @@ Please notice we'll use semantic versioning as of 1.0.0.
 
 ## 0.6.0 - Unreleased
 
+### Added
+
+* Added packaging for CentOS 6 & 7 (thanks @ehartmann) - enhancement [#17](https://github.com/servebox/electric_sheep/issues/17).
+
 ## 0.5.0 - 2015-06-24
 
 ### Added
