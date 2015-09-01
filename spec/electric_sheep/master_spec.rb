@@ -167,7 +167,7 @@ describe ElectricSheep::Master do
 
   describe 'starting' do
     before do
-      master.stubs(:should_stop?).returns(false).then.returns(true)
+      master.stubs(:should_stop).returns(false).then.returns(true)
     end
 
     it 'raises if a process is already running' do
@@ -276,8 +276,8 @@ describe ElectricSheep::Master do
 
   it 'traps the TERM signal' do
     master.expects(:trap).with(:TERM).yields
-    master.send(:should_stop?).must_be_nil
+    master.send(:should_stop).must_be_nil
     master.send(:trap_signals)
-    master.send(:should_stop?).must_equal true
+    master.send(:should_stop).must_equal true
   end
 end

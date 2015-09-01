@@ -35,7 +35,7 @@ describe ElectricSheep::Commands::Compression::TarGz do
             .returns(input.path)
           expects_stat(input_type, input, 4096)
           ensure_execution(*cmds)
-          input.transient?.must_equal true if delete_source
+          input.transient.must_equal true if delete_source
         end
       end
     end

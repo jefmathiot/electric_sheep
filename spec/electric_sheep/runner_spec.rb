@@ -171,7 +171,7 @@ describe ElectricSheep::Runner do
       resource.expects(:local?).returns(false)
       resource.stubs(:type).returns('file')
       resource.stubs(:basename).returns('resource')
-      resource.stubs(:timestamp?).returns(false)
+      resource.stubs(:timestamp).returns(nil)
       job.add metadata = ElectricSheep::Metadata::Transport.new
       metadata.expects(:agent_klazz).in_sequence(script).at_least(1)
         .returns(FakeTransport)

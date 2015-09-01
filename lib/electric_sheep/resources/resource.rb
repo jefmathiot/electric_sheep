@@ -3,18 +3,10 @@ module ElectricSheep
     class Resource < Metadata::Base
       include Metadata::Typed
 
-      attr_reader :timestamp
-
-      def timestamp?
-        @timestamp
-      end
+      attr_reader :timestamp, :transient
 
       def timestamp!(origin)
-        if origin.timestamp?
-          @timestamp = origin.timestamp
-        else
-          @timestamp = Time.now.utc.strftime('%Y%m%d-%H%M%S')
-        end
+        @timestamp = origin.timestamp || Time.now.utc.strftime('%Y%m%d-%H%M%S')
       end
 
       def stat!(size)
@@ -37,10 +29,6 @@ module ElectricSheep
       def transient!
         @transient = true
         self
-      end
-
-      def transient?
-        @transient
       end
     end
   end
