@@ -33,3 +33,10 @@ package :deb do
   section 'utilities'
   base_name "electric-sheep-#{build_platform}"
 end
+
+package :rpm do
+  vendor 'ServeBox <humans@electricsheep.io>'
+  license 'MIT'
+  category 'utilities'
+end
+
