@@ -3,11 +3,9 @@ module ElectricSheep
     class Resource < Metadata::Base
       include Metadata::Typed
 
-      attr_reader :timestamp
-
-      def timestamp?
-        @timestamp
-      end
+      attr_reader :timestamp, :transient
+      alias_method :timestamp?, :timestamp
+      alias_method :transient?, :transient
 
       def timestamp!(origin)
         if origin.timestamp?
@@ -37,10 +35,6 @@ module ElectricSheep
       def transient!
         @transient = true
         self
-      end
-
-      def transient?
-        @transient
       end
     end
   end

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe ElectricSheep::Metadata::Schedule do
-  before {  Timecop.travel(Time.local(2014, 1, 1, 1, 0, 0)) }
+  before { Timecop.travel(Time.local(2014, 1, 1, 1, 0, 0)) }
   after { Timecop.return }
 
   def expects_scheduled_at(options, expected)

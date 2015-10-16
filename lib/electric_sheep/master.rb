@@ -1,13 +1,13 @@
 module ElectricSheep
   class Master
-    attr_reader :spawners
+    attr_reader :spawners, :should_stop
 
     def initialize(options)
       @config = options[:config]
       @logger = options[:logger]
       @workers = [1, options[:workers]].compact.max
       @pidfile = File.expand_path(options[:pidfile]) if options[:pidfile]
-      @spawners =  Spawners.get(options, @logger, @pidfile)
+      @spawners = Spawners.get(options, @logger, @pidfile)
     end
 
     def start!
@@ -15,7 +15,7 @@ module ElectricSheep
       @logger.info 'Starting master'
       spawners.master.spawn('Master started') do
         trap_signals
-        until should_stop?
+        until should_stop
           run_workers
           # TODO: Configurable rest time
           sleep 1
@@ -56,10 +56,6 @@ module ElectricSheep
       trap(:TERM) { @should_stop = true }
     end
 
-    def should_stop?
-      @should_stop
-    end
-
     def kill_self
       return unless (pid = running?)
       @logger.debug "Terminating process #{pid}"
@@ -69,8 +65,8 @@ module ElectricSheep
 
     def process?(pid)
       pid > 0 && Process.kill(0, pid)
-      rescue Errno::ESRCH, RangeError
-        false
+    rescue Errno::ESRCH, RangeError
+      false
     end
 
     def run_scheduled

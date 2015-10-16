@@ -204,7 +204,8 @@ describe ElectricSheep::Interactors::SshInteractor do
 
       it 'should return both stdout and stderr' do
         build_ssh_story 'echo "Hello World" ; echo "Goodbye Cruel World" >&2',
-                        data: 'Hello World', extended_data: 'Goodbye Cruel World'
+                        data: 'Hello World',
+                        extended_data: 'Goodbye Cruel World'
         logger.expects(:debug)
           .with('echo "Hello World" ; echo "Goodbye Cruel World" >&2')
         logger.expects(:debug).with('Hello World')
