@@ -50,6 +50,10 @@ module ElectricSheep
       @evaluator.load(@config, path)
     end
 
+    def ssh(options)
+      @config.ssh_options = Metadata::SshOptions.new(options)
+    end
+
     class AbstractDsl
       include RaiseOnMethodMissing
       include Encrypted

@@ -3,9 +3,12 @@ module ElectricSheep
     class SshInteractor < Base
       include ShellStat
 
-      def initialize(host, job, user, logger = nil)
+      HOST_KEY_VERIFIERS = { standard: :very, strict: :secure }.freeze
+
+      def initialize(host, job, user, options, logger = nil)
         super(host, job, logger)
         @user = user
+        @options = options
       end
 
       def exec(cmd)
@@ -47,12 +50,22 @@ module ElectricSheep
       protected
 
       def build_session
-        Net::SSH.start(
-          @host.hostname,
-          @user,
-          port: @host.ssh_port, auth_methods: %w(publickey), keys_only: true,
+        Net::SSH.start(@host.hostname, @user, ssh_options)
+      end
+
+      def ssh_options
+        { port: @host.ssh_port, keys_only: true, auth_methods: %w(publickey),
           key_data: PrivateKey.get_key(private_key, :private).export
-        )
+        }.tap do |opts|
+          opts[:user_known_hosts_file] =
+            File.expand_path(@options.known_hosts) if @options.known_hosts
+          opts[:paranoid] = host_key_checking
+        end
+      end
+
+      def host_key_checking
+        return 'standard' if @options.host_key_checking.nil?
+        HOST_KEY_VERIFIERS[@options.host_key_checking.to_sym]
       end
 
       def private_key

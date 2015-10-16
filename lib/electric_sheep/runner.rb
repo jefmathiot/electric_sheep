@@ -57,8 +57,9 @@ module ElectricSheep
           job.last_output.host,
           job,
           input,
-          @logger,
-          metadata.user
+          metadata.user,
+          @config.ssh_options,
+          @logger
         ).perform!(metadata)
         metadata.last_output
       end

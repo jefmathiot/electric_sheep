@@ -58,9 +58,9 @@ describe ElectricSheep::Interactors::SshInteractor do
   end
 
   let(:logger) { mock }
-
+  let(:ssh_options) { ElectricSheep::Metadata::SshOptions.new }
   let(:interactor) do
-    subject.new(host, job, 'johndoe', logger)
+    subject.new(host, job, 'johndoe', ssh_options, logger)
   end
 
   let(:host) do
@@ -83,21 +83,21 @@ describe ElectricSheep::Interactors::SshInteractor do
 
     it 'uses the host key if specified' do
       host.expects(:private_key).returns('key_rsa')
-      subject.new(host, job, 'user').send(:private_key)
+      interactor.send(:private_key)
         .must_equal File.expand_path('key_rsa')
     end
 
     it 'falls back to the job key' do
       host.expects(:private_key).returns(nil)
       job.expects(:private_key).returns('key_rsa')
-      subject.new(host, job, 'user').send(:private_key)
+      interactor.send(:private_key)
         .must_equal File.expand_path('key_rsa')
     end
 
     it 'falls back to the default key' do
       host.expects(:private_key).returns(nil)
       job.expects(:private_key).returns(nil)
-      subject.new(host, job, 'user').send(:private_key)
+      interactor.send(:private_key)
         .must_equal File.expand_path('~/.ssh/id_rsa')
     end
   end
@@ -117,113 +117,144 @@ describe ElectricSheep::Interactors::SshInteractor do
       end
     end
 
-    before do
-      ElectricSheep::Interactors::SshInteractor::PrivateKey.expects(:get_key)
-        .with('/path/to/private/key', :private)
-        .returns(pk = mock)
-      pk.expects(:export).returns('SECRET')
-      options = { port: 22, auth_methods: ['publickey'], key_data: 'SECRET',
-                  keys_only: true }
-      Net::SSH.expects(:start)
-        .with('host.tld', 'johndoe', options)
-        .returns(connection)
-      job.expects(:private_key).returns('/path/to/private/key')
-      ElectricSheep::Helpers::Directories.any_instance
-        .expects(:mk_job_directory!)
+    let :default_options do
+      { port: 22, auth_methods: ['publickey'], key_data: 'SECRET',
+        keys_only: true, paranoid: :very }
     end
 
-    it 'logs to stderr on failing exec' do
-      story do |session|
-        channel = session.opens_channel
-        channel.sends_exec 'whatever', true, false
-        channel.gets_close
-        channel.sends_close
+    def self.expecting_ssh_session
+      before do
+        ElectricSheep::Interactors::SshInteractor::PrivateKey.expects(:get_key)
+          .with('/path/to/private/key', :private)
+          .returns(pk = mock)
+        pk.expects(:export).returns('SECRET')
+        Net::SSH.expects(:start)
+          .with('host.tld', 'johndoe', options)
+          .returns(connection)
+        job.expects(:private_key).returns('/path/to/private/key')
+        ElectricSheep::Helpers::Directories.any_instance
+          .expects(:mk_job_directory!)
       end
-      logger.expects(:debug).with('whatever')
-      assert_scripted do
-        interactor.in_session do
-          proc { interactor.exec 'whatever' }.must_raise RuntimeError
+    end
+
+    describe 'with specific SSH options' do
+      let :options do
+        default_options.merge(paranoid: :secure,
+                              user_known_hosts_file: '/path/to/known_hosts')
+      end
+
+      let(:ssh_options) do
+        ElectricSheep::Metadata::SshOptions
+          .new(known_hosts: '/path/to/known_hosts', host_key_checking: 'strict')
+      end
+
+      expecting_ssh_session
+
+      it 'starts the session using the specific options' do
+        interactor.in_session
+      end
+    end
+
+    describe 'with default SSH options' do
+      let :options do
+        default_options
+      end
+
+      expecting_ssh_session
+
+      it 'logs to stderr on failing exec' do
+        story do |session|
+          channel = session.opens_channel
+          channel.sends_exec 'whatever', true, false
+          channel.gets_close
+          channel.sends_close
+        end
+        logger.expects(:debug).with('whatever')
+        assert_scripted do
+          interactor.in_session do
+            proc { interactor.exec 'whatever' }.must_raise RuntimeError
+          end
         end
       end
-    end
 
-    it 'should return stdout output' do
-      build_ssh_story 'echo "Hello World"', data: 'Hello World'
-      logger.expects(:debug).with('echo "Hello World"')
-      logger.expects(:debug).with('Hello World')
-      assert_scripted do
-        interactor.in_session do
-          result = interactor.exec 'echo "Hello World"'
-          result.must_equal(out: 'Hello World', err: '', exit_status: 0)
-        end
-      end
-    end
-
-    it 'should return stderr output' do
-      build_ssh_story 'echo "Goodbye Cruel World" >&2',
-                      extended_data: 'Goodbye Cruel World'
-      logger.expects(:debug).with('echo "Goodbye Cruel World" >&2')
-      assert_scripted do
-        interactor.in_session do
-          result = interactor.exec 'echo "Goodbye Cruel World" >&2'
-          result.must_equal(out: '', err: 'Goodbye Cruel World',
-                            exit_status: 0)
-        end
-      end
-    end
-
-    it 'should return both stdout and stderr' do
-      build_ssh_story 'echo "Hello World" ; echo "Goodbye Cruel World" >&2',
-                      data: 'Hello World', extended_data: 'Goodbye Cruel World'
-      logger.expects(:debug)
-        .with('echo "Hello World" ; echo "Goodbye Cruel World" >&2')
-      logger.expects(:debug).with('Hello World')
-      assert_scripted do
-        interactor.in_session do
-          result = interactor.exec('echo "Hello World" ; ' \
-            'echo "Goodbye Cruel World" >&2')
-          result.must_equal(out: 'Hello World', err: 'Goodbye Cruel World',
-                            exit_status: 0)
-        end
-      end
-    end
-
-    describe 'on returning status' do
-      it 'should succeed' do
+      it 'should return stdout output' do
         build_ssh_story 'echo "Hello World"', data: 'Hello World'
         logger.expects(:debug).with('echo "Hello World"')
         logger.expects(:debug).with('Hello World')
         assert_scripted do
-          result = nil
           interactor.in_session do
-            result = interactor.exec('echo "Hello World"')
-          end
-          result[:exit_status].must_equal 0
-          result[:out].must_equal 'Hello World'
-        end
-      end
-
-      it 'should fail gracefully' do
-        build_ssh_story 'ls --wtf', { extended_data: 'An error' }, 2
-        logger.expects(:debug).with('ls --wtf')
-        assert_scripted do
-          interactor.in_session do
-            proc { interactor.exec('ls --wtf') }.must_raise RuntimeError
+            result = interactor.exec 'echo "Hello World"'
+            result.must_equal(out: 'Hello World', err: '', exit_status: 0)
           end
         end
       end
 
-      it 'should be able to delete resources' do
-        resource = mock(path: 'resource')
-        cmd = 'rm -rf /path/to/resource'
-        build_ssh_story cmd, {}
-        logger.expects(:debug).with(cmd)
-        interactor.expects(:expand_path).with('resource')
-          .returns('/path/to/resource')
+      it 'should return stderr output' do
+        build_ssh_story 'echo "Goodbye Cruel World" >&2',
+                        extended_data: 'Goodbye Cruel World'
+        logger.expects(:debug).with('echo "Goodbye Cruel World" >&2')
         assert_scripted do
           interactor.in_session do
-            result = interactor.delete!(resource)
+            result = interactor.exec 'echo "Goodbye Cruel World" >&2'
+            result.must_equal(out: '', err: 'Goodbye Cruel World',
+                              exit_status: 0)
+          end
+        end
+      end
+
+      it 'should return both stdout and stderr' do
+        build_ssh_story 'echo "Hello World" ; echo "Goodbye Cruel World" >&2',
+                        data: 'Hello World', extended_data: 'Goodbye Cruel World'
+        logger.expects(:debug)
+          .with('echo "Hello World" ; echo "Goodbye Cruel World" >&2')
+        logger.expects(:debug).with('Hello World')
+        assert_scripted do
+          interactor.in_session do
+            result = interactor.exec('echo "Hello World" ; ' \
+              'echo "Goodbye Cruel World" >&2')
+            result.must_equal(out: 'Hello World', err: 'Goodbye Cruel World',
+                              exit_status: 0)
+          end
+        end
+      end
+
+      describe 'on returning status' do
+        it 'should succeed' do
+          build_ssh_story 'echo "Hello World"', data: 'Hello World'
+          logger.expects(:debug).with('echo "Hello World"')
+          logger.expects(:debug).with('Hello World')
+          assert_scripted do
+            result = nil
+            interactor.in_session do
+              result = interactor.exec('echo "Hello World"')
+            end
             result[:exit_status].must_equal 0
+            result[:out].must_equal 'Hello World'
+          end
+        end
+
+        it 'should fail gracefully' do
+          build_ssh_story 'ls --wtf', { extended_data: 'An error' }, 2
+          logger.expects(:debug).with('ls --wtf')
+          assert_scripted do
+            interactor.in_session do
+              proc { interactor.exec('ls --wtf') }.must_raise RuntimeError
+            end
+          end
+        end
+
+        it 'should be able to delete resources' do
+          resource = mock(path: 'resource')
+          cmd = 'rm -rf /path/to/resource'
+          build_ssh_story cmd, {}
+          logger.expects(:debug).with(cmd)
+          interactor.expects(:expand_path).with('resource')
+            .returns('/path/to/resource')
+          assert_scripted do
+            interactor.in_session do
+              result = interactor.delete!(resource)
+              result[:exit_status].must_equal 0
+            end
           end
         end
       end

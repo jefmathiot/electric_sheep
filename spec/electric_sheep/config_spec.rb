@@ -16,4 +16,8 @@ describe ElectricSheep::Config do
   it 'initializes an empty hosts' do
     @config.hosts.must_be_instance_of ElectricSheep::Metadata::Hosts
   end
+
+  it 'initializes an empty set of ssh options' do
+    @config.ssh_options.must_be_instance_of ElectricSheep::Metadata::SshOptions
+  end
 end

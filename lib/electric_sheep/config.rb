@@ -7,6 +7,7 @@ module ElectricSheep
 
     def initialize
       @hosts = Metadata::Hosts.new
+      @ssh_options = Metadata::SshOptions.new
     end
   end
 end
