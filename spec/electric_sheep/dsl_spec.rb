@@ -39,6 +39,12 @@ describe ElectricSheep::Dsl do
                            description: 'Some host'
   end
 
+  it 'modifies SSH options' do
+    options = { known_hosts: '/path/to/known_hosts', host_key_checking: 'strict' }
+    dsl.ssh options
+    check_properties config.ssh_options, options
+  end
+
   it 'loads an external Sheepfile or directory' do
     evaluator.expects(:load).with(config, 'external/Sheepfile')
     dsl.load 'external/Sheepfile'
