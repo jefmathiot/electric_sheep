@@ -13,7 +13,7 @@ fi
 if [[ $# -gt 0 ]]; then
   OPERATING_SYSTEMS=( "$@" )
 else
-  OPERATING_SYSTEMS=(centos6 ubuntu32 debian64 ubuntu64 debian32 centos7)
+  OPERATING_SYSTEMS=(centos6 ubuntu32 debian64-jessie debian64-wheezy ubuntu64 debian32-jessie debian32-wheezy deb centos7)
 fi
 
 
