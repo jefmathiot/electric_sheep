@@ -10,7 +10,7 @@ build_version ElectricSheep::VERSION
 install_dir '/opt/electric_sheep'
 build_iteration 1
 
-build_platform = ohai['platform']
+build_platform = ohai['platform'] + '_' + ohai['platform_version']
 
 override 'ruby', version: "2.2.1"
 override 'rubygems', version: "2.4.5"
