@@ -39,7 +39,7 @@ describe ElectricSheep::Transports::S3 do
     def ensure_s3_object_created
       resource.stubs(:basename).returns('file')
       resource.stubs(:extension).returns('.ext')
-      resource.stubs(:timestamp?).returns(false)
+      resource.stubs(:timestamp).returns(nil)
       metadata.stubs(:to).returns('bucket/path/to')
       resource = s3.remote_resource
       resource.must_be_instance_of ElectricSheep::Resources::S3Object

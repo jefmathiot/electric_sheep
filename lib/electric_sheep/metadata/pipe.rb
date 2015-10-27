@@ -34,9 +34,9 @@ module ElectricSheep
 
       def propagate(item, result)
         if result.is_a?(Array)
-          done!(item,  *result)
+          done!(item, *result)
         else
-          done!(item,  result, result)
+          done!(item, result, result)
         end
       end
 

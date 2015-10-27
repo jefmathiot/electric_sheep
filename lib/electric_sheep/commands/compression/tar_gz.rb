@@ -8,6 +8,8 @@ module ElectricSheep
 
         register as: 'tar_gz'
 
+        option :tar_options
+
         def perform!
           logger.info "Compressing #{input.path} to #{input.basename}.tar.gz"
           input_path = shell.expand_path(input.path)
@@ -25,7 +27,9 @@ module ElectricSheep
 
         def cmd(input_path, archive)
           cmd = "cd #{File.dirname(input_path)}; "
-          cmd << "tar -cvzf #{shell.expand_path(archive.path)} "
+          cmd << " tar "
+          cmd << option(:tar_options) unless option(:tar_options).nil?
+          cmd << " -cvzf #{shell.expand_path(archive.path)} "
           cmd << "#{File.basename(input_path)} 1>&2"
         end
       end

@@ -7,7 +7,6 @@ describe ElectricSheep::Resources::Resource do
 
   it 'uses original timestamp if any' do
     ts = Time.now.utc.strftime('%Y%m%d-%H%M%S')
-    origin.expects(:timestamp?).returns(true)
     origin.expects(:timestamp).returns(ts)
     subject.new.tap do |resource|
       resource.timestamp!(origin)
@@ -17,7 +16,7 @@ describe ElectricSheep::Resources::Resource do
 
   it 'creates a new timestamp' do
     Timecop.travel(Timecop.travel Time.utc(2014, 6, 5, 4, 3, 2)) do
-      origin.expects(:timestamp?).returns(false)
+      origin.expects(:timestamp).returns(nil)
       subject.new.tap do |resource|
         resource.timestamp!(origin)
         resource.timestamp.must_equal '20140605-040302'
@@ -41,7 +40,7 @@ describe ElectricSheep::Resources::Resource do
   end
 
   it 'is marked as transient' do
-    subject.new.transient?.must_be_nil
-    subject.new.transient!.transient?.must_equal true
+    subject.new.transient.must_be_nil
+    subject.new.transient!.transient.must_equal true
   end
 end

@@ -2,21 +2,14 @@
 
 ## Prerequisites
 
+* A 64bits Linux OS,
 * You must have a sane Ruby 1.9+ environment
-* Vagrant 1.5+ and VirtualBox
+* ~~Vagrant 1.5+ and VirtualBox~~
+* Docker 1.8
 
 ## Build packages
 
 Packages are built in the `pkg` directory.
-
-## Build a single package
-
-Cd to the platform-specific folder (i.e. vagrant/ubuntu32 ) and spin up / halt
-the VM :
-
-```shell
-vagrant up --provision && vagrant halt
-```
 
 ## Build all packages
 

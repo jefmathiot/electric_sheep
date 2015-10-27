@@ -22,7 +22,7 @@ module ElectricSheep
 
       def name_items
         [basename].tap do |items|
-          items << "-#{timestamp}" if timestamp?
+          items << "-#{timestamp}" if timestamp
         end
       end
 

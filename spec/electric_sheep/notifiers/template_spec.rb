@@ -60,7 +60,7 @@ describe ElectricSheep::Notifiers::Template do
       end
 
       describe 'with time frozen' do
-        before {  Timecop.travel(Time.local(2014, 1, 1, 1, 2, 3)) }
+        before { Timecop.travel(Time.local(2014, 1, 1, 1, 2, 3)) }
         after { Timecop.return }
 
         it 'formats datetime to date' do
