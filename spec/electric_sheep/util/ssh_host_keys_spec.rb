@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe ElectricSheep::Util::SshHostKeys do
-
   def read_file(name)
     File.read(File.join(File.dirname(__FILE__), name)).chomp
   end
@@ -27,8 +26,11 @@ describe ElectricSheep::Util::SshHostKeys do
   end
 
   let(:known_hosts_file_path) do
-    known_hosts_file.respond_to?(:path) ? known_hosts_file.path :
-                                          known_hosts_file
+    if known_hosts_file.respond_to?(:path)
+      known_hosts_file.path
+    else
+      known_hosts_file
+    end
   end
 
   let(:ssh_options) do
@@ -56,28 +58,27 @@ describe ElectricSheep::Util::SshHostKeys do
   end
 
   it 'fails when it\'s not able to scan a remote key' do
-    expects_keyscan('host.one.tld', 2222, {exit_status: 1, err: 'An error'})
+    expects_keyscan('host.one.tld', 2222, exit_status: 1, err: 'An error')
     logger.expects(:error).with('An error')
     ex = -> { subject.refresh(config, logger, false) }.must_raise
-    ex.message.must_equal "Unable to fetch key for server host.one.tld"
+    ex.message.must_equal 'Unable to fetch key for server host.one.tld'
   end
 
   describe 'with keys scanned' do
-
     let(:confirmation_messages) do
       confirmation = /Replace the public keys in "#{known_hosts_file_path}"\?/
       [
         'The following public keys have been retrieved:',
         read_file('table_output.txt'),
-        regexp_matches(/#{confirmation} \[Y\/n\]:/)
+        regexp_matches(%r{#{confirmation} \[Y\/n\]:})
       ]
     end
 
     before do
       expects_keyscan('host.one.tld', 2222,
-                      { exit_status: 0, out: scan_keys.first.join("\n") })
+                      exit_status: 0, out: scan_keys.first.join("\n"))
       expects_keyscan('host.two.tld', 22,
-                      { exit_status: 0, out: scan_keys.last.join("\n") })
+                      exit_status: 0, out: scan_keys.last.join("\n"))
     end
 
     def expects_key_removal(hostname, success)
@@ -100,13 +101,13 @@ describe ElectricSheep::Util::SshHostKeys do
         contents.split("\n").tap do |lines|
           lines.length.must_equal 3
           lines.each do |line|
-            line.must_match /\|1\|.*\|.* (ssh-rsa|ecdsa-sha2-nistp256) .*/
+            line.must_match(/\|1\|.*\|.* (ssh-rsa|ecdsa-sha2-nistp256) .*/)
           end
         end
       end
     end
 
-    def expects_key_replacement(hostnames, success=true, force=false)
+    def expects_key_replacement(hostnames, success = true, force = false)
       STDIN.expects(:gets).returns('Y') unless force
       hostnames.each do |hostname|
         expects_key_removal hostname, success
@@ -144,7 +145,7 @@ describe ElectricSheep::Util::SshHostKeys do
       describe 'when the known hosts file does not exist' do
         let(:known_hosts_file) do
           file = Tempfile.new('known_hosts_file')
-          file.path.tap do |path|
+          file.path.tap do
             file.unlink
           end
         end

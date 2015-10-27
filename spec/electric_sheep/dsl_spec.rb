@@ -40,7 +40,8 @@ describe ElectricSheep::Dsl do
   end
 
   it 'modifies SSH options' do
-    options = { known_hosts: '/path/to/known_hosts', host_key_checking: 'strict' }
+    options = { known_hosts: '/path/to/known_hosts',
+                host_key_checking: 'strict' }
     dsl.ssh options
     check_properties config.ssh_options, options
   end
