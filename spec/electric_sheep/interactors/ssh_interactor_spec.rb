@@ -118,8 +118,10 @@ describe ElectricSheep::Interactors::SshInteractor do
     end
 
     let :default_options do
-      { port: 22, auth_methods: ['publickey'], key_data: 'SECRET',
-        keys_only: true, paranoid: :very }
+      { port: 22, keys_only: true, auth_methods: ['publickey'],
+        key_data: 'SECRET',
+        user_known_hosts_file: File.expand_path('~/.ssh/known_hosts'),
+        paranoid: :very }
     end
 
     def self.expecting_ssh_session

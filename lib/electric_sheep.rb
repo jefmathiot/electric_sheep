@@ -23,6 +23,7 @@ require 'electric_sheep/agents'
 require 'electric_sheep/commands'
 require 'electric_sheep/transports'
 require 'electric_sheep/notifiers'
+require 'electric_sheep/util'
 
 module ElectricSheep
   class << self

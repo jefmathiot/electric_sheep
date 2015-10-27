@@ -169,6 +169,7 @@ module ElectricSheep
            aliases: %w(-y), type: :boolean,
            desc: 'Don\'t ask for confirmation before updating the key cache'
     def hostkeys
+      Util::SshHostKeys.refresh(configuration, stdout_logger, options[:yes])
     end
 
     default_task :work

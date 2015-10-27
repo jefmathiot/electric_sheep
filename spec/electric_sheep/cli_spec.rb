@@ -97,6 +97,14 @@ describe ElectricSheep::CLI do
     end
   end
 
+  it 'refreshes SSH hosts keys' do
+    expects_evaluator
+    expects_stdout_logger :info
+    ElectricSheep::Util::SshHostKeys.expects(:refresh)
+      .with(config, logger, true)
+    subject.new([], config: 'Sheepfile', yes: true).hostkeys
+  end
+
   describe 'encrypting plain text' do
     before do
       ElectricSheep::Crypto.gpg.expects(:string).returns(encryptor)
