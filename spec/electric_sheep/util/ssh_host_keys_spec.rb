@@ -67,9 +67,16 @@ describe ElectricSheep::Util::SshHostKeys do
   describe 'with keys scanned' do
     let(:confirmation_messages) do
       confirmation = /Replace the public keys in "#{known_hosts_file_path}"\?/
+      header = /HOST\s+\| KEYTYPE\s+\| SIZE\s+\| FINGERPRINT\s+\n(-+\|){3}-+\n/
+      hostname = /host\.(one|two)\.tld/
+      key_type = /(ssh-rsa|ecdsa-sha2-nistp256)/
+      key_size = /(256|2048)/
+      hash = /(SHA256:\S{43}|(\w{2}:?){16})/
+      host = /(#{hostname} \| #{key_type}\s+\| #{key_size}\s+\| #{hash}\n?)/
+
       [
         'The following public keys have been retrieved:',
-        read_file('table_output.txt'),
+        regexp_matches(/#{header}#{host}{3}/),
         regexp_matches(%r{#{confirmation} \[Y\/n\]:})
       ]
     end
