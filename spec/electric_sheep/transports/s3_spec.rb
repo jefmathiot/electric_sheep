@@ -165,7 +165,7 @@ describe ElectricSheep::Transports::S3 do
       end
 
       def ensure_transfer(action, from_dir, to_dir, expanded_dir,
-        local_resource)
+                          local_resource)
         dummy(from_dir, from.path)
         local_interactor.expects(:expand_path).with(local_resource.path)
           .returns(File.join(expanded_dir, local_resource.path))

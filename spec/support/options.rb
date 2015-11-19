@@ -22,7 +22,7 @@ module Support
     end
 
     def expects_validation_error(subject, option, msg,
-      config = ElectricSheep::Config.new)
+                                 config = ElectricSheep::Config.new)
       subject.validate(config)
       actual = (subject.errors[option] || []).find do |error|
         error[:message] =~ /#{msg}/
