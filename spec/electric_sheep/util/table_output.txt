@@ -1,5 +1,5 @@
-HOST         | KEYTYPE             | SIZE | FINGERPRINT                                    
--------------|---------------------|------|------------------------------------------------
-host.one.tld | ssh-rsa             | 2048 | a6:f2:09:75:f4:ff:67:4e:93:d5:04:18:92:44:e6:c0
-host.one.tld | ecdsa-sha2-nistp256 | 256  | 9e:c7:b4:62:33:89:c9:69:86:f3:b6:7d:09:be:04:84
-host.two.tld | ssh-rsa             | 2048 | 2b:d3:9e:18:44:4c:2e:8b:59:c6:41:8d:47:9a:c8:22
+HOST         | KEYTYPE             | SIZE | FINGERPRINT                                       
+-------------|---------------------|------|---------------------------------------------------
+host.one.tld | ssh-rsa             | 2048 | SHA256:/cPWVabAuzH9jiU/3ugYn4Q/sO+/PbimXp/xiHFOo30
+host.one.tld | ecdsa-sha2-nistp256 | 256  | SHA256:HlxjWL5aWtgEwxCK/6oqzfPckxotc/DZbYzjpIwGLSw
+host.two.tld | ssh-rsa             | 2048 | SHA256:+6ltyhzwP+nICk1eUFkPB+cmFMTU8HYf0+vMfMh0RRs

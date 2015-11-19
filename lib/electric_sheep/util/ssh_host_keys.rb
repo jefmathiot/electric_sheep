@@ -71,7 +71,7 @@ module ElectricSheep
             :host,
             :keytype,
             :size,
-            fingerprint: { display_name: 'Fingerprint', width: 47 }
+            fingerprint: { display_name: 'Fingerprint', width: 50 }
           ]
           printer = TablePrint::Printer.new(keys, table_opts)
           print 'The following public keys have been retrieved:'

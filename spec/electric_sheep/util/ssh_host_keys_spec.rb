@@ -122,7 +122,7 @@ describe ElectricSheep::Util::SshHostKeys do
       end
     end
 
-    describe 'asking confirmation' do
+    describe 'asking for confirmation' do
       before do
         confirmation_messages.each do |msg|
           STDOUT.expects(:puts).with(msg)
