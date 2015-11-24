@@ -43,14 +43,14 @@ module ElectricSheep
     end
 
     def refute_local_file_exists?(path)
-      in_current_dir do
+      cd('.') do
         path = File.expand_path(path)
         expect(FileTest.exists?(path)).to be(false), "expected #{path} to be absent"
       end
     end
 
     def assert_local_file_exists?(path)
-      in_current_dir do
+      cd('.') do
         path = File.expand_path(path)
         expect(FileTest.exists?(path)).to be(true), "expected #{path} to be present"
       end
@@ -80,10 +80,14 @@ end
 
 World(ElectricSheep::Acceptance)
 
+Aruba.configure do |config|
+  config.exit_timeout = 15
+  config.working_directory = 'tmp'
+end
+
 Before do
-  self.electric_dir=File.expand_path('.')
+  self.electric_dir = File.expand_path('.')
   self.ssh_run_simple 'rm -rf /tmp/acceptance /tmp/acceptance_backup'
   self.ssh_run_simple 'rm -rf /home/vagrant/.electric_sheep'
   FileUtils.rm_rf "#{`echo $HOME`.strip}/.electric_sheep/working-directories"
-  @aruba_timeout_seconds = 10
 end
