@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe ElectricSheep::Interactors::Base do
-
   class FakeInteractor < ElectricSheep::Interactors::Base
     attr_accessor :returning, :directories, :session
 
@@ -20,7 +19,7 @@ describe ElectricSheep::Interactors::Base do
     let(m) { mock }
   end
 
-  let(:interactor){ FakeInteractor.new(host, job, logger) }
+  let(:interactor) { FakeInteractor.new(host, job, logger) }
 
   describe 'executing' do
     let(:secret) do
@@ -74,5 +73,4 @@ describe ElectricSheep::Interactors::Base do
   it 'does nothing on close' do
     interactor.close
   end
-
 end

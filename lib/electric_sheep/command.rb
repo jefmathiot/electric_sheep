@@ -57,7 +57,7 @@ module ElectricSheep
       end
 
       def to_s
-        "*" * 8
+        '*' * 8
       end
     end
   end

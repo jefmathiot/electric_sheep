@@ -13,10 +13,10 @@ module Support
 
       it 'should add commands' do
         shell = subject_instance
-        shell.add(
-          ElectricSheep::Metadata::Command.new(config, id: 'exec_id',
-                                               type: Object)
-        )
+        cmd = ElectricSheep::Metadata::Command.new(config,
+                                                   id: 'exec_id',
+                                                   type: Object)
+        shell.add cmd
         shell.size.must_equal 1
       end
     end

@@ -16,7 +16,7 @@ module ElectricSheep
           logger.info "Creating a dump of the \"#{input.basename}\" " \
                       'MongoDB database'
           directory_resource(host).tap do |dump|
-            shell.exec *cmd(input.name, option(:user), option(:password), dump)
+            shell.exec(*cmd(input.name, option(:user), option(:password), dump))
           end
         end
 
@@ -28,9 +28,10 @@ module ElectricSheep
         private
 
         def cmd(db, user, password, dump)
-          ["mongodump -d #{shell_safe(db)}",
-           " -o #{shell.expand_path(dump.path)}"]
-           .concat(credentials(user, password))
+          [
+            "mongodump -d #{shell_safe(db)}",
+            " -o #{shell.expand_path(dump.path)}"
+          ].concat(credentials(user, password))
            .<< ' &> /dev/null'
         end
 

@@ -96,11 +96,9 @@ module ElectricSheep
       end
 
       def tmpdir(source, target)
-        File.join(
-          File.dirname(target),
-          Helpers::FSUtil.tempname,
-          File.basename(source)
-        )
+        File.join(File.dirname(target),
+                  Helpers::FSUtil.tempname,
+                  File.basename(source))
       end
 
       def handle_errors(cmd, success, result)

@@ -43,7 +43,7 @@ module ElectricSheep
       def _exec(*cmd)
         @logger.debug cmd.map(&:to_s).join if @logger
         after_exec do
-          yield cmd.map {|chunk| _arg(chunk) }.join
+          yield cmd.map { |chunk| _arg(chunk) }.join
         end
       end
 

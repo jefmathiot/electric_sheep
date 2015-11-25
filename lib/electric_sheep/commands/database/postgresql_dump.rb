@@ -16,7 +16,7 @@ module ElectricSheep
           logger.info "Creating a dump of the \"#{input.basename}\" " \
                       'PostgreSQL database'
           file_resource(host, extension: '.sql').tap do |dump|
-            shell.exec *cmd(dump)
+            shell.exec(*cmd(dump))
           end
         end
 
@@ -51,16 +51,22 @@ module ElectricSheep
 
         def login_options(base)
           [" #{base}"].tap do |cmd|
-            if option(:password)
-              cmd.unshift logger_safe(shell_safe(option(:password)))
-              cmd.unshift 'PGPASSWORD='
-            end
-            if option(:sudo_as)
-              cmd.unshift "sudo -n -u #{shell_safe(option(:sudo_as))} "
-            end
+            password_option(cmd)
+            sudo_option(cmd)
             cmd << ' --no-password' # Never prompt
             cmd << " -U #{shell_safe(option(:user))}" if option(:user)
           end
+        end
+
+        def password_option(cmd)
+          return unless option(:password)
+          cmd.unshift logger_safe(shell_safe(option(:password)))
+          cmd.unshift 'PGPASSWORD='
+        end
+
+        def sudo_option(cmd)
+          return unless option(:sudo_as)
+          cmd.unshift "sudo -n -u #{shell_safe(option(:sudo_as))} "
         end
       end
     end

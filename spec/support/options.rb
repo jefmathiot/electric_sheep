@@ -19,8 +19,7 @@ module Support
       initialize_subject.option(option).must_equal to
     end
 
-    def expects_validation_error(subject, option, msg,
-                                 config = ElectricSheep::Config.new)
+    def expects_validation_error(subject, option, msg)
       subject.validate
       actual = (subject.errors[option] || []).find do |error|
         error[:message] =~ /#{msg}/
@@ -30,9 +29,9 @@ module Support
 
     def initialize_subject(*args)
       if subject.ancestors.include?(ElectricSheep::Metadata::Configured)
-        object = subject.new(ElectricSheep::Config.new, *args)
+        subject.new(ElectricSheep::Config.new, *args)
       else
-        object = subject.new(*args)
+        subject.new(*args)
       end
     end
   end

@@ -21,7 +21,7 @@ describe ElectricSheep::Commands::Database::MySQLDump do
       "FROM information_schema.tables WHERE table_schema='\\$MyDatabase' " \
       'GROUP BY table_schema'
     shell.expects(:exec).in_sequence(seq).with(
-      "echo \"#{query}\" | ", "mysql --skip-column-names", *creds
+      "echo \"#{query}\" | ", 'mysql --skip-column-names', *creds
     ).returns(out: '4096')
   end
 
@@ -44,7 +44,7 @@ describe ElectricSheep::Commands::Database::MySQLDump do
     it 'appends credentials to the command' do
       metadata.stubs(:user).returns('$operator')
       metadata.stubs(:password).returns('$secret')
-      creds = [' --user=', "\\$operator", ' --password=',
+      creds = [' --user=', '\\$operator', ' --password=',
                kind_of(ElectricSheep::Command::LoggerSafe)]
       expects_db_stat(creds)
       ensure_execution(%w(mysqldump)

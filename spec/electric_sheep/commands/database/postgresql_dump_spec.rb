@@ -20,21 +20,21 @@ describe ElectricSheep::Commands::Database::PostgreSQLDump do
   def expects_db_stat(options = [], prolog = [])
     query = "SELECT pg_database_size('\\$MyDatabase')"
     cmd = prolog.dup
-      .<<(' psql')
-      .<<(' --no-password')
-      .concat(options)
-      .<<(" -t -d \\$MyDatabase")
-      .<<(" -c \"#{query}\"")
+          .<<(' psql')
+          .<<(' --no-password')
+          .concat(options)
+          .<<(' -t -d \\$MyDatabase')
+          .<<(" -c \"#{query}\"")
     shell.expects(:exec).in_sequence(seq).with(*cmd).returns(out: '4096')
   end
 
   def expects_stat_and_exec(options = [], prolog = [])
     expects_db_stat options, prolog
     cmd = prolog.<<(' pg_dump')
-      .<<(' --no-password')
-      .concat(options)
-      .<<(" -d \\$MyDatabase >")
-      .<<(" #{output_path}")
+          .<<(' --no-password')
+          .concat(options)
+          .<<(' -d \\$MyDatabase >')
+          .<<(" #{output_path}")
     ensure_execution cmd
   end
 

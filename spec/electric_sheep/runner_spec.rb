@@ -9,14 +9,15 @@ describe ElectricSheep::Runner do
   let(:script) { sequence('script') }
 
   let(:job) do
-    ElectricSheep::Metadata::Job
-      .new(config, id: 'first-job', description: 'First job description').tap do |p|
+    ElectricSheep::Metadata::Job.new(config,
+                                     id: 'first-job',
+                                     description: 'First job description'
+                                    ).tap do |p|
       p.stubs(:execution_time).returns(10.112)
     end
   end
 
   describe ElectricSheep::Runner::Inline do
-
     let(:runner) { subject.new(config: config, logger: logger) }
 
     let(:resource) do

@@ -14,7 +14,7 @@ module ElectricSheep
           logger.info "Creating a dump of the \"#{input.basename}\" " \
                       'MySQL database'
           file_resource(host, extension: '.sql').tap do |dump|
-            shell.exec *dump_cmd(dump)
+            shell.exec(*dump_cmd(dump))
           end
         end
 
@@ -48,9 +48,9 @@ module ElectricSheep
         def credentials
           return [] if option(:user).nil?
           [
-            " --user=",
+            ' --user=',
             shell_safe(option(:user)),
-            " --password=",
+            ' --password=',
             logger_safe(shell_safe(option(:password)))
           ]
         end

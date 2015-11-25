@@ -60,7 +60,7 @@ describe ElectricSheep::Interactors::SshInteractor do
   let(:logger) { mock }
   let(:ssh_options) { ElectricSheep::Metadata::SshOptions.new }
   let(:config) do
-    mock.tap {|config| config.stubs(:ssh_options).returns(ssh_options) }
+    mock.tap { |config| config.stubs(:ssh_options).returns(ssh_options) }
   end
   let(:interactor) do
     subject.new(host, job, 'johndoe', logger)

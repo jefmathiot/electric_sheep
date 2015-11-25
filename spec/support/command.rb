@@ -76,7 +76,7 @@ module Support
           let(:job) do
             ElectricSheep::Metadata::Job.new(ElectricSheep::Config.new)
           end
-          
+
           [:logger, :shell, :host, :metadata].each do |m|
             let(m) { mock }
           end

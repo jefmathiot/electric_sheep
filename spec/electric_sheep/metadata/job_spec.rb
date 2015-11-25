@@ -33,8 +33,7 @@ describe ElectricSheep::Metadata::Job do
 
     it 'adds child steps errors' do
       step.expects(:validate).returns(false)
-      expects_validation_error(job, :base, 'Invalid step',
-                               ElectricSheep::Config.new)
+      expects_validation_error(job, :base, 'Invalid step')
     end
 
     it 'validates' do
@@ -63,7 +62,7 @@ describe ElectricSheep::Metadata::Job do
       .must_equal 'Description (job-name)'
   end
 
-  let(:job){ subject.new(config) }
+  let(:job) { subject.new(config) }
 
   describe 'on inspecting schedule' do
     def scheduled(updates, *expired, &_block)
