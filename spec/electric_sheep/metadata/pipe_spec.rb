@@ -109,7 +109,7 @@ describe ElectricSheep::Metadata::Pipe do
       step.payload.must_equal payload
     end
 
-    let(:command) { ElectricSheep::Metadata::Command.new }
+    let(:command) { ElectricSheep::Metadata::Command.new(mock) }
 
     describe 'appending a command to the stack' do
       def step
@@ -138,7 +138,7 @@ describe ElectricSheep::Metadata::Pipe do
     end
 
     describe 'appending a transport to the stack' do
-      let(:transport) { ElectricSheep::Metadata::Transport.new }
+      let(:transport) { ElectricSheep::Metadata::Transport.new(mock) }
 
       def step(output)
         report.step(transport, product, output)

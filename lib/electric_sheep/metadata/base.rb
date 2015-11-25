@@ -11,7 +11,7 @@ module ElectricSheep
         @errors ||= Errors.new
       end
 
-      def validate(_config)
+      def validate
         options.each do |option, opts|
           ensure_present(option) if opts[:required]
         end

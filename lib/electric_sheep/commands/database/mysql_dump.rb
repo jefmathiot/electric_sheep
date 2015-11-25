@@ -14,25 +14,28 @@ module ElectricSheep
           logger.info "Creating a dump of the \"#{input.basename}\" " \
                       'MySQL database'
           file_resource(host, extension: '.sql').tap do |dump|
-            shell.exec cmd(dump)
+            shell.exec *dump_cmd(dump)
           end
         end
 
         def stat_database(input)
-          shell.exec(database_size_cmd(input))[:out].chomp.to_i
+          shell.exec(*database_size_cmd(input))[:out].chomp.to_i
         end
 
         private
 
-        def cmd(dump)
-          'mysqldump' \
-           " #{credentials}" \
-           " #{shell_safe(input.name)} > #{shell.expand_path(dump.path)}"
+        def dump_cmd(dump)
+          ['mysqldump']
+            .concat(credentials)
+            .<< " #{shell_safe(input.name)} > "
+            .<< shell.expand_path(dump.path)
         end
 
         def database_size_cmd(input)
-          "echo \"#{database_size_query(input.name)}\" | " \
-            "mysql --skip-column-names #{credentials}"
+          [
+            "echo \"#{database_size_query(input.name)}\" | ",
+            'mysql --skip-column-names'
+          ].concat(credentials)
         end
 
         def database_size_query(db)
@@ -43,9 +46,13 @@ module ElectricSheep
         end
 
         def credentials
-          option(:user).nil? && '' ||
-            "--user=#{shell_safe(option(:user))} " \
-            "--password=#{shell_safe(option(:password))}"
+          return [] if option(:user).nil?
+          [
+            " --user=",
+            shell_safe(option(:user)),
+            " --password=",
+            logger_safe(shell_safe(option(:password)))
+          ]
         end
       end
     end

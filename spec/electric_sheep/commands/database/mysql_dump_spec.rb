@@ -16,13 +16,12 @@ describe ElectricSheep::Commands::Database::MySQLDump do
     )
   end
 
-  def expects_db_stat(creds = '')
+  def expects_db_stat(creds = [])
     query = 'SELECT sum(data_length+index_length) ' \
       "FROM information_schema.tables WHERE table_schema='\\$MyDatabase' " \
       'GROUP BY table_schema'
-    cmd = "mysql --skip-column-names #{creds}"
     shell.expects(:exec).in_sequence(seq).with(
-      "echo \"#{query}\" | #{cmd}"
+      "echo \"#{query}\" | ", "mysql --skip-column-names", *creds
     ).returns(out: '4096')
   end
 
@@ -39,17 +38,18 @@ describe ElectricSheep::Commands::Database::MySQLDump do
       metadata.stubs(:user).returns(nil)
       metadata.stubs(:password).returns(nil)
       expects_db_stat
-      ensure_execution "mysqldump  \\$MyDatabase > #{output_path}"
+      ensure_execution ['mysqldump', " \\$MyDatabase > #{output_path}"]
     end
 
     it 'appends credentials to the command' do
       metadata.stubs(:user).returns('$operator')
       metadata.stubs(:password).returns('$secret')
-      creds = '--user=\\$operator --password=\\$secret'
+      creds = [' --user=', "\\$operator", ' --password=',
+               kind_of(ElectricSheep::Command::LoggerSafe)]
       expects_db_stat(creds)
-      ensure_execution(
-        "mysqldump #{creds} \\$MyDatabase > #{output_path}"
-      )
+      ensure_execution(%w(mysqldump)
+                       .concat(creds)
+                       .<<(" \\$MyDatabase > #{output_path}"))
     end
   end
 end

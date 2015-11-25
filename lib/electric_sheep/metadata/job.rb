@@ -1,6 +1,6 @@
 module ElectricSheep
   module Metadata
-    class Job < Base
+    class Job < Configured
       include Pipe
       include Monitor
 
@@ -18,9 +18,9 @@ module ElectricSheep
         notifiers << metadata
       end
 
-      def validate(config)
+      def validate
         queue.each do |step|
-          unless step.validate(config)
+          unless step.validate
             errors.add(:base, "Invalid step #{step}", step.errors)
           end
         end

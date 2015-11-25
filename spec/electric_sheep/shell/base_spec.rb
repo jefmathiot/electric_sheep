@@ -7,6 +7,10 @@ describe ElectricSheep::Shell::Base do
     end
   end
 
+  let(:config) do
+    ElectricSheep::Config.new
+  end
+
   let(:shell) do
     subject.new(host, job, input, logger).tap do |shell|
       shell.instance_variable_set(:@interactor, mock)
@@ -37,7 +41,7 @@ describe ElectricSheep::Shell::Base do
   end
 
   it 'performs the queue of commands' do
-    metadata = ElectricSheep::Metadata::Shell.new
+    metadata = ElectricSheep::Metadata::Shell.new(config)
     first = metadata.add ElectricSheep::Metadata::Command.new(
       id: 'first', type: 'fake'
     )

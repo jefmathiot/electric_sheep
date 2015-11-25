@@ -4,10 +4,14 @@ describe ElectricSheep::Metadata::Job do
   include Support::Queue
   include Support::Options
 
+  let(:config) do
+    ElectricSheep::Config.new
+  end
+
   def queue_items
     [
-      ElectricSheep::Metadata::Shell.new,
-      ElectricSheep::Metadata::Transport.new
+      ElectricSheep::Metadata::Shell.new(config),
+      ElectricSheep::Metadata::Transport.new(config)
     ]
   end
 
@@ -22,48 +26,47 @@ describe ElectricSheep::Metadata::Job do
     end
 
     let(:job) do
-      subject.new(id: 'some-id').tap do |job|
+      subject.new(config, id: 'some-id').tap do |job|
         job.add step
       end
     end
 
     it 'adds child steps errors' do
-      step.expects(:validate).with(instance_of(ElectricSheep::Config))
-        .returns(false)
+      step.expects(:validate).returns(false)
       expects_validation_error(job, :base, 'Invalid step',
                                ElectricSheep::Config.new)
     end
 
     it 'validates' do
-      step.expects(:validate).with(instance_of(ElectricSheep::Config))
-        .returns(true)
-      job.validate(ElectricSheep::Config.new).must_equal true
+      step.expects(:validate).returns(true)
+      job.validate.must_equal true
     end
   end
 
   it 'initializes' do
-    job = subject.new(id: 'some-job')
+    job = subject.new(config, id: 'some-job')
     job.id.must_equal 'some-job'
   end
 
   it 'keeps a reference to its initial resource' do
-    job = subject.new
+    job = subject.new(config)
     job.start_with!(resource = mock)
     job.starts_with.must_equal resource
   end
 
   it 'uses its id as the default name' do
-    subject.new(id: 'job-name').name.must_equal 'job-name'
+    subject.new(config, id: 'job-name').name.must_equal 'job-name'
   end
 
   it 'uses its description and id' do
-    subject.new(id: 'job-name', description: 'Description').name
+    subject.new(config, id: 'job-name', description: 'Description').name
       .must_equal 'Description (job-name)'
   end
 
+  let(:job){ subject.new(config) }
+
   describe 'on inspecting schedule' do
     def scheduled(updates, *expired, &_block)
-      job = subject.new
       expired.each do |expires|
         mock(expired?: expires).tap do |s|
           s.expects(:update!).send(updates)
@@ -79,7 +82,6 @@ describe ElectricSheep::Metadata::Job do
     end
 
     it 'expose its schedules' do
-      job = subject.new
       2.times { job.schedule!(mock) }
       job.schedules.length.must_equal 2
     end
@@ -97,7 +99,6 @@ describe ElectricSheep::Metadata::Job do
     end
 
     it 'does not yield if it is not scheduled' do
-      job = subject.new
       called = nil
       job.on_schedule do
         called = true
@@ -107,10 +108,8 @@ describe ElectricSheep::Metadata::Job do
   end
 
   it 'appends a notifier' do
-    subject.new.tap do |job|
-      job.notifiers.size.must_equal 0
-      job.notifier mock
-      job.notifiers.size.must_equal 1
-    end
+    job.notifiers.size.must_equal 0
+    job.notifier mock
+    job.notifiers.size.must_equal 1
   end
 end

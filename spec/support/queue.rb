@@ -5,7 +5,11 @@ module Support
     included do
       describe 'queuing' do
         before do
-          @queue = subject.new
+          if subject.ancestors.include?(ElectricSheep::Metadata::Configured)
+            @queue = subject.new(mock)
+          else
+            @queue = subject.new
+          end
           @items = queue_items
           @items.each do |item|
             @queue.add item

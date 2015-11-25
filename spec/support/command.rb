@@ -53,7 +53,7 @@ module Support
         expects_log
         expected_cmds.each do |cmd|
           shell.expects(:exec).in_sequence(seq)
-            .with(cmd)
+            .with(*cmd)
         end
         expects_output_stat
         assert_command
@@ -73,7 +73,10 @@ module Support
           let(:output_ext) { nil }
           let(:command) { subject.new(job, logger, shell, input, metadata) }
 
-          let(:job) { ElectricSheep::Metadata::Job.new }
+          let(:job) do
+            ElectricSheep::Metadata::Job.new(ElectricSheep::Config.new)
+          end
+          
           [:logger, :shell, :host, :metadata].each do |m|
             let(m) { mock }
           end

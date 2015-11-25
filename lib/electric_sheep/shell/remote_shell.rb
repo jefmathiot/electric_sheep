@@ -1,13 +1,10 @@
 module ElectricSheep
   module Shell
     class RemoteShell < Base
-      # TODO: enable this check, as soon as logger becomes global
-      # rubocop:disable Metrics/ParameterLists
-      def initialize(host, job, input, user, ssh_options, logger)
+      def initialize(host, job, input, user, logger)
         # rubocop:enable Metrics/ParameterLists
         super(host, job, input, logger)
         @user = user
-        @ssh_options = ssh_options
       end
 
       def interactor
@@ -15,7 +12,6 @@ module ElectricSheep
           @host,
           @job,
           @user,
-          @ssh_options,
           @logger
         )
       end

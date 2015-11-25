@@ -2,20 +2,20 @@ require 'spec_helper'
 
 describe ElectricSheep::Runner do
   let(:logger) { mock }
+  let(:config) do
+    ElectricSheep::Config.new
+  end
 
   let(:script) { sequence('script') }
 
   let(:job) do
     ElectricSheep::Metadata::Job
-      .new(id: 'first-job', description: 'First job description').tap do |p|
+      .new(config, id: 'first-job', description: 'First job description').tap do |p|
       p.stubs(:execution_time).returns(10.112)
     end
   end
 
   describe ElectricSheep::Runner::Inline do
-    let(:config) do
-      ElectricSheep::Config.new
-    end
 
     let(:runner) { subject.new(config: config, logger: logger) }
 
@@ -46,7 +46,7 @@ describe ElectricSheep::Runner do
       describe 'with multiple jobs' do
         before do
           config.add(
-            ElectricSheep::Metadata::Job.new(id: 'second-job')
+            ElectricSheep::Metadata::Job.new(config, id: 'second-job')
           ).tap do |p|
             p.stubs(:execution_time).returns(5.5)
             p.start_with! resource
@@ -69,7 +69,7 @@ describe ElectricSheep::Runner do
         end
 
         it 'reports failing jobs' do
-          job.add ElectricSheep::Metadata::Shell.new
+          job.add ElectricSheep::Metadata::Shell.new(config)
           shell = ElectricSheep::Shell::LocalShell.any_instance
           shell.expects(:perform!).in_sequence(script)
             .raises(RuntimeError, 'Error message')
@@ -95,13 +95,6 @@ describe ElectricSheep::Runner do
   end
 
   describe ElectricSheep::Runner::SingleRun do
-    let(:config) do
-      ElectricSheep::Config.new.tap do |c|
-        c.hosts.add('some-host', hostname: 'some-host.tld')
-        c.add job
-      end
-    end
-
     def host
       config.hosts.get('some-host')
     end
@@ -118,6 +111,8 @@ describe ElectricSheep::Runner do
     end
 
     before do
+      config.hosts.add('some-host', hostname: 'some-host.tld')
+      config.add job
       logger.expects(:info).in_sequence(script)
         .with("Executing \"First job description (first-job)\"")
       job.start_with! resource
@@ -141,7 +136,7 @@ describe ElectricSheep::Runner do
       end
 
       it 'wraps command executions in a local shell' do
-        job.add(metadata = ElectricSheep::Metadata::Shell.new)
+        job.add(metadata = ElectricSheep::Metadata::Shell.new(config))
         shell = ElectricSheep::Shell::LocalShell.any_instance
         shell.expects(:perform!).in_sequence(script)
         expects_output(metadata)
@@ -151,9 +146,8 @@ describe ElectricSheep::Runner do
 
       it 'wraps command executions in a remote shell' do
         job.add(
-          metadata = ElectricSheep::Metadata::RemoteShell.new(
-            user: 'op'
-          )
+          metadata = ElectricSheep::Metadata::RemoteShell.new(config,
+                                                              user: 'op')
         )
         shell = ElectricSheep::Shell::RemoteShell.any_instance
         shell.expects(:perform!).in_sequence(script).returns(shell)
@@ -172,7 +166,7 @@ describe ElectricSheep::Runner do
       resource.stubs(:type).returns('file')
       resource.stubs(:basename).returns('resource')
       resource.stubs(:timestamp?).returns(false)
-      job.add metadata = ElectricSheep::Metadata::Transport.new
+      job.add metadata = ElectricSheep::Metadata::Transport.new(config)
       metadata.expects(:agent_klazz).in_sequence(script).at_least(1)
         .returns(FakeTransport)
       FakeTransport.any_instance.expects(:run!).in_sequence(script)
@@ -214,7 +208,7 @@ describe ElectricSheep::Runner do
       end
 
       it 'fails and notifies' do
-        job.add ElectricSheep::Metadata::Shell.new
+        job.add ElectricSheep::Metadata::Shell.new(config)
         ElectricSheep::Shell::LocalShell.any_instance.expects(:perform!)
           .raises('An error')
         logger.expects(:error).in_sequence(script).with('An error')

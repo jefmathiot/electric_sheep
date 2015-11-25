@@ -5,16 +5,14 @@ module ElectricSheep
 
       HOST_KEY_VERIFIERS = { standard: :very, strict: :secure }.freeze
 
-      def initialize(host, job, user, options, logger = nil)
+      def initialize(host, job, user, logger = nil)
         super(host, job, logger)
         @user = user
-        @options = options
       end
 
-      def exec(cmd)
-        @logger.debug cmd if @logger
-        after_exec do
-          result = session_exec(cmd)
+      def exec(*cmd)
+        _exec(*cmd) do |cmd_as_string|
+          result = session_exec(cmd_as_string)
           session.loop
           [:out, :err].each do |key|
             result[key] = result[key].chomp
@@ -58,14 +56,18 @@ module ElectricSheep
           key_data: PrivateKey.get_key(private_key, :private).export
         }.tap do |opts|
           opts[:user_known_hosts_file] =
-            File.expand_path(@options.known_hosts) if @options.known_hosts
+            File.expand_path(options.known_hosts) if options.known_hosts
           opts[:paranoid] = host_key_checking
         end
       end
 
+      def options
+        @job.config.ssh_options
+      end
+
       def host_key_checking
-        return 'standard' if @options.host_key_checking.nil?
-        HOST_KEY_VERIFIERS[@options.host_key_checking.to_sym]
+        return 'standard' if options.host_key_checking.nil?
+        HOST_KEY_VERIFIERS[options.host_key_checking.to_sym]
       end
 
       def private_key

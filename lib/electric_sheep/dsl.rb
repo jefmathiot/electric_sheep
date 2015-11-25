@@ -76,8 +76,8 @@ module ElectricSheep
     class JobDsl < AbstractDsl
       returning :job
 
-      def build(_config, id, options, &_)
-        @subject = Metadata::Job.new(options.merge(id: id))
+      def build(config, id, options, &_)
+        @subject = Metadata::Job.new(config, options.merge(id: id))
       end
 
       def remotely(options, &block)
@@ -98,7 +98,7 @@ module ElectricSheep
 
       def notify(options)
         options[:agent] = options.delete(:via)
-        @subject.notifier Metadata::Notifier.new(options)
+        @subject.notifier Metadata::Notifier.new(@config, options)
       end
 
       def resource(type, options = {})
@@ -122,7 +122,8 @@ module ElectricSheep
       def transport(action, options)
         options[:agent] = options.delete(:using)
         options[:to] = options[:to]
-        @subject.add Metadata::Transport.new(options.merge(action: action))
+        @subject.add Metadata::Transport.new(@config,
+                                             options.merge(action: action))
       end
     end
 
@@ -136,13 +137,13 @@ module ElectricSheep
       def encrypt(options = {})
         key = @config.encryption_options.option(:with)
         opts = { agent: 'encrypt', public_key: key }.merge(options)
-        @subject.add Metadata::Command.new(opts)
+        @subject.add Metadata::Command.new(@config, opts)
       end
 
       def method_missing(method, *args, &_)
         if Agents::Register.command(method)
           opts = { agent: method }.merge(args.first || {})
-          @subject.add Metadata::Command.new(opts)
+          @subject.add Metadata::Command.new(@config, opts)
         else
           super
         end
@@ -151,7 +152,7 @@ module ElectricSheep
       protected
 
       def new_shell(_)
-        Metadata::Shell.new
+        Metadata::Shell.new(@config)
       end
     end
 
@@ -160,7 +161,7 @@ module ElectricSheep
 
       def new_shell(options)
         opts = { user: options[:as] }
-        Metadata::RemoteShell.new(opts)
+        Metadata::RemoteShell.new(@config, opts)
       end
     end
   end

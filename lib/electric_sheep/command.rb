@@ -37,9 +37,27 @@ module ElectricSheep
                    "#{resource.type}: #{e.message}"
     end
 
+    def logger_safe(value)
+      LoggerSafe.new(value)
+    end
+
     module ClassMethods
       def register(options = {})
         ElectricSheep::Agents::Register.register options.merge(command: self)
+      end
+    end
+
+    class LoggerSafe
+      def initialize(value)
+        @value = value
+      end
+
+      def raw
+        @value
+      end
+
+      def to_s
+        "*" * 8
       end
     end
   end

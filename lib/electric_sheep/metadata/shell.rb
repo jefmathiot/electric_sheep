@@ -1,16 +1,12 @@
 module ElectricSheep
   module Metadata
-    class Shell < Base
+    class Shell < Configured
       include Pipe
       include Monitor
 
-      def initialize(options = {})
-        super
-      end
-
-      def validate(config)
+      def validate
         iterate do |command|
-          unless command.validate(config)
+          unless command.validate
             errors.add :base, "Invalid command \"#{command.agent}\"",
                        command.errors
           end

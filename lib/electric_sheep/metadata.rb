@@ -1,5 +1,6 @@
 require 'electric_sheep/metadata/options'
 require 'electric_sheep/metadata/base'
+require 'electric_sheep/metadata/configured'
 require 'electric_sheep/metadata/typed'
 require 'electric_sheep/metadata/monitor'
 require 'electric_sheep/metadata/crypto_options'

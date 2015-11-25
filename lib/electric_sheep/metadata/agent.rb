@@ -1,11 +1,11 @@
 module ElectricSheep
   module Metadata
-    class Agent < Base
+    class Agent < Configured
       include Typed
 
       option :agent, required: true
 
-      def validate(config)
+      def validate
         ensure_known_agent
         super
       end

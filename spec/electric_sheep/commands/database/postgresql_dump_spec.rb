@@ -17,17 +17,25 @@ describe ElectricSheep::Commands::Database::PostgreSQLDump do
     )
   end
 
-  def expects_db_stat(options = '', prolog = '')
+  def expects_db_stat(options = [], prolog = [])
     query = "SELECT pg_database_size('\\$MyDatabase')"
-    cmd = "#{prolog}psql --no-password #{options}" \
-      "-t -d \\$MyDatabase -c \"#{query}\""
-    shell.expects(:exec).in_sequence(seq).with(cmd).returns(out: '4096')
+    cmd = prolog.dup
+      .<<(' psql')
+      .<<(' --no-password')
+      .concat(options)
+      .<<(" -t -d \\$MyDatabase")
+      .<<(" -c \"#{query}\"")
+    shell.expects(:exec).in_sequence(seq).with(*cmd).returns(out: '4096')
   end
 
-  def expects_stat_and_exec(options = '', prolog = '')
+  def expects_stat_and_exec(options = [], prolog = [])
     expects_db_stat options, prolog
-    ensure_execution "#{prolog}pg_dump --no-password #{options}" \
-      "-d \\$MyDatabase > #{output_path}"
+    cmd = prolog.<<(' pg_dump')
+      .<<(' --no-password')
+      .concat(options)
+      .<<(" -d \\$MyDatabase >")
+      .<<(" #{output_path}")
+    ensure_execution cmd
   end
 
   def stub_metadata(options = {})
@@ -52,27 +60,29 @@ describe ElectricSheep::Commands::Database::PostgreSQLDump do
 
     it 'prepends the password' do
       stub_metadata password: 'secret'
-      expects_stat_and_exec '', 'PGPASSWORD=secret '
+      expects_stat_and_exec [], ['PGPASSWORD=',
+                                 kind_of(ElectricSheep::Command::LoggerSafe)]
     end
 
-    it 'uses sudo' do
+    it 'impersonates' do
       stub_metadata sudo_as: 'postgres'
-      expects_stat_and_exec '', 'sudo -n -u postgres '
+      expects_stat_and_exec [], ['sudo -n -u postgres ']
     end
 
     it 'combines sudo and password' do
       stub_metadata sudo_as: 'postgres', password: 'secret'
-      expects_stat_and_exec '', 'sudo -n -u postgres PGPASSWORD=secret '
+      expects_stat_and_exec [], ['sudo -n -u postgres ', 'PGPASSWORD=',
+                                 kind_of(ElectricSheep::Command::LoggerSafe)]
     end
 
     it 'appends the username to the options' do
       stub_metadata user: 'operator'
-      expects_stat_and_exec '-U operator '
+      expects_stat_and_exec [' -U operator']
     end
 
     it 'appends the login host to the options' do
       stub_metadata login_host: 'localhost'
-      expects_stat_and_exec '-h localhost '
+      expects_stat_and_exec [' -h localhost']
     end
   end
 end

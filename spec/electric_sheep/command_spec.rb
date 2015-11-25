@@ -56,4 +56,14 @@ describe ElectricSheep::Command do
       command.send(:host).must_equal host
     end
   end
+
+  describe ElectricSheep::Command::LoggerSafe do
+    it 'obfuscates value' do
+      subject.new('value').to_s.must_equal '********'
+    end
+
+    it 'provides the raw value' do
+      subject.new('value').raw.must_equal 'value'
+    end
+  end
 end

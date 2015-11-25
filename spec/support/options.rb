@@ -10,24 +10,30 @@ module Support
     def requires(*options)
       options.each do |option|
         args = [nil] * [subject.allocate.method(:initialize).arity, 0].max
-        subject.new(*args).tap do |subject|
-          expects_validation_error(subject, option,
-                                   "Option #{option} is required")
-        end
+        expects_validation_error(initialize_subject(*args), option,
+                                 "Option #{option} is required")
       end
     end
 
     def defaults_option(option, to)
-      subject.new.option(option).must_equal to
+      initialize_subject.option(option).must_equal to
     end
 
     def expects_validation_error(subject, option, msg,
                                  config = ElectricSheep::Config.new)
-      subject.validate(config)
+      subject.validate
       actual = (subject.errors[option] || []).find do |error|
         error[:message] =~ /#{msg}/
       end
       actual.wont_be_nil "Expected validation error: #{msg}"
+    end
+
+    def initialize_subject(*args)
+      if subject.ancestors.include?(ElectricSheep::Metadata::Configured)
+        object = subject.new(ElectricSheep::Config.new, *args)
+      else
+        object = subject.new(*args)
+      end
     end
   end
 end

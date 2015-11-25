@@ -4,14 +4,14 @@ module ElectricSheep
       option :host, required: true
       option :user, required: true
 
-      def validate(config)
-        ensure_known_host(config)
+      def validate
+        ensure_known_host
         super
       end
 
       protected
 
-      def ensure_known_host(config)
+      def ensure_known_host
         return unless host && config.hosts.get(host).nil?
         errors.add(:host, "Unknown host with id #{host}")
       end

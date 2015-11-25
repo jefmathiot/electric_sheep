@@ -14,9 +14,11 @@ describe ElectricSheep::Commands::Database::MongoDBDump do
     )
   end
 
-  def expects_db_stat(creds = '')
+  def expects_db_stat(creds = [])
     shell.expects(:exec).in_sequence(seq).with(
-      "mongo \\$MyDatabase #{creds}--quiet --eval 'printjson(db.stats())'"
+      *["mongo \\$MyDatabase"]
+        .concat(creds)
+        .<<(' --quiet --eval \'printjson(db.stats())\'')
     ).returns(out: { 'storageSize' => 4096 }.to_json)
   end
 
@@ -33,17 +35,20 @@ describe ElectricSheep::Commands::Database::MongoDBDump do
       metadata.stubs(:password).returns(nil)
       expects_db_stat
       ensure_execution(
-        "mongodump -d \\$MyDatabase -o #{output_path} &> /dev/null"
+        ["mongodump -d \\$MyDatabase", " -o #{output_path}", ' &> /dev/null']
       )
     end
 
     it 'appends credentials to the command' do
       metadata.stubs(:user).returns('$operator')
       metadata.stubs(:password).returns('$secret')
-      creds = '-u \\$operator -p \\$secret '
+      creds = [" -u \\$operator", ' -p ',
+               kind_of(ElectricSheep::Command::LoggerSafe)]
       expects_db_stat(creds)
       ensure_execution(
-        "mongodump -d \\$MyDatabase -o #{output_path} #{creds}&> /dev/null"
+        ["mongodump -d \\$MyDatabase", " -o #{output_path}"]
+          .concat(creds)
+          .<<(' &> /dev/null')
       )
     end
   end

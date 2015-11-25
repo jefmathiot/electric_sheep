@@ -9,6 +9,10 @@ Please notice we'll use semantic versioning as of 1.0.0.
 * Added an 'ssh' DSL verb to specify SSH options (path to a `known_hosts` file, and host keys checking behavior)
 * Add an 'hostkeys' CLI command used to refresh key cache.
 
+### Fixed
+
+* Fixed #16 (avoid sensitive data, such as passwords, to be shown verbose mode is active).
+
 ## 0.5.0 - 2015-06-24
 
 ### Added

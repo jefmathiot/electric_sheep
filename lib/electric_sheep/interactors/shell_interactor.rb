@@ -3,10 +3,9 @@ module ElectricSheep
     class ShellInteractor < Base
       include ShellStat
 
-      def exec(cmd)
-        @logger.debug cmd if @logger
-        after_exec do
-          Spawn.exec(cmd, @logger)
+      def exec(*cmd)
+        _exec(*cmd) do |cmd_as_string|
+          Spawn.exec(cmd_as_string, @logger)
         end
       end
 

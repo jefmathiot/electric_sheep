@@ -58,7 +58,6 @@ module ElectricSheep
           job,
           input,
           metadata.user,
-          @config.ssh_options,
           @logger
         ).perform!(metadata)
         metadata.last_output

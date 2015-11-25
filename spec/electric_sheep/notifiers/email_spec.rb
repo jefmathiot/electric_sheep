@@ -3,6 +3,10 @@ require 'spec_helper'
 describe ElectricSheep::Notifiers::Email do
   include Support::Options
 
+  let(:config) do
+    ElectricSheep::Config.new
+  end
+
   before do
     Mail::TestMailer.deliveries.clear
   end
@@ -14,7 +18,7 @@ describe ElectricSheep::Notifiers::Email do
   end
 
   let(:job) do
-    ElectricSheep::Metadata::Job.new(id: 'some-job').tap do |p|
+    ElectricSheep::Metadata::Job.new(config, id: 'some-job').tap do |p|
       report = mock.tap { |m| m.stubs(:stack).returns([]) }
       p.stubs(:report).returns(report)
       p.stubs(:last_product).returns(resource)
@@ -29,6 +33,7 @@ describe ElectricSheep::Notifiers::Email do
 
   let(:metadata) do
     ElectricSheep::Metadata::Notifier.new(
+      config,
       agent: 'email',
       from: 'from@host.tld',
       to: 'to@host.tld',

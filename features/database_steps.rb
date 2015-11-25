@@ -26,7 +26,7 @@ Then(/^I am notified the mysqldump failed due to an unknown database$/) do
 end
 
 Then(/^I am notified the mongodump command failed$/) do
-  step "the output should contain \"Command terminated with exit status : 255\""
+  step "the output should contain \"Command terminated with exit status: 255\""
 end
 
 Then(/^I am notified the pg_dump failed due to an authentication failure$/) do
