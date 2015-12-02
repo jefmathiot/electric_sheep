@@ -1,15 +1,32 @@
 Given(/^a local file$/) do
-  @resource_name = "dummy.file"
+  step "a local file named \"dummy.file\""
+end
+
+Given(/^a local file named with special characters$/) do
+  step "a local file named \"dummy *.file\""
+end
+
+Given(/^a local file named "(.*?)"$/) do |file|
+  @resource_name = file
   step "a 102400 byte file named \"#{@resource_name}\""
 end
 
 Given(/^a local directory containing multiple files$/) do
-  @resource_name="dummy-directory"
+  step "a local directory named \"dummy-directory\" containing multiple files"
+end
+
+Given(/^a local directory named "(.*?)" containing multiple files$/) do |dir|
+  @resource_name = dir
   step "a directory named \"#{@resource_name}\""
+  STDOUT.puts `ls -la tmp`
   with_multiple_files(@resource_name) do |directory, file|
     step "a 102400 byte file named \"#{directory}/#{file}\""
   end
   assert_local_file_exists? @resource_name
+end
+
+Given(/^a local directory named with special characters$/) do
+  step "a local directory named \"dummy *directory\" containing multiple files"
 end
 
 Given(/^a local directory containing multiple files in the job "(.*?)"$/) do |job|

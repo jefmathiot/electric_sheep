@@ -48,6 +48,14 @@ Feature: SCP transport
     When I tell the sheep to work on job "scp-copy-directory-remote-to-local"
     Then the directory should have been copied to the localhost
 
-  Scenario: fail using SCP
-    Given I tell the sheep to work on failing job "scp-fail"
+  Scenario: Notify on failed SCP transfer
+    Given I tell the sheep to work on failing job "scp-failure"
     Then I am notified the scp move failed
+
+  Scenario: Move a directory named with special characters
+    Given a local directory named with special characters
+    Then I should be able to tell the sheep to work on job "scp-special-chars-directory"
+
+  Scenario: Move a file named with special characters
+    Given a local file named with special characters
+    Then I should be able to tell the sheep to work on job "scp-special-chars-file"

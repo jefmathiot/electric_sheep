@@ -2,6 +2,12 @@ When(/^I'm working on configuration "(.*?)"$/) do |configuration|
   @sheepfile = "#{acceptance_dir}/#{configuration}"
 end
 
+Then(/^I should be able to tell the sheep to work on job "(.*?)"$/) do |job|
+  options="-c #{sheepfile} -j \"#{job}\""
+  @job=job
+  step "I successfully run `bundle exec #{electric_sheep} work #{options}`"
+end
+
 When(/^I tell the sheep to work on job "(.*?)"$/) do |job|
   options="-c #{sheepfile} -j \"#{job}\""
   @job=job

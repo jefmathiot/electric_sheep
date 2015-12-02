@@ -3,14 +3,17 @@ if File.basename(Dir.pwd)=='tmp'
   # Cucumber features
   working_directory File.expand_path('./')
   ssh_key=File.join('../', 'acceptance', 'id_rsa')
-  dummy= File.expand_path('dummy.file')
+  dummy = File.expand_path('dummy.file')
+  special = File.expand_path('dummy *.file')
   dummy_directory= File.expand_path('dummy-directory')
+  special_directory= File.expand_path('dummy *directory')
 else
   # Manual run
   working_directory File.expand_path("tmp")
   ssh_key='./acceptance/id_rsa'
-  dummy= File.expand_path('tmp/dummy.file')
-  dummy_directory= File.expand_path('tmp/dummy-directory')
+  dummy = File.expand_path('tmp/dummy.file')
+  special = File.expand_path('tmp/dummy *.file')
+  special_directory= File.expand_path('tmp/dummy *directory')
 end
 
 ###############################################################################
@@ -20,7 +23,7 @@ job "scp-move-local-to-remote", private_key: ssh_key do
   move to: "main-host", using: "scp", as: "vagrant"
 end
 
-job "scp-fail", private_key: ssh_key do
+job "scp-failure", private_key: ssh_key do
   resource "file", path: 'tmp/fail.file'
   move to: "main-host", using: "scp", as: "vagrant"
 end
@@ -64,4 +67,16 @@ end
 job "scp-copy-directory-remote-to-local", private_key: ssh_key do
   resource "directory", path: "dummy-directory", host: "main-host"
   copy to: "localhost", using: "scp", as: "vagrant"
+end
+
+job "scp-special-chars-directory", private_key: ssh_key do
+  resource "directory", path: special_directory
+  move to: "main-host", using: "scp", as: "vagrant"
+  move to: "localhost", using: "scp", as: "vagrant"
+end
+
+job "scp-special-chars-file", private_key: ssh_key do
+  resource "file", path: special
+  move to: "main-host", using: "scp", as: "vagrant"
+  move to: "localhost", using: "scp", as: "vagrant"
 end
