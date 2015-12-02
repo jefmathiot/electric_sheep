@@ -60,6 +60,12 @@ module Support
       end
     end
 
+    def escapes(*args)
+      args.each do |arg|
+        shell.stubs(:safe).with(arg).returns(Shellwords.escape(arg))
+      end
+    end
+
     module ClassMethods
       def ensure_registration(id)
         it "registers as \"#{id}\"" do
@@ -81,7 +87,13 @@ module Support
             let(m) { mock }
           end
 
-          let(:output_path) { "/job/dir/#{output_name}#{output_ext}" }
+          let(:output_path) do
+            "/job/dir/#{output_name}#{output_ext}"
+          end
+
+          let(:safe_output_path) do
+            Shellwords.escape "/job/dir/#{output_name}#{output_ext}"
+          end
 
           let(:shell) do
             mock.tap do |shell|

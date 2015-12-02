@@ -3,7 +3,6 @@ module ElectricSheep
     module Database
       class MySQLDump
         include Command
-        include Helpers::ShellSafe
 
         register as: 'mysql_dump'
 
@@ -27,8 +26,8 @@ module ElectricSheep
         def dump_cmd(dump)
           ['mysqldump']
             .concat(credentials)
-            .<< " #{shell_safe(input.name)} > "
-            .<< shell.expand_path(dump.path)
+            .<< " #{shell.safe(input.name)} > "
+            .<< shell.safe(shell.expand_path(dump.path))
         end
 
         def database_size_cmd(input)
@@ -41,7 +40,7 @@ module ElectricSheep
         def database_size_query(db)
           'SELECT sum(data_length+index_length)' \
             ' FROM information_schema.tables' \
-            " WHERE table_schema='#{shell_safe(db)}'" \
+            " WHERE table_schema='#{shell.safe(db)}'" \
             ' GROUP BY table_schema'
         end
 
@@ -49,9 +48,9 @@ module ElectricSheep
           return [] if option(:user).nil?
           [
             ' --user=',
-            shell_safe(option(:user)),
+            shell.safe(option(:user)),
             ' --password=',
-            logger_safe(shell_safe(option(:password)))
+            logger_safe(shell.safe(option(:password)))
           ]
         end
       end

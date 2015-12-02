@@ -2,6 +2,7 @@ module ElectricSheep
   module Interactors
     class SshInteractor < Base
       include ShellStat
+      include Helpers::ShellSafe
 
       HOST_KEY_VERIFIERS = { standard: :very, strict: :secure }.freeze
 
@@ -88,16 +89,16 @@ module ElectricSheep
       def to_tmpdir(source, target, context, &_)
         path = tmpdir(source, target)
         File.expand_path(File.join(path, '..')).tap do |parent|
-          context.exec "mkdir #{parent}"
+          safe_parent = shell_safe(parent)
+          context.exec "mkdir #{safe_parent}"
           yield parent
-          context.exec "mv #{path} #{target}"
-          context.exec "rm -rf #{parent}"
+          context.exec "mv #{shell_safe(path)} #{shell_safe(target)}"
+          context.exec "rm -rf #{safe_parent}"
         end
       end
 
       def tmpdir(source, target)
-        File.join(File.dirname(target),
-                  Helpers::FSUtil.tempname,
+        File.join(File.dirname(target), Helpers::FSUtil.tempname,
                   File.basename(source))
       end
 

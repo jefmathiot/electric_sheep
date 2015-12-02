@@ -4,13 +4,11 @@ if File.basename(Dir.pwd)=='tmp'
   working_directory File.expand_path('./')
   ssh_key=File.join('../', 'acceptance', 'id_rsa')
   dummy= File.expand_path('dummy.file')
-  dummy_directory= File.expand_path('dummy-directory')
 else
   # Manual run
   working_directory File.expand_path("tmp")
   ssh_key='./acceptance/id_rsa'
   dummy= File.expand_path('tmp/dummy.file')
-  dummy_directory= File.expand_path('tmp/dummy-directory')
 end
 
 ###############################################################################

@@ -11,7 +11,8 @@ Please notice we'll use semantic versioning as of 1.0.0.
 
 ### Fixed
 
-* Fixed #16 (avoid sensitive data, such as passwords, to be shown verbose mode is active).
+* Fixed [#16](https://github.com/servebox/electric_sheep/issues/16) (avoid sensitive data, such as passwords, to be shown verbose mode is active).
+* Fixed [#15](https://github.com/servebox/electric_sheep/issues/15) (exception is raised if there is a whitespace inside the jobname).
 
 ## 0.5.0 - 2015-06-24
 

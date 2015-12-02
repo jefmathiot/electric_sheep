@@ -37,19 +37,21 @@ describe ElectricSheep::Commands::Database::MySQLDump do
     it 'executes the backup command' do
       metadata.stubs(:user).returns(nil)
       metadata.stubs(:password).returns(nil)
+      escapes '$MyDatabase', output_path
       expects_db_stat
-      ensure_execution ['mysqldump', " \\$MyDatabase > #{output_path}"]
+      ensure_execution ['mysqldump', " \\$MyDatabase > #{safe_output_path}"]
     end
 
     it 'appends credentials to the command' do
       metadata.stubs(:user).returns('$operator')
       metadata.stubs(:password).returns('$secret')
+      escapes '$operator', '$secret', '$MyDatabase', output_path
       creds = [' --user=', '\\$operator', ' --password=',
                kind_of(ElectricSheep::Command::LoggerSafe)]
       expects_db_stat(creds)
       ensure_execution(%w(mysqldump)
                        .concat(creds)
-                       .<<(" \\$MyDatabase > #{output_path}"))
+                       .<<(" \\$MyDatabase > #{safe_output_path}"))
     end
   end
 end

@@ -3,13 +3,13 @@ When(/^I'm working on configuration "(.*?)"$/) do |configuration|
 end
 
 When(/^I tell the sheep to work on job "(.*?)"$/) do |job|
-  options="-c #{sheepfile} -j #{job}"
+  options="-c #{sheepfile} -j \"#{job}\""
   @job=job
   step "I successfully run `bundle exec #{electric_sheep} work #{options}`"
 end
 
 When(/^I tell the sheep to work on failing job "(.*?)"$/) do |job|
-  options="-c #{sheepfile} -j #{job}"
+  options="-c #{sheepfile} -j \"#{job}\""
   @job=job
   step "I run `bundle exec #{electric_sheep} work #{options}`"
   step "the exit status should be 1"
@@ -24,7 +24,7 @@ Then(/^the job "(.*?)" hasn't been executed$/) do |job|
 end
 
 When(/^I tell the sheep to work on the job$/) do
-  options="-c #{sheepfile} -j #{@job}"
+  options="-c #{sheepfile} -j \"#{@job}\""
   step "I run `bundle exec #{electric_sheep} work #{options}`"
 end
 

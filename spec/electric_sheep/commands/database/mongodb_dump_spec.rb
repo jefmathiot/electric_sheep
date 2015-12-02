@@ -33,20 +33,24 @@ describe ElectricSheep::Commands::Database::MongoDBDump do
     it 'executes the backup command' do
       metadata.stubs(:user).returns(nil)
       metadata.stubs(:password).returns(nil)
+      escapes '$MyDatabase', output_path
       expects_db_stat
-      ensure_execution(
-        ['mongodump -d \\$MyDatabase', " -o #{output_path}", ' &> /dev/null']
-      )
+      ensure_execution([
+        'mongodump -d \\$MyDatabase',
+        " -o #{safe_output_path}",
+        ' &> /dev/null'
+      ])
     end
 
     it 'appends credentials to the command' do
       metadata.stubs(:user).returns('$operator')
       metadata.stubs(:password).returns('$secret')
+      escapes '$operator', '$secret', '$MyDatabase', output_path
       creds = [' -u \\$operator', ' -p ',
                kind_of(ElectricSheep::Command::LoggerSafe)]
       expects_db_stat(creds)
       ensure_execution(
-        ['mongodump -d \\$MyDatabase', " -o #{output_path}"]
+        ['mongodump -d \\$MyDatabase', " -o #{safe_output_path}"]
           .concat(creds)
           .<<(' &> /dev/null')
       )

@@ -5,7 +5,6 @@ module ElectricSheep
     module Database
       class MongoDBDump
         include Command
-        include Helpers::ShellSafe
 
         register as: 'mongodb_dump'
 
@@ -29,22 +28,22 @@ module ElectricSheep
 
         def cmd(db, user, password, dump)
           [
-            "mongodump -d #{shell_safe(db)}",
-            " -o #{shell.expand_path(dump.path)}"
+            "mongodump -d #{shell.safe(db)}",
+            " -o #{shell.safe(shell.expand_path(dump.path))}"
           ].concat(credentials(user, password))
            .<< ' &> /dev/null'
         end
 
         def database_size_cmd(db, user, password)
-          ["mongo #{shell_safe(db)}"]
+          ["mongo #{shell.safe(db)}"]
             .concat(credentials(user, password))
             .<< " --quiet --eval 'printjson(db.stats())'"
         end
 
         def credentials(user, password)
           return [] if user.nil?
-          [" -u #{shell_safe(user)}",
-           ' -p ', logger_safe(shell_safe(password))]
+          [" -u #{shell.safe(user)}",
+           ' -p ', logger_safe(shell.safe(password))]
         end
       end
     end

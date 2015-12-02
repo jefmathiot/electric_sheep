@@ -1,6 +1,9 @@
 module ElectricSheep
   module Shell
     class Base
+      include Helpers::ShellSafe
+
+      alias_method :safe, :shell_safe
       delegate :expand_path, :exec, to: :interactor
       delegate :stat_file, :stat_directory, :stat_filesystem, to: :interactor
 

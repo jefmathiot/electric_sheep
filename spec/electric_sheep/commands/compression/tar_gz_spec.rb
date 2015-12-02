@@ -24,10 +24,11 @@ describe ElectricSheep::Commands::Compression::TarGz do
         let(:input) { send(input_type, "/tmp/some-#{input_type}") }
 
         it "compresses the provided #{input_type}" do
+          escapes input.path, output_path
           metadata.expects(:delete_source).returns(delete_source)
           cmds = [
             "cd #{File.dirname(input.path)}; " \
-            "tar -cvzf #{output_path} " \
+            "tar -cvzf #{safe_output_path} " \
             "#{File.basename(input.path)} 1>&2"
           ]
           cmds << "rm -rf #{input.path}" if delete_source
