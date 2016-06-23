@@ -14,7 +14,7 @@ describe ElectricSheep::Commands::Compression::TarGz do
     )
   end
 
-  def self.describe_compression(input_type, delete_source = false)
+  def self.describe_compression(input_type, delete_source, exclude = [])
     describe "with a #{input_type} as the input " \
       "(delete source: #{delete_source})" do
       executing do
@@ -26,14 +26,18 @@ describe ElectricSheep::Commands::Compression::TarGz do
         it "compresses the provided #{input_type}" do
           escapes input.path, output_path
           metadata.expects(:delete_source).returns(delete_source)
+          if input_type == :directory
+            metadata.expects(:exclude).returns(exclude)
+          end
           cmds = [
             "cd #{File.dirname(input.path)}; " \
-            "tar -cvzf #{safe_output_path} " \
+            "tar #{exclude.map { |path| "--exclude #{path} " }.join}" \
+            "-cvzf #{safe_output_path} " \
             "#{File.basename(input.path)} 1>&2"
           ]
           cmds << "rm -rf #{input.path}" if delete_source
           shell.expects(:expand_path).at_least(1).with(input.path)
-            .returns(input.path)
+               .returns(input.path)
           expects_stat(input_type, input, 4096)
           ensure_execution(*cmds)
           input.transient?.must_equal true if delete_source
@@ -42,8 +46,9 @@ describe ElectricSheep::Commands::Compression::TarGz do
     end
   end
 
-  describe_compression :file
-  describe_compression :directory
+  describe_compression :file, false
+  describe_compression :directory, false
   describe_compression :file, true
   describe_compression :directory, true
+  describe_compression :directory, true, ['file1', 'file2']
 end

@@ -1,18 +1,12 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
-
-# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
-VAGRANTFILE_API_VERSION = "2"
-
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-
-  config.vm.box = "ubuntu/trusty64"
+Vagrant.configure('2') do |config|
+  config.vm.box = 'ubuntu/trusty64'
 
   config.omnibus.chef_version = :latest
 
-  config.vm.provision :shell, inline: "sudo locale-gen #{ENV['LANG']} && sudo dpkg-reconfigure locales"
+  config.vm.provision :shell, inline: "sudo locale-gen #{ENV['LANG']} && " \
+    'sudo dpkg-reconfigure locales'
   config.vm.provider :virtualbox do |vb|
-    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    vb.customize ['modifyvm', :id, '--natdnshostresolver1', 'on']
   end
   config.vm.provision :chef_solo do |chef|
     chef.cookbooks_path = ['cookbooks']
@@ -22,19 +16,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     chef.add_recipe 'mysql::server'
     chef.add_recipe 'postgresql::server'
     chef.json = {
-      "mysql" => {
-        "server_root_password" => "pseudorandom",
-        "server_repl_password" => "pseudorandom",
-        "server_debian_password" => "pseudorandom"
+      'mysql' => {
+        'server_root_password' => 'pseudorandom',
+        'server_repl_password' => 'pseudorandom',
+        'server_debian_password' => 'pseudorandom'
       },
-      "mongodb" => {
-        "package_version" => '2.4.9'
+      'mongodb' => {
+        'package_version' => '2.4.9'
       },
-      "postgresql" => {
-        "password" => { "postgres"=>"pseudorandom" }
+      'postgresql' => {
+        'password' => { 'postgres' => 'pseudorandom' }
       }
     }
   end
-  config.vm.provision :shell, inline: "echo \"#{`cat ./id_rsa.pub`}\" >> ~vagrant/.ssh/authorized_keys"
+  config.vm.provision :shell, inline: "echo \"#{`cat ./id_rsa.pub`}\" >> " \
+    '~vagrant/.ssh/authorized_keys'
   config.vm.provision :shell, path: 'setup.sh'
 end

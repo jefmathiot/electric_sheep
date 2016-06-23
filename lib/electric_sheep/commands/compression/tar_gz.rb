@@ -6,6 +6,7 @@ module ElectricSheep
         include DeleteSource
 
         register as: 'tar_gz'
+        option :exclude
 
         def perform!
           logger.info "Compressing #{input.path} to #{input.basename}.tar.gz"
@@ -26,9 +27,19 @@ module ElectricSheep
         end
 
         def cmd(input_path, archive)
-          cmd = "cd #{File.dirname(input_path)}; "
-          cmd << "tar -cvzf #{shell.safe(shell.expand_path(archive.path))} "
+          cmd = "cd #{File.dirname(input_path)};"
+          cmd << ' tar'
+          exclude(cmd)
+          cmd << " -cvzf #{shell.safe(shell.expand_path(archive.path))} "
           cmd << "#{File.basename(input_path)} 1>&2"
+        end
+
+        def exclude(cmd)
+          return unless input.directory?
+          paths = option(:exclude)
+          (paths.is_a?(Enumerable) && paths || [paths]).compact.each do |path|
+            cmd << " --exclude #{path}"
+          end
         end
       end
     end

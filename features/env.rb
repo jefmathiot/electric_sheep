@@ -68,7 +68,7 @@ module ElectricSheep
     end
 
     def with_multiple_files(directory, &block)
-      @files=[1, 2].map do |index|
+      @files=[1, 2, 3].map do |index|
         "dummy.file.#{index}".tap do |file|
           yield directory, file
         end
