@@ -26,7 +26,7 @@ job "tar-gz-directory", private_key: ssh_key do
 end
 
 job "tar-gz-directory-exclusions", private_key: ssh_key do
-  resource "file", path: "dummy-directory", host: "main-host"
+  resource "directory", path: "dummy-directory", host: "main-host"
   remotely as: "vagrant" do
     tar_gz exclude: ["dummy.file.2", "dummy.file.3"]
   end
