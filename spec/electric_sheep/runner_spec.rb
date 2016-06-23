@@ -9,10 +9,9 @@ describe ElectricSheep::Runner do
   let(:script) { sequence('script') }
 
   let(:job) do
-    ElectricSheep::Metadata::Job.new(config,
-                                     id: 'first-job',
-                                     description: 'First job description'
-                                    ).tap do |p|
+    ElectricSheep::Metadata::Job
+      .new(config, id: 'first-job',
+                   description: 'First job description').tap do |p|
       p.stubs(:execution_time).returns(10.112)
     end
   end
@@ -35,13 +34,13 @@ describe ElectricSheep::Runner do
       logger.expects(:info).never.with('Executing unknown')
       runner = subject.new(config: config, job: 'unknown', logger: logger)
       err = -> { runner.run! }.must_raise RuntimeError
-      err.message.must_equal "job \"unknown\" does not exist"
+      err.message.must_equal 'job "unknown" does not exist'
     end
 
     describe 'executing jobs' do
       before do
         logger.expects(:info).in_sequence(script)
-          .with("Executing \"First job description (first-job)\"")
+              .with('Executing "First job description (first-job)"')
       end
 
       describe 'with multiple jobs' do
@@ -56,15 +55,15 @@ describe ElectricSheep::Runner do
 
         def expects_second_job_run
           logger.expects(:info).in_sequence(script)
-            .with("Executing \"second-job\"")
+                .with('Executing "second-job"')
           logger.expects(:info).in_sequence(script)
-            .with("job \"second-job\" completed in 5.500 seconds")
+                .with('job "second-job" completed in 5.500 seconds')
         end
 
         it 'should not have remaining jobs' do
           logger.expects(:info)
-            .with("job \"First job description (first-job)\" " \
-            'completed in 10.112 seconds')
+                .with('job "First job description (first-job)" ' \
+                'completed in 10.112 seconds')
           expects_second_job_run
           runner.run!
         end
@@ -73,20 +72,20 @@ describe ElectricSheep::Runner do
           job.add ElectricSheep::Metadata::Shell.new(config)
           shell = ElectricSheep::Shell::LocalShell.any_instance
           shell.expects(:perform!).in_sequence(script)
-            .raises(RuntimeError, 'Error message')
+               .raises(RuntimeError, 'Error message')
           logger.expects(:error).in_sequence(script).with('Error message')
           logger.expects(:debug).in_sequence(script).with(kind_of(RuntimeError))
           expects_second_job_run
           ex = -> { runner.run! }.must_raise RuntimeError
-          ex.message.must_equal "Some jobs have failed: \"First job " \
-            "description (first-job)\""
+          ex.message.must_equal 'Some jobs have failed: "First job ' \
+            'description (first-job)"'
         end
 
         it 'executes a single job when told to do so' do
           logger.expects(:info)
-            .with("job \"First job description (first-job)\" " \
-            'completed in 10.112 seconds')
-          logger.expects(:info).never.with("Executing \"second-job\"")
+                .with('job "First job description (first-job)" ' \
+                      'completed in 10.112 seconds')
+          logger.expects(:info).never.with('Executing "second-job"')
           runner = subject.new(config: config, job: 'first-job',
                                logger: logger)
           runner.run!
@@ -115,7 +114,7 @@ describe ElectricSheep::Runner do
       config.hosts.add('some-host', hostname: 'some-host.tld')
       config.add job
       logger.expects(:info).in_sequence(script)
-        .with("Executing \"First job description (first-job)\"")
+            .with('Executing "First job description (first-job)"')
       job.start_with! resource
     end
 
@@ -130,10 +129,10 @@ describe ElectricSheep::Runner do
       def expects_output(metadata)
         metadata.stubs(:last_output).returns(output = mock)
         job.expects(:done!).in_sequence(script)
-          .with(metadata, output, output)
+           .with(metadata, output, output)
         logger.expects(:info).in_sequence(script)
-          .with("job \"First job description (first-job)\" " \
-          'completed in 10.112 seconds')
+              .with('job "First job description (first-job)" ' \
+                    'completed in 10.112 seconds')
       end
 
       it 'wraps command executions in a local shell' do
@@ -169,13 +168,13 @@ describe ElectricSheep::Runner do
       resource.stubs(:timestamp?).returns(false)
       job.add metadata = ElectricSheep::Metadata::Transport.new(config)
       metadata.expects(:agent_klazz).in_sequence(script).at_least(1)
-        .returns(FakeTransport)
+              .returns(FakeTransport)
       FakeTransport.any_instance.expects(:run!).in_sequence(script)
       job.expects(:done!).in_sequence(script)
-        .with(metadata, kind_of(ElectricSheep::Resources::File), resource)
+         .with(metadata, kind_of(ElectricSheep::Resources::File), resource)
       logger.expects(:info).in_sequence(script)
-        .with("job \"First job description (first-job)\" " \
-        'completed in 10.112 seconds')
+            .with('job "First job description (first-job)" ' \
+                  'completed in 10.112 seconds')
       runner.run!.must_equal true
       expects_execution_times(job, metadata)
     end
@@ -192,10 +191,10 @@ describe ElectricSheep::Runner do
       def expects_notifications
         notifiers.map do |metadata|
           metadata.expects(:agent_klazz).in_sequence(script)
-            .returns(notifier_klazz = mock)
+                  .returns(notifier_klazz = mock)
           notifier_klazz.expects(:new).in_sequence(script)
-            .with(job, config.hosts, logger, metadata)
-            .returns(notifier = mock)
+                        .with(job, config.hosts, logger, metadata)
+                        .returns(notifier = mock)
           notifier.expects(:notify!).in_sequence(script)
         end
       end
@@ -203,15 +202,15 @@ describe ElectricSheep::Runner do
       it 'triggers notifications' do
         expects_notifications
         logger.expects(:info).in_sequence(script)
-          .with("job \"First job description (first-job)\" " \
-          'completed in 10.112 seconds')
+              .with('job "First job description (first-job)" ' \
+                    'completed in 10.112 seconds')
         runner.run!.must_equal true
       end
 
       it 'fails and notifies' do
         job.add ElectricSheep::Metadata::Shell.new(config)
         ElectricSheep::Shell::LocalShell.any_instance.expects(:perform!)
-          .raises('An error')
+                                        .raises('An error')
         logger.expects(:error).in_sequence(script).with('An error')
         logger.expects(:debug).in_sequence(script).with(kind_of(RuntimeError))
         expects_notifications
@@ -223,14 +222,11 @@ describe ElectricSheep::Runner do
         logger.expects(:error).in_sequence(script).with('Another error')
         logger.expects(:debug).in_sequence(script).with(kind_of(RuntimeError))
         logger.expects(:info).in_sequence(script)
-          .with("job \"First job description (first-job)\" " \
-          'completed in 10.112 seconds')
+              .with('job "First job description (first-job)" ' \
+                    'completed in 10.112 seconds')
         runner.run!.must_equal true
       end
     end
-
-    # it 'fails and triggers notifications even when the job failed' do
-    # end
   end
 
   it 'defines logger' do

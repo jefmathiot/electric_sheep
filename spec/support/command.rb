@@ -33,8 +33,8 @@ module Support
 
     def expects_stat(type, resource, size = 1024)
       shell.expects("stat_#{type}").in_sequence(seq)
-        .with(resource)
-        .returns(size)
+           .with(resource)
+           .returns(size)
     end
 
     def assert_product(product)
@@ -53,7 +53,7 @@ module Support
         expects_log
         expected_cmds.each do |cmd|
           shell.expects(:exec).in_sequence(seq)
-            .with(*cmd)
+               .with(*cmd)
         end
         expects_output_stat
         assert_command

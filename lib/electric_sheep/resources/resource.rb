@@ -4,15 +4,15 @@ module ElectricSheep
       include Metadata::Typed
 
       attr_reader :timestamp, :transient
-      alias_method :timestamp?, :timestamp
-      alias_method :transient?, :transient
+      alias timestamp? timestamp
+      alias transient? transient
 
       def timestamp!(origin)
-        if origin.timestamp?
-          @timestamp = origin.timestamp
-        else
-          @timestamp = Time.now.utc.strftime('%Y%m%d-%H%M%S')
-        end
+        @timestamp = if origin.timestamp?
+                       origin.timestamp
+                     else
+                       Time.now.utc.strftime('%Y%m%d-%H%M%S')
+                     end
       end
 
       def stat!(size)

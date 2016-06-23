@@ -12,7 +12,7 @@ module ElectricSheep
         def tempdir(executor, &block)
           path = expand_path(executor, File.join(TMPDIR, tempname))
           output = executor.exec("mkdir -p #{path} && chmod 0700 #{path}")
-          fail 'Unable to create tempdir' if output[:exit_status] != 0
+          raise 'Unable to create tempdir' if output[:exit_status] != 0
           yield_path(executor, path, &block)
         end
 

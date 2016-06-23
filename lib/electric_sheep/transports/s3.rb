@@ -11,7 +11,7 @@ module ElectricSheep
       option :secret_key, required: true, secret: true
       option :region
 
-      DEFAULT_REGION = 'us-east-1'
+      DEFAULT_REGION = 'us-east-1'.freeze
 
       def remote_interactor
         @remote_interactor ||= S3Interactor.new(
@@ -42,7 +42,7 @@ module ElectricSheep
       def with_directory(&_)
         paths = option(:to).split('/')
         bucket = paths.shift
-        yield bucket, paths.length > 0 ? paths.join('/') : nil
+        yield bucket, paths.empty? ? nil : paths.join('/')
       end
 
       class S3Interactor

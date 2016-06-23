@@ -13,7 +13,8 @@ describe ElectricSheep::Shell::RemoteShell do
   end
 
   it 'initializes an interactor and cache it' do
-    ElectricSheep::Interactors::SshInteractor.expects(:new)
+    ElectricSheep::Interactors::SshInteractor
+      .expects(:new)
       .with(host, job, 'johndoe', logger)
       .once.returns(interactor = mock)
     2.times do

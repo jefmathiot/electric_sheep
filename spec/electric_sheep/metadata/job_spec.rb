@@ -59,7 +59,7 @@ describe ElectricSheep::Metadata::Job do
 
   it 'uses its description and id' do
     subject.new(config, id: 'job-name', description: 'Description').name
-      .must_equal 'Description (job-name)'
+           .must_equal 'Description (job-name)'
   end
 
   let(:job) { subject.new(config) }

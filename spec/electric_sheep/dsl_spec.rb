@@ -111,7 +111,7 @@ describe ElectricSheep::Dsl do
       end
       job.schedules.size.must_equal 2
       job.schedules.first
-        .must_be_instance_of ElectricSheep::Metadata::Schedule::Hourly
+         .must_be_instance_of ElectricSheep::Metadata::Schedule::Hourly
     end
 
     it 'appends a notifier' do

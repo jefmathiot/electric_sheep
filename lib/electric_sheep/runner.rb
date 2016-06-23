@@ -27,7 +27,7 @@ module ElectricSheep
         job.notifiers.each do |metadata|
           rescued do
             metadata.agent_klazz
-              .new(job, @config.hosts, logger, metadata).notify!
+                    .new(job, @config.hosts, logger, metadata).notify!
           end
         end
       end
@@ -97,16 +97,13 @@ module ElectricSheep
         end
         return unless failures.count > 0
         jobs = failures.map { |p| "\"#{p}\"" }.join(', ')
-        fail "Some jobs have failed: #{jobs}"
+        raise "Some jobs have failed: #{jobs}"
       end
 
       def run_single!
         job = @config.queue.find { |p| p.id == @job }
-        if job.nil?
-          fail "job \"#{@job}\" does not exist"
-        else
-          fail "job #{job.id} has failed" unless run(job)
-        end
+        raise "job \"#{@job}\" does not exist" if job.nil?
+        raise "job #{job.id} has failed" unless run(job)
       end
 
       def run(job)

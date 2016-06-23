@@ -22,7 +22,7 @@ describe ElectricSheep::Metadata::Monitor do
       monitor = subject.new
       ex = lambda do
         monitor.monitored do
-          fail 'An exception'
+          raise 'An exception'
         end
       end.must_raise RuntimeError
       ex.message.must_equal 'An exception'

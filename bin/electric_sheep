@@ -2,5 +2,5 @@
 require 'electric_sheep/cli'
 
 # See https://github.com/erikhuda/thor/issues/244
-Thor.send :define_singleton_method, :exit_on_failure? do true end
+Thor.send(:define_singleton_method, :exit_on_failure?) { true }
 ElectricSheep::CLI.start(ARGV)

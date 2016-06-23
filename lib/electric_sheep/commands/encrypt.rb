@@ -31,7 +31,7 @@ module ElectricSheep
         local_key = shell_safe(option(:public_key))
         cmd = Spawn.exec("gpg --batch --enarmor < \"#{local_key}\"")
         if cmd[:exit_status] != 0
-          fail 'Unable to convert the public key to the ASCII-armored format'
+          raise 'Unable to convert the public key to the ASCII-armored format'
         end
         cmd[:out]
       end

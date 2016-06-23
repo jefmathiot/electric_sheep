@@ -28,7 +28,7 @@ module ElectricSheep
       end
 
       def load_file(config, path)
-        fail "Unable to evaluate #{path}" unless readable?(path)
+        raise "Unable to evaluate #{path}" unless readable?(path)
         Dsl.new(config, self).instance_eval File.open(path, 'rb').read, path
         config
       rescue SyntaxError => e

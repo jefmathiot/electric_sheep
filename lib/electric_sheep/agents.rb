@@ -50,7 +50,7 @@ module ElectricSheep
 
         def assign_defaults_for(type, id, options)
           if @agents[type][id].nil?
-            fail "Can't assign default options for the unknown #{type} #{id}"
+            raise "Can't assign default options for the unknown #{type} #{id}"
           end
           type_defaults(type)[id] = options
         end

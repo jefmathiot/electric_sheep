@@ -24,7 +24,8 @@ describe ElectricSheep::Metadata::Pipe do
       end
 
       it 'creates a report using the input and start location' do
-        ElectricSheep::Metadata::Pipe::Report.expects(:new)
+        ElectricSheep::Metadata::Pipe::Report
+          .expects(:new)
           .with(resource, start_location).returns(report = mock)
         pipe.pipelined(resource)
         pipe.report.must_equal report
@@ -70,7 +71,7 @@ describe ElectricSheep::Metadata::Pipe do
         it 'reports' do
           [item1, item2].each_with_index do |item, i|
             pipe.report.expects(:step)
-              .with(item, products[i], outputs[i])
+                .with(item, products[i], outputs[i])
           end
           execute_pipeline
         end
@@ -195,7 +196,7 @@ describe ElectricSheep::Metadata::Pipe do
 
       it 'uses provided steps if any' do
         subject.new(nil, nil, steps = [mock, mock])
-          .steps.must_equal steps
+               .steps.must_equal steps
       end
 
       describe 'with steps' do

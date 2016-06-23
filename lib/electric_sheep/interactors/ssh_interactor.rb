@@ -53,9 +53,9 @@ module ElectricSheep
       end
 
       def ssh_options
+        key_data = PrivateKey.get_key(private_key, :private).export
         { port: @host.ssh_port, keys_only: true, auth_methods: %w(publickey),
-          key_data: PrivateKey.get_key(private_key, :private).export
-        }.tap do |opts|
+          key_data: key_data }.tap do |opts|
           opts[:user_known_hosts_file] =
             File.expand_path(options.known_hosts) if options.known_hosts
           opts[:paranoid] = host_key_checking
@@ -152,7 +152,7 @@ module ElectricSheep
         class << self
           def get_key(keyfile, type)
             ::OpenSSL::PKey::RSA.new(read_keyfile(keyfile)).tap do |key|
-              fail "Not a #{type} key: #{keyfile}" unless key.send("#{type}?")
+              raise "Not a #{type} key: #{keyfile}" unless key.send("#{type}?")
             end
           end
 
@@ -160,18 +160,18 @@ module ElectricSheep
 
           def read_keyfile(keyfile)
             keyfile = File.expand_path(keyfile)
-            fail "Key file not found #{keyfile}" unless File.exist?(keyfile)
+            raise "Key file not found #{keyfile}" unless File.exist?(keyfile)
             key = File.read(keyfile)
             return openssh_to_pem(keyfile) if openssh?(key)
             return key if pem?(key)
-            fail 'Key file format not supported'
+            raise 'Key file format not supported'
           end
 
           def openssh_to_pem(keyfile)
             result = Spawn.exec("ssh-keygen -f #{keyfile} -e -m pem")
             unless result[:exit_status] == 0
-              fail "Unable to convert key file #{keyfile} to PEM: " +
-                result[:err]
+              raise "Unable to convert key file #{keyfile} to PEM: " +
+                    result[:err]
             end
             result[:out]
           end
@@ -181,7 +181,7 @@ module ElectricSheep
           end
 
           def openssh?(key)
-            key =~ /\Assh-rsa /
+            key.start_with?('ssh-rsa')
           end
         end
       end

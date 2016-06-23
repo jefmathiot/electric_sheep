@@ -20,7 +20,7 @@ describe ElectricSheep::Notifiers::Template do
 
       it 'binds the context and renders the template' do
         ElectricSheep.expects(:template_path)
-          .returns(File.dirname(template.path))
+                     .returns(File.dirname(template.path))
         renderer = subject.new(File.basename(template.path, '.erb'))
         renderer.render(bound_value: 1).must_equal 'Value: 1'
       end
@@ -46,17 +46,17 @@ describe ElectricSheep::Notifiers::Template do
 
     it 'renders partial using a child template' do
       ElectricSheep.expects(:template_path)
-        .returns(File.dirname(partial.path))
+                   .returns(File.dirname(partial.path))
       subject.new(assets_url: 'http://assets.host.tld')
-        .partial(File.basename(partial.path, '.erb'), bound_value: 1)
-        .must_equal 'assets: http://assets.host.tld, value: 1'
+             .partial(File.basename(partial.path, '.erb'), bound_value: 1)
+             .must_equal 'assets: http://assets.host.tld, value: 1'
     end
 
     describe 'providing helpers' do
       it 'creates path to assets' do
         subject.new(assets_url: 'http://assets.host.tld')
-          .asset('asset.png')
-          .must_equal 'http://assets.host.tld/asset.png'
+               .asset('asset.png')
+               .must_equal 'http://assets.host.tld/asset.png'
       end
 
       describe 'with time frozen' do
@@ -73,12 +73,12 @@ describe ElectricSheep::Notifiers::Template do
 
         it 'formats datetime to timezone' do
           subject.new({}).to_timezone(Time.now)
-            .must_equal Time.now.getlocal.zone
+                 .must_equal Time.now.getlocal.zone
         end
 
         it 'formats number to duration' do
           subject.new({}).to_duration(3600 + 60 + 1.0)
-            .must_equal '1h1m1s'
+                 .must_equal '1h1m1s'
         end
       end
     end

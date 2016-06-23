@@ -25,7 +25,7 @@ module ElectricSheep
         def exec(cmd)
           result = @executor.exec cmd
           if result[:exit_status] != 0
-            fail "Command failed to complete \"#{cmd}\": #{result[:err]}"
+            raise "Command failed to complete \"#{cmd}\": #{result[:err]}"
           end
           result[:out]
         end
@@ -36,7 +36,7 @@ module ElectricSheep
           keylist.split(/\n+/).each do |line|
             return line.split(':')[4] if line =~ /^(pub|sec):/
           end
-          fail "Unable to retrieve key info for #{keyfile}"
+          raise "Unable to retrieve key info for #{keyfile}"
         end
 
         def with_keyring(keyfile, &_)
@@ -147,7 +147,7 @@ module ElectricSheep
         def compact(cipher_text)
           return cipher_text unless cipher_text =~ /^#{PGP_ARMOR_HEADER}/
           cipher_text.gsub(/-----(BEGIN|END) PGP MESSAGE-----/, '')
-            .split(/\n+/).join
+                     .split(/\n+/).join
         end
       end
 

@@ -33,7 +33,8 @@ describe ElectricSheep::Metadata::Transport do
   end
 
   it 'resolves the agent class' do
-    ElectricSheep::Agents::Register.expects(:transport).with('foo')
+    ElectricSheep::Agents::Register
+      .expects(:transport).with('foo')
       .returns(Object)
     subject.new(config, agent: 'foo').agent_klazz.must_equal Object
   end

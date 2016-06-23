@@ -38,7 +38,7 @@ describe ElectricSheep::Interactors::SshInteractor do
 
             buffer = @connection.next_message
             unless buffer.type == NEWKEYS
-              fail Net::SSH::Exception, 'expected NEWKEYS'
+              raise Net::SSH::Exception, 'expected NEWKEYS'
             end
 
             {
@@ -88,21 +88,21 @@ describe ElectricSheep::Interactors::SshInteractor do
     it 'uses the host key if specified' do
       host.expects(:private_key).returns('key_rsa')
       interactor.send(:private_key)
-        .must_equal File.expand_path('key_rsa')
+                .must_equal File.expand_path('key_rsa')
     end
 
     it 'falls back to the job key' do
       host.expects(:private_key).returns(nil)
       job.expects(:private_key).returns('key_rsa')
       interactor.send(:private_key)
-        .must_equal File.expand_path('key_rsa')
+                .must_equal File.expand_path('key_rsa')
     end
 
     it 'falls back to the default key' do
       host.expects(:private_key).returns(nil)
       job.expects(:private_key).returns(nil)
       interactor.send(:private_key)
-        .must_equal File.expand_path('~/.ssh/id_rsa')
+                .must_equal File.expand_path('~/.ssh/id_rsa')
     end
   end
 
@@ -130,15 +130,18 @@ describe ElectricSheep::Interactors::SshInteractor do
 
     def self.expecting_ssh_session
       before do
-        ElectricSheep::Interactors::SshInteractor::PrivateKey.expects(:get_key)
+        ElectricSheep::Interactors::SshInteractor::PrivateKey
+          .expects(:get_key)
           .with('/path/to/private/key', :private)
           .returns(pk = mock)
         pk.expects(:export).returns('SECRET')
-        Net::SSH.expects(:start)
+        Net::SSH
+          .expects(:start)
           .with('host.tld', 'johndoe', options)
           .returns(connection)
         job.expects(:private_key).returns('/path/to/private/key')
-        ElectricSheep::Helpers::Directories.any_instance
+        ElectricSheep::Helpers::Directories
+          .any_instance
           .expects(:mk_job_directory!)
       end
     end
@@ -212,7 +215,8 @@ describe ElectricSheep::Interactors::SshInteractor do
         build_ssh_story 'echo "Hello World" ; echo "Goodbye Cruel World" >&2',
                         data: 'Hello World',
                         extended_data: 'Goodbye Cruel World'
-        logger.expects(:debug)
+        logger
+          .expects(:debug)
           .with('echo "Hello World" ; echo "Goodbye Cruel World" >&2')
         logger.expects(:debug).with('Hello World')
         assert_scripted do
@@ -255,7 +259,8 @@ describe ElectricSheep::Interactors::SshInteractor do
           cmd = 'rm -rf /path/to/resource'
           build_ssh_story cmd, {}
           logger.expects(:debug).with(cmd)
-          interactor.expects(:expand_path).with('resource')
+          interactor
+            .expects(:expand_path).with('resource')
             .returns('/path/to/resource')
           assert_scripted do
             interactor.in_session do
@@ -296,26 +301,30 @@ describe ElectricSheep::Interactors::SshInteractor do
 
     def expects_paths_expansion(input_expander, output_expander)
       input_expander.expects(:expand_path).with(input.path)
-        .returns(input_path)
+                    .returns(input_path)
       output_expander.expects(:expand_path).with(output.path)
-        .returns(output_path)
+                     .returns(output_path)
     end
 
     def expects_file_op(action, _interactor)
       scp.expects(action).in_sequence(seq)
-        .with(input_path, output_path, recursive: input.directory?)
+         .with(input_path, output_path, recursive: input.directory?)
     end
 
     def expects_directory_op(action, interactor)
       path_regexp = %r{\/path\/to\/tmp\d{8}}
-      interactor.expects(:exec).in_sequence(seq)
+      interactor
+        .expects(:exec).in_sequence(seq)
         .with(regexp_matches(/^mkdir #{path_regexp}/))
-      scp.expects(action).in_sequence(seq)
+      scp
+        .expects(action).in_sequence(seq)
         .with(input_path, regexp_matches(path_regexp),
               recursive: input.directory?)
-      interactor.expects(:exec).in_sequence(seq)
+      interactor
+        .expects(:exec).in_sequence(seq)
         .with(regexp_matches(/^mv #{path_regexp}.* #{output_path}/))
-      interactor.expects(:exec).in_sequence(seq)
+      interactor
+        .expects(:exec).in_sequence(seq)
         .with(regexp_matches(/^rm -rf #{path_regexp}/))
     end
 
@@ -369,7 +378,8 @@ describe ElectricSheep::Interactors::SshInteractor::PrivateKey do
     end
 
     it 'raises if the key is of the wrong type' do
-      subject.expects(:read_keyfile).with(path = '/path/to/key')
+      subject
+        .expects(:read_keyfile).with(path = '/path/to/key')
         .returns(keyfile = mock)
       OpenSSL::PKey::RSA.expects(:new).with(keyfile).returns(key = mock)
       key.expects(:private?).returns(false)
@@ -384,7 +394,8 @@ describe ElectricSheep::Interactors::SshInteractor::PrivateKey do
 
     describe 'with an SSH key' do
       def expects_conversion(status)
-        spawn.expects(:exec)
+        spawn
+          .expects(:exec)
           .with("ssh-keygen -f #{ssh_keyfile.path} -e -m pem")
           .returns(out: pem_lines, err: 'An error', exit_status: status)
       end

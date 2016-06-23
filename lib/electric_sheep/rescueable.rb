@@ -1,7 +1,7 @@
 module ElectricSheep
   module Rescueable
     def logger
-      fail 'Undefined logger, please override'
+      raise 'Undefined logger, please override'
     end
 
     def rescued(fail_on_error = false, &_)

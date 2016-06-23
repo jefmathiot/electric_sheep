@@ -7,7 +7,8 @@ describe ElectricSheep::Commands::Database::PostgreSQLDump do
   it { defines_options :user, :password, :sudo_as, :login_host }
 
   it 'should have registered as the "postgresql_dump" agent of type command' do
-    ElectricSheep::Agents::Register.command('postgresql_dump')
+    ElectricSheep::Agents::Register
+      .command('postgresql_dump')
       .must_equal subject
   end
 
@@ -20,21 +21,21 @@ describe ElectricSheep::Commands::Database::PostgreSQLDump do
   def expects_db_stat(options = [], prolog = [])
     query = "SELECT pg_database_size('\\$MyDatabase')"
     cmd = prolog.dup
-          .<<(' psql')
-          .<<(' --no-password')
-          .concat(options)
-          .<<(' -t -d \\$MyDatabase')
-          .<<(" -c \"#{query}\"")
+                .<<(' psql')
+                .<<(' --no-password')
+                .concat(options)
+                .<<(' -t -d \\$MyDatabase')
+                .<<(" -c \"#{query}\"")
     shell.expects(:exec).in_sequence(seq).with(*cmd).returns(out: '4096')
   end
 
   def expects_stat_and_exec(options = [], prolog = [])
     expects_db_stat options, prolog
     cmd = prolog.<<(' pg_dump')
-          .<<(' --no-password')
-          .concat(options)
-          .<<(' -d \\$MyDatabase >')
-          .<<(" #{safe_output_path}")
+                .<<(' --no-password')
+                .concat(options)
+                .<<(' -d \\$MyDatabase >')
+                .<<(" #{safe_output_path}")
     ensure_execution cmd
   end
 

@@ -16,7 +16,7 @@ describe ElectricSheep::Resources::Resource do
   end
 
   it 'creates a new timestamp' do
-    Timecop.travel(Timecop.travel Time.utc(2014, 6, 5, 4, 3, 2)) do
+    Timecop.travel(Timecop.travel(Time.utc(2014, 6, 5, 4, 3, 2))) do
       origin.expects(:timestamp?).returns(false)
       subject.new.tap do |resource|
         resource.timestamp!(origin)

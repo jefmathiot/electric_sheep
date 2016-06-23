@@ -11,7 +11,7 @@ module ElectricSheep
     end
 
     def start!
-      fail 'Another master seems to be running' if running?
+      raise 'Another master seems to be running' if running?
       @logger.info 'Starting master'
       spawners.master.spawn('Master started') do
         trap_signals

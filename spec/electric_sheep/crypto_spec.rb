@@ -20,18 +20,18 @@ describe ElectricSheep::Crypto::GPG do
 
   it 'creates a string encryptor' do
     subject.string(executor)
-      .must_be_instance_of ElectricSheep::Crypto::GPG::StringEncryptor
+           .must_be_instance_of ElectricSheep::Crypto::GPG::StringEncryptor
   end
 
   it 'creates a file encryptor' do
     subject.file(executor)
-      .must_be_instance_of ElectricSheep::Crypto::GPG::FileEncryptor
+           .must_be_instance_of ElectricSheep::Crypto::GPG::FileEncryptor
   end
 
   def expects_exec(regexp, output)
     executor.expects(:exec)
-      .with(regexp_matches(regexp))
-      .returns(output)
+            .with(regexp_matches(regexp))
+            .returns(output)
   end
 
   def expects_keyid(type)
@@ -57,9 +57,9 @@ describe ElectricSheep::Crypto::GPG do
     def ensure_exec_failure_raises
       it 'raises on command failure' do
         executor.expects(:exec).with(cmd = 'ls')
-          .returns(exit_status: 1, err: 'An error')
+                .returns(exit_status: 1, err: 'An error')
         ex = -> { encryptor.send(:exec, cmd) }.must_raise RuntimeError
-        ex.message.must_equal "Command failed to complete \"ls\": An error"
+        ex.message.must_equal 'Command failed to complete "ls": An error'
       end
     end
 
@@ -76,7 +76,8 @@ describe ElectricSheep::Crypto::GPG do
     let(:encryptor) { subject.new(executor) }
 
     def expects_operation(operation, output, options)
-      ElectricSheep::Helpers::FSUtil.expects(:expand_path)
+      ElectricSheep::Helpers::FSUtil
+        .expects(:expand_path)
         .with(executor, keyfile).returns("/#{keyfile}")
       options = operation_options(operation, options)
       cmd = /^cat #{tempfile} \| #{gpg_regexp} #{options}$/
@@ -84,7 +85,8 @@ describe ElectricSheep::Crypto::GPG do
     end
 
     def expects_tempfile(contents)
-      ElectricSheep::Helpers::FSUtil.expects(:tempfile).with(executor)
+      ElectricSheep::Helpers::FSUtil
+        .expects(:tempfile).with(executor)
         .yields('/temp/file')
       cmd = "echo #{contents} > #{tempfile} && chmod 0700 #{tempfile}"
       executor.expects(:exec).with(cmd).returns(exit_status: 0)
@@ -126,12 +128,12 @@ describe ElectricSheep::Crypto::GPG do
 
           it 'outputs standard PGP message' do
             encryptor.encrypt(keyfile, 'secret', ascii: true)
-              .must_equal ascii_armor
+                     .must_equal ascii_armor
           end
 
           it 'compacts the output' do
             encryptor.encrypt(keyfile, 'secret', ascii: true, compact: true)
-              .must_equal 'encrypted'
+                     .must_equal 'encrypted'
           end
         end
       end
@@ -156,7 +158,8 @@ describe ElectricSheep::Crypto::GPG do
     describe 'with a keyring' do
       before do
         [keyfile, input, output].each do |file|
-          ElectricSheep::Helpers::FSUtil.expects(:expand_path)
+          ElectricSheep::Helpers::FSUtil
+            .expects(:expand_path)
             .with(executor, file).returns("/#{file}")
         end
         expects_keyring

@@ -86,7 +86,7 @@ module ElectricSheep
           result = Spawn.exec("ssh-keyscan -p #{port} #{host}", logger)
           unless result[:exit_status] == 0
             logger.error result[:err]
-            fail "Unable to fetch key for server #{host}"
+            raise "Unable to fetch key for server #{host}"
           end
           parse_keys(result[:out])
         end

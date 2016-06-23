@@ -50,11 +50,11 @@ describe ElectricSheep::Shell::Base do
     )
     shell.interactor.expects(:in_session).in_sequence(seq).yields
     metadata.expects(:pipelined).with(input, job).in_sequence(seq)
-      .multiple_yields [first, input], [second, input]
+            .multiple_yields [first, input], [second, input]
     [first, second].each do |cmd_metadata|
       cmd_metadata.stubs(:agent_klazz).returns(FakeCommand)
       ElectricSheep::Metadata::Command.any_instance.expects(:monitored)
-        .in_sequence(seq).yields
+                                      .in_sequence(seq).yields
       FakeCommand.any_instance.tap do |cmd|
         cmd.expects(:run!).in_sequence(seq).returns(input)
       end

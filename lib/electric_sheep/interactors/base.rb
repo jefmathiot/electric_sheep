@@ -12,23 +12,23 @@ module ElectricSheep
         @directories = Helpers::Directories.new(host, job, self)
       end
 
-      def after_exec(&block)
-        block.call.tap do |result|
+      def after_exec(&_block)
+        yield.tap do |result|
           unless result[:exit_status] == 0
             if result[:err].empty?
-              fail 'Command terminated with exit status: ' +
-                result[:exit_status].to_s
+              raise 'Command terminated with exit status: ' +
+                    result[:exit_status].to_s
             else
-              fail result[:err]
+              raise result[:err]
             end
           end
         end
       end
 
-      def in_session(&block)
+      def in_session(&_block)
         @session = build_session
         @directories.mk_job_directory!
-        block.call if block_given?
+        yield if block_given?
         close
       end
 

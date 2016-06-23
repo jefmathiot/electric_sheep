@@ -18,7 +18,8 @@ describe ElectricSheep::Interactors::ShellInteractor do
   describe 'executing a command' do
     def expects_execution(cmd, out = '', err = '')
       logger.stubs(:debug)
-      ElectricSheep::Spawn.expects(:exec).with(cmd, logger)
+      ElectricSheep::Spawn
+        .expects(:exec).with(cmd, logger)
         .returns(out: out, err: err, exit_status: err ? 2 : 0)
       if err
         proc { interactor.exec(cmd) }.must_raise RuntimeError
@@ -43,7 +44,7 @@ describe ElectricSheep::Interactors::ShellInteractor do
     resource = mock(path: 'resource')
     cmd = 'rm -rf /path/to/resource'
     interactor.expects(:expand_path).with('resource')
-      .returns('/path/to/resource')
+              .returns('/path/to/resource')
     interactor.expects(:exec).with(cmd)
     interactor.delete!(resource)
   end

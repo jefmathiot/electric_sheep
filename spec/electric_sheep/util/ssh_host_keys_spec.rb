@@ -52,7 +52,8 @@ describe ElectricSheep::Util::SshHostKeys do
   let(:logger) { mock }
 
   def expects_keyscan(host, port, result)
-    ElectricSheep::Spawn.expects(:exec)
+    ElectricSheep::Spawn
+      .expects(:exec)
       .with("ssh-keyscan -p #{port} #{host}", logger)
       .returns(result)
   end
@@ -94,11 +95,13 @@ describe ElectricSheep::Util::SshHostKeys do
       else
         result = { exit_status: 1, err: 'An error' }
         err = /Unable to remove keys from \"#{known_hosts_file_path}\"/
-        logger.expects(:warn)
+        logger
+          .expects(:warn)
           .with(regexp_matches(/#{err} for server #{hostname}/))
         logger.expects(:warn).with('An error')
       end
-      ElectricSheep::Spawn.expects(:exec)
+      ElectricSheep::Spawn
+        .expects(:exec)
         .with(regexp_matches(/ssh-keygen -R -f .* #{hostname}/), logger)
         .returns(result)
     end

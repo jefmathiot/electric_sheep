@@ -41,11 +41,11 @@ module ElectricSheep
 
     def git_revision
       if @sha.nil?
-        if ENV['ELECTRIC_SHEEP_REVISION']
-          @sha = ENV['ELECTRIC_SHEEP_REVISION'][0, 7]
-        else
-          @sha = git_rev
-        end
+        @sha = if ENV['ELECTRIC_SHEEP_REVISION']
+                 ENV['ELECTRIC_SHEEP_REVISION'][0, 7]
+               else
+                 git_rev
+               end
       end
       @sha
     end

@@ -86,9 +86,9 @@ describe ElectricSheep::Transports::S3 do
         connection = interactor.send(:connection)
         connection.instance_variable_get(:@aws_access_key_id).must_equal 'ABCD'
         connection.instance_variable_get(:@aws_secret_access_key)
-          .must_equal 'secret'
+                  .must_equal 'secret'
         connection.instance_variable_get(:@region)
-          .must_equal 'eu-central-1'
+                  .must_equal 'eu-central-1'
       end
     end
 
@@ -168,7 +168,7 @@ describe ElectricSheep::Transports::S3 do
                           local_resource)
         dummy(from_dir, from.path)
         local_interactor.expects(:expand_path).with(local_resource.path)
-          .returns(File.join(expanded_dir, local_resource.path))
+                        .returns(File.join(expanded_dir, local_resource.path))
         interactor.send action, from, to, local_interactor
         File.read(File.join(to_dir, to.path)).must_equal dummy_content
       end
@@ -192,7 +192,7 @@ describe ElectricSheep::Transports::S3 do
         end
         interactor.expects(:remote_files).with(to).returns(files = mock)
         interactor.expects(:upload_options).with(kind_of(File))
-          .returns(an_option: 'a_value')
+                  .returns(an_option: 'a_value')
         files.expects(:create).with(has_entry(:an_option, 'a_value'))
         interactor.upload!(from, to, local_interactor)
       end

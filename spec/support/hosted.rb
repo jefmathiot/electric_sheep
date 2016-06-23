@@ -10,7 +10,7 @@ module Support
 
       it 'delegates conversion to location to host' do
         subject.new(host: mock(to_location: location = mock)).to_location
-          .must_equal location
+               .must_equal location
       end
     end
   end

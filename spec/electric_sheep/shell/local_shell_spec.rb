@@ -12,7 +12,8 @@ describe ElectricSheep::Shell::LocalShell do
   end
 
   it 'initializes an interactor and cache it' do
-    ElectricSheep::Interactors::ShellInteractor.expects(:new)
+    ElectricSheep::Interactors::ShellInteractor
+      .expects(:new)
       .with(host, job, logger).once.returns(interactor = mock)
     2.times do
       shell.send(:interactor).must_equal interactor

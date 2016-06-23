@@ -64,8 +64,9 @@ describe ElectricSheep::Interactors::Base do
   it 'deletes a resource' do
     resource = mock(path: 'resource')
     interactor.expects(:expand_path).with('resource')
-      .returns('/path/to/resource')
-    ElectricSheep::Helpers::FSUtil.expects(:delete!)
+              .returns('/path/to/resource')
+    ElectricSheep::Helpers::FSUtil
+      .expects(:delete!)
       .with(interactor, '/path/to/resource')
     interactor.delete!(resource)
   end

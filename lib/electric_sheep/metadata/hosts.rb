@@ -68,7 +68,7 @@ module ElectricSheep
 
       def get(id)
         return localhost if id == 'localhost' || id.nil?
-        fail SheepException, "The '#{id}' host is undefined" if all[id].nil?
+        raise SheepException, "The '#{id}' host is undefined" if all[id].nil?
         all[id]
       end
 

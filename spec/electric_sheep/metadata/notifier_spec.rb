@@ -19,7 +19,7 @@ describe ElectricSheep::Metadata::Notifier do
 
   it 'resolves the agent class' do
     ElectricSheep::Agents::Register.expects(:notifier).with('foo')
-      .returns(Object)
+                                   .returns(Object)
     subject.new(config, agent: 'foo').agent_klazz.must_equal Object
   end
 end

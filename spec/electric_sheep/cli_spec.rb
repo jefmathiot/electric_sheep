@@ -6,18 +6,21 @@ describe ElectricSheep::CLI do
   let(:config) { mock }
 
   def expects_stdout_logger(level)
-    Lumberjack::Logger.expects(:new).with(kind_of(IO), level: level)
+    Lumberjack::Logger
+      .expects(:new).with(kind_of(IO), level: level)
       .returns(logger)
   end
 
   def expects_file_logger(level, path = nil)
-    Lumberjack::Logger.expects(:new)
+    Lumberjack::Logger
+      .expects(:new)
       .with(path || File.expand_path('electric_sheep.log'), level: level)
       .returns(logger)
   end
 
   def expects_evaluator(f = 'Sheepfile')
-    ElectricSheep::Sheepfile::Evaluator.expects(:new).with(f)
+    ElectricSheep::Sheepfile::Evaluator
+      .expects(:new).with(f)
       .returns(mock(evaluate: config))
   end
 
@@ -53,7 +56,8 @@ describe ElectricSheep::CLI do
   end
 
   it 'overrides the path to logfile' do
-    Lumberjack::Logger.expects(:new)
+    Lumberjack::Logger
+      .expects(:new)
       .with('/var/log/electric_sheep.log', level: :info)
     subject.new([], logfile: '/var/log/electric_sheep.log').send(:file_logger)
   end
@@ -61,7 +65,8 @@ describe ElectricSheep::CLI do
   describe 'working' do
     describe 'on successful invocation' do
       before do
-        ElectricSheep::Runner::Inline.expects(:new)
+        ElectricSheep::Runner::Inline
+          .expects(:new)
           .with(all_of(
                   has_entry(config: config),
                   has_entry(job: 'some-job'),
@@ -72,7 +77,7 @@ describe ElectricSheep::CLI do
       ensure_verbosity do
         expects_evaluator
         subject.new([], config: 'Sheepfile', job: 'some-job', verbose: true)
-          .work
+               .work
       end
 
       concise do
@@ -90,7 +95,8 @@ describe ElectricSheep::CLI do
 
     concise do
       ensure_exception_handling do
-        ElectricSheep::Sheepfile::Evaluator.expects(:new)
+        ElectricSheep::Sheepfile::Evaluator
+          .expects(:new)
           .raises(Exception.new('fail'))
         subject.new.work
       end
@@ -100,7 +106,8 @@ describe ElectricSheep::CLI do
   it 'refreshes SSH hosts keys' do
     expects_evaluator
     expects_stdout_logger :info
-    ElectricSheep::Util::SshHostKeys.expects(:refresh)
+    ElectricSheep::Util::SshHostKeys
+      .expects(:refresh)
       .with(config, logger, true)
     subject.new([], config: 'Sheepfile', yes: true).hostkeys
   end
@@ -114,16 +121,16 @@ describe ElectricSheep::CLI do
 
     it 'encrypts secrets' do
       encryptor.expects(:encrypt)
-        .with('/some/key', 'SECRET', ascii: true, compact: true)
-        .returns('CIPHER')
+               .with('/some/key', 'SECRET', ascii: true, compact: true)
+               .returns('CIPHER')
       STDOUT.expects(:puts).with('CIPHER')
       subject.new([], key: '/some/key', standard_armor: false).encrypt('SECRET')
     end
 
     it 'disables the compact output' do
       encryptor.expects(:encrypt)
-        .with('/some/key', 'SECRET', ascii: true, compact: false)
-        .returns('CIPHER')
+               .with('/some/key', 'SECRET', ascii: true, compact: false)
+               .returns('CIPHER')
       STDOUT.expects(:puts).with('CIPHER')
       subject.new([], key: '/some/key', standard_armor: true).encrypt('SECRET')
     end
@@ -131,19 +138,20 @@ describe ElectricSheep::CLI do
     concise do
       ensure_exception_handling do
         encryptor.expects(:encrypt)
-          .with('/some/key', 'SECRET', ascii: true, compact: true)
-          .raises(Exception.new('fail'))
+                 .with('/some/key', 'SECRET', ascii: true, compact: true)
+                 .raises(Exception.new('fail'))
         subject.new([], key: '/some/key', standard_armor: false)
-          .encrypt('SECRET')
+               .encrypt('SECRET')
       end
     end
   end
 
   it 'decrypts a file' do
-    ElectricSheep::Crypto.gpg.expects(:file).with(::ElectricSheep::Spawn)
-      .returns(encryptor = mock)
+    ElectricSheep::Crypto.gpg.expects(:file)
+                         .with(::ElectricSheep::Spawn)
+                         .returns(encryptor = mock)
     encryptor.expects(:decrypt)
-      .with('/some/key', '/some/input', '/some/output')
+             .with('/some/key', '/some/input', '/some/output')
     subject.new([], key: '/some/key').decrypt('/some/input', '/some/output')
   end
 
@@ -156,8 +164,8 @@ describe ElectricSheep::CLI do
 
     def expects_startup(method, master_options, cfg_file = nil, workers = nil)
       expects_evaluator(cfg_file || 'Sheepfile')
-      expects_control(
-        method, { config: config, workers: workers, daemon: nil }
+      expects_control(method,
+                      { config: config, workers: workers, daemon: nil }
           .merge(master_options))
     end
 
@@ -181,7 +189,7 @@ describe ElectricSheep::CLI do
         it 'overrides the path to pidfile' do
           expects_startup("#{action}!", pidfile: '/tmp/es.lock')
           subject.new([], config: 'Sheepfile', pidfile: '/tmp/es.lock')
-            .send(action)
+                 .send(action)
         end
 
         it 'overrides the maximum number of workers' do

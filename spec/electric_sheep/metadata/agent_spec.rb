@@ -35,41 +35,47 @@ describe ElectricSheep::Metadata::Agent do
 
     describe 'fetching default values' do
       before do
-        ElectricSheep::Agents::Register.stubs(:agent_klazz).with('id')
+        ElectricSheep::Agents::Register
+          .stubs(:agent_klazz).with('id')
           .returns(nil)
       end
 
       it 'fetches a globally defined default value for option' do
-        ElectricSheep::Agents::Register.expects(:defaults_for)
+        ElectricSheep::Agents::Register
+          .expects(:defaults_for)
           .with('agent_klazz', 'id').returns(foobar: 'value')
         subject.new(config, agent: 'id').option(:foobar).must_equal 'value'
       end
 
       it 'prefers a default a locally defined default value for option' do
-        ElectricSheep::Agents::Register.expects(:defaults_for)
+        ElectricSheep::Agents::Register
+          .expects(:defaults_for)
           .returns({})
         subject.new(config, agent: 'id').option(:foobar).must_equal 'local'
       end
     end
 
     it 'does not validate unless the agent is known' do
-      ElectricSheep::Agents::Register.stubs(:agent_klazz).with('foo')
+      ElectricSheep::Agents::Register
+        .stubs(:agent_klazz).with('foo')
         .returns(nil)
       expects_validation_error(subject.new(config, agent: 'foo'), :agent_klazz,
                                'Unknown agent_klazz "foo"')
     end
 
     it 'resolves the agent class' do
-      ElectricSheep::Agents::Register.expects(:agent_klazz).with('foo')
+      ElectricSheep::Agents::Register
+        .expects(:agent_klazz).with('foo')
         .returns(Object)
       subject.new(config, agent: 'foo').agent_klazz.must_equal Object
     end
   end
 
   it 'merges its options with those of the agent class' do
-    ElectricSheep::Agents::Register.stubs(:agent).with('foo')
+    ElectricSheep::Agents::Register
+      .stubs(:agent).with('foo')
       .returns(mock(options: { another_option: {} }))
     subject.new(config, agent: 'foo').options
-      .must_equal(agent: { required: true }, another_option: {})
+           .must_equal(agent: { required: true }, another_option: {})
   end
 end

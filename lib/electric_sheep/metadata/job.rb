@@ -44,7 +44,7 @@ module ElectricSheep
       end
 
       def name
-        description.nil? ? "#{id}" : "#{description} (#{id})"
+        description.nil? ? id.to_s : "#{description} (#{id})"
       end
 
       def notifiers

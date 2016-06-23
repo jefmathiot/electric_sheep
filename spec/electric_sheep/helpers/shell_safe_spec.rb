@@ -7,7 +7,7 @@ describe ElectricSheep::Helpers::ShellSafe do
 
   describe ShellSafeKlazz do
     it 'escapes shell expressions' do
-      ShellSafeKlazz.new.shell_safe('"expression').must_equal "\\\"expression"
+      ShellSafeKlazz.new.shell_safe('"expression').must_equal '\"expression'
     end
   end
 end

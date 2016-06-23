@@ -35,11 +35,9 @@ describe ElectricSheep::Commands::Database::MongoDBDump do
       metadata.stubs(:password).returns(nil)
       escapes '$MyDatabase', output_path
       expects_db_stat
-      ensure_execution([
-        'mongodump -d \\$MyDatabase',
-        " -o #{safe_output_path}",
-        ' &> /dev/null'
-      ])
+      ensure_execution(['mongodump -d \\$MyDatabase',
+                        " -o #{safe_output_path}",
+                        ' &> /dev/null'])
     end
 
     it 'appends credentials to the command' do

@@ -83,7 +83,7 @@ describe ElectricSheep::Notifiers::Email do
   it 'handles delivery options' do
     msg = mock
     msg.expects(:delivery_method)
-      .with(:test, an_option: 'value', encrypted_option: 'value')
+       .with(:test, an_option: 'value', encrypted_option: 'value')
     msg.expects(:deliver)
     notifier.send(:deliver, msg)
   end

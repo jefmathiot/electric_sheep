@@ -17,7 +17,7 @@ module ElectricSheep
       def template(type)
         path = File.join(ElectricSheep.template_path, type)
         path << '.erb'
-        fail "Unable to find template #{path}" unless File.exist?(path)
+        raise "Unable to find template #{path}" unless File.exist?(path)
         File.read path
       end
 

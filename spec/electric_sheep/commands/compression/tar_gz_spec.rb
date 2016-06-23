@@ -50,5 +50,5 @@ describe ElectricSheep::Commands::Compression::TarGz do
   describe_compression :directory, false
   describe_compression :file, true
   describe_compression :directory, true
-  describe_compression :directory, true, ['file1', 'file2']
+  describe_compression :directory, true, %w(file1 file2)
 end

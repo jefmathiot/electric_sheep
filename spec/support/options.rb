@@ -3,7 +3,7 @@ module Support
     def defines_options(*options)
       options.each do |prop|
         subject.options.include?(prop)
-          .must_equal true, "Expected #{subject.name} to define #{prop}"
+               .must_equal true, "Expected #{subject.name} to define #{prop}"
       end
     end
 

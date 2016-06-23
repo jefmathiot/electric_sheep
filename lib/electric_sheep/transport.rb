@@ -85,11 +85,11 @@ module ElectricSheep
     end
 
     def remote_interactor
-      fail "Not implemented, please define #{self.class}#remote_interactor"
+      raise "Not implemented, please define #{self.class}#remote_interactor"
     end
 
     def remote_resource
-      fail "Not implemented, please define #{self.class}#remote_resource"
+      raise "Not implemented, please define #{self.class}#remote_resource"
     end
 
     def host(id)

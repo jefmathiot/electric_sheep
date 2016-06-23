@@ -3,7 +3,7 @@ require 'lumberjack'
 
 module Lumberjack
   class Template
-    alias_method :boring_call, :call
+    alias boring_call call
 
     COLORS = [
       :cyan,

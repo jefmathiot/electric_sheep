@@ -19,10 +19,10 @@ describe ElectricSheep::Commands::Encrypt do
   def expects_key_conversion(status = 0)
     # Key copy
     fs_util.expects(:tempfile).in_sequence(seq).with(shell).twice
-      .yields('/tmp/keyfile').then.yields('/tmp/ascii')
+           .yields('/tmp/keyfile').then.yields('/tmp/ascii')
     spawn.expects(:exec).in_sequence(seq)
-      .with("gpg --batch --enarmor < \"/path/to/key\"")
-      .returns(exit_status: status, out: 'ARMORED ASCII')
+         .with('gpg --batch --enarmor < "/path/to/key"')
+         .returns(exit_status: status, out: 'ARMORED ASCII')
   end
 
   class << self
@@ -33,7 +33,7 @@ describe ElectricSheep::Commands::Encrypt do
         metadata.stubs(:public_key).returns('/path/to/key')
         metadata.stubs(:delete_source).returns(delete_source)
         shell.expects(:expand_path).at_least(1).with(input.path)
-          .returns(input.path)
+             .returns(input.path)
         # Initial steps
         expects_stat(:file, input, 4096)
         logger.expects(:info).in_sequence(seq).with('Encrypting "file"')
@@ -43,7 +43,7 @@ describe ElectricSheep::Commands::Encrypt do
         # Final call
         gpg.expects(:file).with(shell).returns(encryptor = mock)
         encryptor.expects(:encrypt)
-          .with('/tmp/keyfile', input.path, output_path)
+                 .with('/tmp/keyfile', input.path, output_path)
 
         cmds = ['echo "ARMORED ASCII" > /tmp/ascii']
         cmds << 'gpg --batch --dearmor < /tmp/ascii > /tmp/keyfile'
@@ -70,7 +70,7 @@ describe ElectricSheep::Commands::Encrypt do
     command.stubs(:host).returns(host = 'host')
     logger.expects(:info).in_sequence(seq).with('Encrypting "file"')
     command.expects(:file_resource).in_sequence(seq)
-      .with(host, extension: '.gpg').yields(mock)
+           .with(host, extension: '.gpg').yields(mock)
     expects_key_conversion(1)
     ex = -> { command.perform! }.must_raise RuntimeError
     ex.message.must_match(/^Unable to convert the public key/)

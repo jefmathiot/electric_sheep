@@ -80,7 +80,8 @@ describe ElectricSheep::Transport do
         transport.send(:stat!, resource, interactor)
       end
       it 'rescues interactor failure' do
-        logger.expects(:warn)
+        logger
+          .expects(:warn)
           .with('Unable to stat resource of type file: Exception')
         interactor.expects(:stat).with(resource).raises('Exception')
         transport.send(:stat!, resource, interactor)
@@ -118,7 +119,8 @@ describe ElectricSheep::Transport do
       { move: 'Moving', copy: 'Copying' }.each do |action, msg|
         def expects_delete(interactor, action)
           return false if action == :copy
-          interactor.expects(:delete!).in_sequence(seq)
+          interactor
+            .expects(:delete!).in_sequence(seq)
             .with(resource)
           resource.expects(:transient!).in_sequence(seq)
         end
@@ -132,8 +134,9 @@ describe ElectricSheep::Transport do
 
         describe "#{msg.downcase} a resource" do
           before do
-            transport.remote_interactor.expects(:in_session).in_sequence(seq)
-              .yields
+            transport.remote_interactor
+                     .expects(:in_session).in_sequence(seq)
+                     .yields
             metadata.stubs(:action).returns(action)
           end
 
@@ -142,13 +145,16 @@ describe ElectricSheep::Transport do
             resource.stubs(:local?).returns(true)
             transport.remote_resource.stubs(:local?).returns(false)
             logger.expects(:info).in_sequence(seq)
-              .with("#{msg} resource.name to some-host using airplane")
+                  .with("#{msg} resource.name to some-host using airplane")
             transport.expects(:stat!).in_sequence(seq)
-              .with(resource, local_interactor)
-            transport.remote_interactor.expects(:upload!).in_sequence(seq)
+                     .with(resource, local_interactor)
+            transport
+              .remote_interactor
+              .expects(:upload!).in_sequence(seq)
               .with(resource, transport.remote_resource, local_interactor)
             expects_delete(local_interactor, action)
-            transport.expects(:stat!).in_sequence(seq)
+            transport
+              .expects(:stat!).in_sequence(seq)
               .with(transport.remote_resource, transport.remote_interactor)
             ensure_done(resource, transport.remote_resource, action)
           end
@@ -157,17 +163,19 @@ describe ElectricSheep::Transport do
             metadata.stubs(:to).returns('localhost')
             resource.stubs(:local?).returns(false)
             transport.expects(:file_resource).with(localhost)
-              .returns(output = mock)
+                     .returns(output = mock)
             output.stubs(:local?).returns(true)
-            logger.expects(:info).in_sequence(seq)
+            logger
+              .expects(:info).in_sequence(seq)
               .with("#{msg} resource.name to localhost using airplane")
             transport.expects(:stat!).in_sequence(seq)
-              .with(resource, transport.remote_interactor)
-            transport.remote_interactor.expects(:download!).in_sequence(seq)
-              .with(resource, output, local_interactor)
+                     .with(resource, transport.remote_interactor)
+            transport.remote_interactor
+                     .expects(:download!).in_sequence(seq)
+                     .with(resource, output, local_interactor)
             expects_delete(transport.remote_interactor, action)
             transport.expects(:stat!).in_sequence(seq)
-              .with(output, local_interactor)
+                     .with(output, local_interactor)
             ensure_done(resource, output, action)
           end
         end

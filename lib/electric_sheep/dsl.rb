@@ -2,7 +2,7 @@ module ElectricSheep
   class Dsl
     module RaiseOnMethodMissing
       def method_missing(method, *_args, &_)
-        fail SheepException, "Unknown command '#{method}' in Sheepfile"
+        raise SheepException, "Unknown command '#{method}' in Sheepfile"
       end
     end
 

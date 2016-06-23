@@ -30,7 +30,7 @@ describe ElectricSheep::Helpers::Directories do
           end
 
           let(:raw_directory) do
-            "#{working_dir || '$HOME/.electric_sheep'}"
+            (working_dir || '$HOME/.electric_sheep')
           end
 
           let(:job_directory) do
@@ -41,9 +41,10 @@ describe ElectricSheep::Helpers::Directories do
             host.expects(:working_directory).returns(working_dir)
             job.expects(:id).returns('UNSAFE$-job-NAME')
             interactor.expects(:exec)
-              .with("echo \"#{raw_directory}\"")
-              .returns(out: '/home/user/.electric_sheep')
-            interactor.expects(:exec)
+                      .with("echo \"#{raw_directory}\"")
+                      .returns(out: '/home/user/.electric_sheep')
+            interactor
+              .expects(:exec)
               .with("mkdir -p #{Shellwords.escape(job_directory)} ; " \
                 "chmod 0700 #{Shellwords.escape(job_directory)}")
             directories.mk_job_directory!

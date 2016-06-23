@@ -136,21 +136,21 @@ describe ElectricSheep::Master do
   it 'spawns master inline and forks children' do
     subject.new(daemon: false, pidfile: 'pid').tap do |master|
       master.spawners.master
-        .must_be_instance_of ElectricSheep::Master::InlineSpawner
+            .must_be_instance_of ElectricSheep::Master::InlineSpawner
       master.spawners.master.instance_variable_get(:@pidfile).must_be_nil
       master.spawners.worker
-        .must_be_instance_of ElectricSheep::Master::ForkSpawner
+            .must_be_instance_of ElectricSheep::Master::ForkSpawner
     end
   end
 
   it 'spawns all processes as daemons' do
     subject.new(daemon: true, pidfile: 'pid').tap do |master|
       master.spawners.master
-        .must_be_instance_of ElectricSheep::Master::DaemonSpawner
+            .must_be_instance_of ElectricSheep::Master::DaemonSpawner
       master.spawners.master.instance_variable_get(:@pidfile)
-        .must_equal File.expand_path('pid')
+            .must_equal File.expand_path('pid')
       master.spawners.worker
-        .must_be_instance_of ElectricSheep::Master::DaemonSpawner
+            .must_be_instance_of ElectricSheep::Master::DaemonSpawner
     end
   end
 
@@ -184,10 +184,10 @@ describe ElectricSheep::Master do
 
       def expects_startup(&_block)
         master.spawners.master.expects(:spawn).in_sequence(seq)
-          .with('Master started').yields
+              .with('Master started').yields
         master.expects(:trap_signals).in_sequence(seq)
         logger.expects(:debug).in_sequence(seq)
-          .with('Searching for scheduled jobs')
+              .with('Searching for scheduled jobs')
         yield if block_given?
         master.expects(:sleep).in_sequence(seq).with(1)
       end
@@ -198,13 +198,14 @@ describe ElectricSheep::Master do
         expects_startup do
           job.expects(:on_schedule).in_sequence(seq).yields
           logger.expects(:info).in_sequence(seq)
-            .with("Forking a new worker to handle job \"some-job\"")
+                .with('Forking a new worker to handle job "some-job"')
           master.spawners.worker.expects(:spawn).yields.returns(10_001)
-          ElectricSheep::Runner::SingleRun.expects(:new).in_sequence(seq)
+          ElectricSheep::Runner::SingleRun
+            .expects(:new).in_sequence(seq)
             .with(config, logger, job).returns(runner = mock)
           runner.expects(:run!)
           logger.expects(:debug).in_sequence(seq)
-            .with("Forked a worker for job \"some-job\", pid: 10001")
+                .with('Forked a worker for job "some-job", pid: 10001')
           yield if block_given?
         end
       end
@@ -229,7 +230,7 @@ describe ElectricSheep::Master do
         expects_child_worker do
           Process.expects(:kill).with(0, 10_001).in_sequence(seq).returns(false)
           logger.expects(:info).in_sequence(seq)
-            .with("Worker for job \"some-job\" completed, pid: 10001")
+                .with('Worker for job "some-job" completed, pid: 10001')
           logger.expects(:debug).in_sequence(seq).with('Active workers: 0')
         end
         master.start!
@@ -259,7 +260,7 @@ describe ElectricSheep::Master do
     logger.expects(:info).in_sequence(seq).with('Stopping master')
     Process.expects(:kill).in_sequence(seq).with(0, 9999).returns(true)
     logger.expects(:debug).in_sequence(seq)
-      .with('Terminating process 9999')
+          .with('Terminating process 9999')
     Process.expects(:kill).in_sequence(seq).with(15, 9999).returns(true)
     master.spawners.master.expects(:delete_pidfile).in_sequence(seq)
     master.stop!

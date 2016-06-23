@@ -11,13 +11,13 @@ describe ElectricSheep::Helpers::FSUtil do
 
   def expects_path_expansion(path, expanded)
     executor.expects(:exec).in_sequence(seq)
-      .with("echo \"#{path}\"")
-      .returns(out: expanded)
+            .with("echo \"#{path}\"")
+            .returns(out: expanded)
   end
 
   def expects_rm(path)
     executor.expects(:exec).in_sequence(seq)
-      .with("rm -rf #{path}")
+            .with("rm -rf #{path}")
   end
 
   describe 'creating a temp object' do
@@ -31,7 +31,8 @@ describe ElectricSheep::Helpers::FSUtil do
 
     describe 'creating a temporary directory' do
       def expects_exec(status = 0)
-        executor.expects(:exec).in_sequence(seq)
+        executor
+          .expects(:exec).in_sequence(seq)
           .with("mkdir -p #{temppath} && chmod 0700 #{temppath}")
           .returns(exit_status: status)
       end
