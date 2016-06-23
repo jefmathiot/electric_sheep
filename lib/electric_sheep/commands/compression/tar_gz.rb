@@ -38,7 +38,7 @@ module ElectricSheep
           return unless input.directory?
           paths = option(:exclude)
           (paths.is_a?(Enumerable) && paths || [paths]).compact.each do |path|
-            cmd << " --exclude #{path}"
+            cmd << " --exclude #{shell.safe(path)}"
           end
         end
       end

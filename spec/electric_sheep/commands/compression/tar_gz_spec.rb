@@ -29,9 +29,14 @@ describe ElectricSheep::Commands::Compression::TarGz do
           if input_type == :directory
             metadata.expects(:exclude).returns(exclude)
           end
+          escaped = exclude.map do |path|
+            "escaped_#{path}".tap do |escaped_path|
+              shell.expects(:safe).with(path).returns(escaped_path)
+            end
+          end
           cmds = [
             "cd #{File.dirname(input.path)}; " \
-            "tar #{exclude.map { |path| "--exclude #{path} " }.join}" \
+            "tar #{escaped.map { |path| "--exclude #{path} " }.join}" \
             "-cvzf #{safe_output_path} " \
             "#{File.basename(input.path)} 1>&2"
           ]
