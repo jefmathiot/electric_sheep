@@ -8,6 +8,7 @@ Please notice we'll use semantic versioning as of 1.0.0.
 
 * Added an 'ssh' DSL verb to specify SSH options (path to a `known_hosts` file, and host keys checking behavior)
 * Add an 'hostkeys' CLI command used to refresh key cache.
+* Bump Ruby to 2.3.0.
 
 ### Fixed
 

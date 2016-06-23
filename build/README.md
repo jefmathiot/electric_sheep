@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-* You must have a sane Ruby 1.9+ environment
+* You must have a sane Ruby 2.3.0+ environment
 * Vagrant 1.5+ and VirtualBox
 
 ## Build packages
