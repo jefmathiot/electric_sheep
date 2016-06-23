@@ -6,8 +6,9 @@ Please notice we'll use semantic versioning as of 1.0.0.
 
 ### Added
 
-* Added an 'ssh' DSL verb to specify SSH options (path to a `known_hosts` file, and host keys checking behavior)
+* Added an 'ssh' DSL verb to specify SSH options (path to a `known_hosts` file, and host keys checking behavior).
 * Add an 'hostkeys' CLI command used to refresh key cache.
+* Add an 'exclude' options to the 'tar_gz ' command  - enhancement [#6](https://github.com/servebox/electric_sheep/issues/6).
 * Bump Ruby to 2.3.0.
 
 ### Fixed
