@@ -2,14 +2,12 @@ module ElectricSheep
   module Commands
     module Database
       class PostgreSQLDump
-        include Command
+        include SQLDump
 
         register as: 'postgresql_dump'
 
         option :sudo_as
-        option :user
         option :login_host
-        option :password, secret: true
 
         def perform!
           logger.info "Creating a dump of the \"#{input.basename}\" " \
