@@ -8,6 +8,7 @@ module ElectricSheep
         included do
           option :user
           option :password, secret: true
+          option :exclude_tables
         end
       end
     end

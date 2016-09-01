@@ -35,7 +35,8 @@ end
 job "mysql-dump", private_key: ssh_key do
   resource "database", name: "control *db", host: "main-host"
   remotely as: "vagrant" do
-    mysql_dump user: "operator", password: "pseudorandom"
+    mysql_dump user: "operator", password: "pseudorandom",
+      exclude_tables: "test2"
   end
   move to: "localhost", using: "scp", as: "vagrant"
 end

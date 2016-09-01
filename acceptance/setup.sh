@@ -12,12 +12,20 @@ mysql --user=root --password=pseudorandom <<EOF
   CREATE DATABASE "control *db";
   GRANT USAGE ON *.* TO 'operator'@'localhost' IDENTIFIED BY 'pseudorandom';
   GRANT ALL PRIVILEGES ON "control *db".* to 'operator'@'localhost';
-  CREATE TABLE "control *db".test(
+  CREATE TABLE "control *db".table1(
     id INT NOT NULL AUTO_INCREMENT,
     value CHAR(1) NOT NULL,
     PRIMARY KEY( id )
   );
-  INSERT INTO "control *db".test(value) VALUES ('A'),('A'),('A'),('A'),('A'),('A'),('A'),('A'),('A'),('A');
+  CREATE TABLE "control *db".table2(
+    id INT NOT NULL AUTO_INCREMENT,
+    value CHAR(1) NOT NULL,
+    PRIMARY KEY( id )
+  );
+  INSERT INTO "control *db".table1(value) VALUES ('A'),('A'),('A'),('A'),('A'),
+    ('A'),('A'),('A'),('A'),('A');
+  INSERT INTO "control *db".table2(value) VALUES ('A'),('A'),('A'),('A'),('A'),
+    ('A'),('A'),('A'),('A'),('A');
 EOF
 
 # Unlike MySQL, MongoDB does not allow whitespace characters in database

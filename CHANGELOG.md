@@ -10,6 +10,8 @@ Please notice we'll use semantic versioning as of 1.0.0.
 * Add an 'hostkeys' CLI command used to refresh key cache.
 * Add an 'exclude' options to the 'tar_gz ' command  - enhancement [#6](https://github.com/servebox/electric_sheep/issues/6).
 * Bump Ruby to 2.3.0.
+* Add the `exclude_tables` option to the 'mysql_dump' command - enhancement
+[#22](https://github.com/servebox/electric_sheep/issues/22).
 
 ### Fixed
 
