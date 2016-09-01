@@ -5,6 +5,8 @@ AllCops:
 #  Exclude:
 Style/Documentation:
   Enabled: false
+Style/FrozenStringLiteralComment:
+  Enabled: false
 Style/AccessorMethodName:
   # Due to ERB's get_binding
   Exclude:

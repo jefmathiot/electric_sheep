@@ -18,7 +18,7 @@ module ElectricSheep
         errors.empty?
       end
 
-      def method_missing(method, *args, &block)
+      def method_missing(method, *_)
         if option?(method)
           option(method)
         else
@@ -26,7 +26,7 @@ module ElectricSheep
         end
       end
 
-      def respond_to?(method, include_all = false)
+      def respond_to_missing?(method, _)
         option?(method) || super
       end
 

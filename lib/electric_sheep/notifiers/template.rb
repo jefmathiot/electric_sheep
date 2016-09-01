@@ -26,12 +26,16 @@ module ElectricSheep
           @context = context
         end
 
-        def method_missing(m, *args, &block)
+        def method_missing(m, *_)
           if @context.key?(m)
             @context[m]
           else
             super
           end
+        end
+
+        def respond_to_missing?(m, _)
+          @context.key?(m)
         end
 
         def to_date(datetime)

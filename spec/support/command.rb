@@ -4,6 +4,7 @@ module Support
     include Options
 
     class NilMetadata
+      # rubocop:disable MethodMissing
       def method_missing(_method, *_args, &_block)
         nil
       end

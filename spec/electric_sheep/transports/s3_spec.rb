@@ -98,19 +98,19 @@ describe ElectricSheep::Transports::S3 do
       it 'doesnt split files up to 10 MB' do
         source.stubs(:size).returns(10.megabytes)
         interactor.send(:upload_options, source)[:multipart_chunk_size]
-          .must_be_nil
+                  .must_be_nil
       end
 
       it 'split files beyond 10 MB' do
         source.stubs(:size).returns(10.megabytes + 1)
         interactor.send(:upload_options, source)[:multipart_chunk_size]
-          .must_equal 5.megabytes
+                  .must_equal 5.megabytes
       end
 
       it 'selects the smallest chunk size available' do
         source.stubs(:size).returns(5.megabytes * 10_001)
         interactor.send(:upload_options, source)[:multipart_chunk_size]
-          .must_equal 10.megabytes
+                  .must_equal 10.megabytes
       end
     end
 

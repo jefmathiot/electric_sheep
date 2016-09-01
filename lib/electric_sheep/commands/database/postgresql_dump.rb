@@ -24,10 +24,15 @@ module ElectricSheep
         private
 
         def cmd(dump)
-          login_options('pg_dump')
-            .concat(login_host_option)
+          cmd_options
             .<<(" -d #{shell.safe(input.name)} >")
             .<<(" #{shell.safe(shell.expand_path(dump.path))}")
+        end
+
+        def cmd_options
+          login_options('pg_dump')
+            .concat(login_host_option)
+            .concat(ignore_tables)
         end
 
         def database_size_cmd(input)
@@ -38,7 +43,7 @@ module ElectricSheep
         end
 
         def database_size_query(db)
-          "SELECT pg_database_size('#{shell.safe(db)}')"
+          "SELECT pg_database_size('#{db}')"
         end
 
         def login_host_option
@@ -64,6 +69,13 @@ module ElectricSheep
         def sudo_option(cmd)
           return unless option(:sudo_as)
           cmd.unshift "sudo -n -u #{shell.safe(option(:sudo_as))} "
+        end
+
+        def ignore_tables
+          excluded_tables.map do |t|
+            t = shell.safe(t)
+            [" --exclude-table-data=#{t}", " --exclude-table=#{t}"]
+          end.flatten
         end
       end
     end

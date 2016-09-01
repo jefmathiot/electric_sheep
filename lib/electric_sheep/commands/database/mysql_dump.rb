@@ -26,6 +26,7 @@ module ElectricSheep
         def dump_cmd(dump)
           ['mysqldump']
             .concat(credentials)
+            .concat(ignore_tables)
             .<< " #{shell.safe(input.name)} > "
             .<< shell.safe(shell.expand_path(dump.path))
         end
@@ -38,10 +39,10 @@ module ElectricSheep
         end
 
         def database_size_query(db)
-          'SELECT sum(data_length+index_length)' \
-            ' FROM information_schema.tables' \
-            " WHERE table_schema='#{shell.safe(db)}'" \
-            ' GROUP BY table_schema'
+          query = 'SELECT sum(data_length+index_length)' \
+                  ' FROM information_schema.tables' \
+                  " WHERE table_schema='#{shell.safe(db)}'"
+          query << ' GROUP BY table_schema'
         end
 
         def credentials
@@ -52,6 +53,13 @@ module ElectricSheep
             ' --password=',
             logger_safe(shell.safe(option(:password)))
           ]
+        end
+
+        def ignore_tables
+          db = shell.safe(input.name)
+          excluded_tables.map do |t|
+            " --ignore-table=#{db}.#{shell.safe(t)}"
+          end
         end
       end
     end

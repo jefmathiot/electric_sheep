@@ -1,3 +1,3 @@
 module ElectricSheep
-  class SheepException < Exception; end
+  class SheepException < RuntimeError; end
 end

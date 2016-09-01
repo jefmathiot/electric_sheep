@@ -35,7 +35,8 @@ end
 job "mysql-dump", private_key: ssh_key do
   resource "database", name: "control *db", host: "main-host"
   remotely as: "vagrant" do
-    mysql_dump user: "operator", password: "pseudorandom"
+    mysql_dump user: "operator", password: "pseudorandom",
+               exclude_tables: "table2"
   end
   move to: "localhost", using: "scp", as: "vagrant"
 end
@@ -59,7 +60,9 @@ end
 job "postgresql-dump", private_key: ssh_key do
   resource "database", name: "control*db", host: "main-host"
   remotely as: "vagrant" do
-    postgresql_dump user: "operator", password: "pseudorandom", login_host: "localhost"
+    postgresql_dump user: "operator", password: "pseudorandom",
+                    login_host: "localhost",
+                    exclude_tables: "table2"
   end
   move to: "localhost", using: "scp", as: "vagrant"
 end
@@ -67,7 +70,7 @@ end
 job "postgresql-dump-sudo", private_key: ssh_key do
   resource "database", name: "control*db", host: "main-host"
   remotely as: "vagrant" do
-    postgresql_dump sudo_as: "postgres"
+    postgresql_dump sudo_as: "postgres", exclude_tables: "table2"
   end
   move to: "localhost", using: "scp", as: "vagrant"
 end
@@ -75,13 +78,15 @@ end
 job "postgresql-dump-auth-fail", private_key: ssh_key do
   resource "database", name: "control*db", host: "main-host"
   remotely as: "vagrant" do
-    postgresql_dump user: "fail_user", password: "incorrect", login_host: "localhost"
+    postgresql_dump user: "fail_user", password: "incorrect",
+                    login_host: "localhost"
   end
 end
 
 job "postgresql-dump-unknown-db-fail", private_key: ssh_key do
   resource "database", name: "unknown", host: "main-host"
   remotely as: "vagrant" do
-    postgresql_dump user: "operator", password: "pseudorandom", login_host: "localhost"
+    postgresql_dump user: "operator", password: "pseudorandom",
+                    login_host: "localhost"
   end
 end

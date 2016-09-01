@@ -2,5 +2,6 @@ source 'https://rubygems.org'
 
 # Install omnibus software
 gem 'omnibus', github: 'servebox/omnibus', branch: 'package-name-override'
-gem 'omnibus-software', github: 'servebox/omnibus-software', branch: 'pin-cacerts'
+gem 'omnibus-software', github: 'servebox/omnibus-software',
+                        branch: 'pin-cacerts'
 gem 'git_rev'
