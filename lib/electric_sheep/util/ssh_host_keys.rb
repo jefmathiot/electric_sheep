@@ -37,7 +37,7 @@ module ElectricSheep
           hosts.each do |hostname|
             cmd = "ssh-keygen -R -f #{known_hosts} -R #{hostname}"
             result = Spawn.exec(cmd, logger)
-            next if (result[:exit_status]).zero?
+            next if (result[:exit_status]).to_i.zero?
             logger.warn "Unable to remove keys from \"#{known_hosts}\" " \
                         "for server #{hostname}"
             logger.warn result[:err]
@@ -84,7 +84,7 @@ module ElectricSheep
 
         def fetch_server_keys(host, port, logger)
           result = Spawn.exec("ssh-keyscan -p #{port} #{host}", logger)
-          unless (result[:exit_status]).zero?
+          unless (result[:exit_status]).to_i.zero?
             logger.error result[:err]
             raise "Unable to fetch key for server #{host}"
           end

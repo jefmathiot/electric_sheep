@@ -169,7 +169,7 @@ module ElectricSheep
 
           def openssh_to_pem(keyfile)
             result = Spawn.exec("ssh-keygen -f #{keyfile} -e -m pem")
-            unless (result[:exit_status]).zero?
+            unless (result[:exit_status]).to_i.zero?
               raise "Unable to convert key file #{keyfile} to PEM: " +
                     result[:err]
             end
