@@ -24,7 +24,7 @@ module ElectricSheep
 
         def exec(cmd)
           result = @executor.exec cmd
-          if result[:exit_status] != 0
+          if (result[:exit_status]).nonzero?
             raise "Command failed to complete \"#{cmd}\": #{result[:err]}"
           end
           result[:out]

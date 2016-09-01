@@ -14,7 +14,7 @@ module ElectricSheep
 
       def after_exec(&_block)
         yield.tap do |result|
-          unless result[:exit_status] == 0
+          unless (result[:exit_status]).zero?
             if result[:err].empty?
               raise 'Command terminated with exit status: ' +
                     result[:exit_status].to_s

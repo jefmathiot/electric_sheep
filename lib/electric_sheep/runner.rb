@@ -95,7 +95,7 @@ module ElectricSheep
         @config.iterate do |job|
           failures << job.name unless run(job)
         end
-        return unless failures.count > 0
+        return unless failures.count.positive?
         jobs = failures.map { |p| "\"#{p}\"" }.join(', ')
         raise "Some jobs have failed: #{jobs}"
       end

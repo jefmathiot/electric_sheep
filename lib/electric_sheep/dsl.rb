@@ -1,8 +1,9 @@
 module ElectricSheep
   class Dsl
     module RaiseOnMethodMissing
-      def method_missing(method, *_args, &_)
-        raise SheepException, "Unknown command '#{method}' in Sheepfile"
+      # rubocop:disable MethodMissing
+      def method_missing(m, *_)
+        raise SheepException, "Unknown command '#{m}' in Sheepfile"
       end
     end
 
@@ -140,13 +141,17 @@ module ElectricSheep
         @subject.add Metadata::Command.new(@config, opts)
       end
 
-      def method_missing(method, *args, &_)
-        if Agents::Register.command(method)
-          opts = { agent: method }.merge(args.first || {})
+      def method_missing(m, *args, &_)
+        if Agents::Register.command(m)
+          opts = { agent: m }.merge(args.first || {})
           @subject.add Metadata::Command.new(@config, opts)
         else
           super
         end
+      end
+
+      def respond_to_missing?(m, _)
+        Agents::Register.command(m)
       end
 
       protected

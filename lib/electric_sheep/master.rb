@@ -64,7 +64,7 @@ module ElectricSheep
     end
 
     def process?(pid)
-      pid > 0 && Process.kill(0, pid)
+      pid.positive? && Process.kill(0, pid)
     rescue Errno::ESRCH, RangeError
       false
     end
