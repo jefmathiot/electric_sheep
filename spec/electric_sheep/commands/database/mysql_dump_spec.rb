@@ -16,10 +16,9 @@ describe ElectricSheep::Commands::Database::MySQLDump do
     )
   end
 
-  def expects_db_stat(creds = [], additional_filter = '')
+  def expects_db_stat(creds = [])
     query = 'SELECT sum(data_length+index_length) ' \
       "FROM information_schema.tables WHERE table_schema='\\$MyDatabase'"
-    query << additional_filter
     query << ' GROUP BY table_schema'
     shell.expects(:exec).in_sequence(seq).with(
       "echo \"#{query}\" | ", 'mysql --skip-column-names', *creds
@@ -61,7 +60,7 @@ describe ElectricSheep::Commands::Database::MySQLDump do
       end
     end
 
-    describe 'exluding tables' do
+    describe 'excluding tables' do
       before do
         metadata.stubs(:user).returns(nil)
         metadata.stubs(:password).returns(nil)
@@ -70,7 +69,7 @@ describe ElectricSheep::Commands::Database::MySQLDump do
 
       it 'excludes a single table' do
         escapes '$MyDatabase', output_path, '$my_table'
-        expects_db_stat [], ' AND table_name NOT IN (\'\\$my_table\')'
+        expects_db_stat
         ensure_execution(%w(mysqldump)
                          .<<(' --ignore-table=\\$MyDatabase.\\$my_table')
                          .<<(" \\$MyDatabase > #{safe_output_path}"))
@@ -79,8 +78,7 @@ describe ElectricSheep::Commands::Database::MySQLDump do
       it 'excludes multiple tables' do
         metadata.stubs(:exclude_tables).returns(['$table1', '$table2'])
         escapes '$MyDatabase', output_path, '$table1', '$table2'
-        sql = ' AND table_name NOT IN (\'\\$table1\', \'\\$table2\')'
-        expects_db_stat [], sql
+        expects_db_stat
         ensure_execution(%w(mysqldump)
                          .<<(' --ignore-table=\\$MyDatabase.\\$table1')
                          .<<(' --ignore-table=\\$MyDatabase.\\$table2')

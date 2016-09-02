@@ -42,10 +42,6 @@ module ElectricSheep
           query = 'SELECT sum(data_length+index_length)' \
                   ' FROM information_schema.tables' \
                   " WHERE table_schema='#{shell.safe(db)}'"
-          if option(:exclude_tables)
-            tables = excluded_tables.map { |t| "'#{shell.safe(t)}'" }.join(', ')
-            query << " AND table_name NOT IN (#{tables})"
-          end
           query << ' GROUP BY table_schema'
         end
 
