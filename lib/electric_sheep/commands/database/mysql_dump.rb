@@ -55,11 +55,6 @@ module ElectricSheep
           ]
         end
 
-        def excluded_tables
-          tables = option(:exclude_tables)
-          (tables.is_a?(Enumerable) && tables || [tables]).compact
-        end
-
         def ignore_tables
           db = shell.safe(input.name)
           excluded_tables.map do |t|

@@ -64,10 +64,10 @@ describe ElectricSheep::Commands::Database::MySQLDump do
       before do
         metadata.stubs(:user).returns(nil)
         metadata.stubs(:password).returns(nil)
-        metadata.stubs(:exclude_tables).returns('$my_table')
       end
 
       it 'excludes a single table' do
+        metadata.stubs(:exclude_tables).returns('$my_table')
         escapes '$MyDatabase', output_path, '$my_table'
         expects_db_stat
         ensure_execution(%w(mysqldump)

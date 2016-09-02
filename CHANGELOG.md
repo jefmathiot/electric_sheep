@@ -12,6 +12,8 @@ Please notice we'll use semantic versioning as of 1.0.0.
 * Bump Ruby to 2.3.0.
 * Add the `exclude_tables` option to the 'mysql_dump' command - enhancement
 [#22](https://github.com/servebox/electric_sheep/issues/22).
+* Add the `exclude_tables` option to the 'pg_dump' command - enhancement
+[#22](https://github.com/servebox/electric_sheep/issues/22).
 
 ### Fixed
 
