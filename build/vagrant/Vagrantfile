@@ -5,8 +5,8 @@ ES_BOXES = {
   # https://bugs.launchpad.net/cloud-images/+bug/1565985
   # ubuntu32: 'ubuntu/xenial32',
   # ubuntu64: 'ubuntu/xenial64',
-  debian32: 'chef/debian-7.4-i386',
-  debian64: 'chef/debian-7.4'
+  debian32: 'bento/debian-8.5-i386',
+  debian64: 'bento/debian-8.5'
 }.freeze
 
 Vagrant.configure('2') do |config|

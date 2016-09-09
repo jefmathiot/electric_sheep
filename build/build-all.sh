@@ -35,7 +35,7 @@ do
   package="electric-sheep-$platform-${ES_VERSION}_$arch.deb"
 
   mv "pkg/$deb" "pkg/$package"
-  size=$(du -hs -0 $package | cut -f1)
+  size=$(du -hs -0 "pkg/$package" | cut -f1)
   echo "$platform-$arch sha1: $sha1"
 
   # Package used by the Docker build
