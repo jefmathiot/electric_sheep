@@ -9,15 +9,6 @@
 
 Packages are built in the `pkg` directory.
 
-## Build a single package
-
-Cd to the platform-specific folder (i.e. vagrant/ubuntu32 ) and spin up / halt
-the VM :
-
-```shell
-vagrant up --provision && vagrant halt
-```
-
 ## Build all packages
 
 ```shell

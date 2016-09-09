@@ -1,7 +1,8 @@
 source 'https://rubygems.org'
 
 # Install omnibus software
-gem 'omnibus', github: 'servebox/omnibus', branch: 'package-name-override'
-gem 'omnibus-software', github: 'servebox/omnibus-software',
-                        branch: 'pin-cacerts'
+gem 'omnibus' #, github: 'servebox/omnibus', branch: 'package-name-override'
+gem 'omnibus-software', github: 'chef/omnibus-software'
+                       # , branch: 'pin-cacerts'
 gem 'git_rev'
+gem 'ffi-yajl', '2.2.0' # Locked as the 2.3.0 does not build on ubuntu wily
