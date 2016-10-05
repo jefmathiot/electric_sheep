@@ -35,5 +35,12 @@ describe ElectricSheep::Metadata::Options do
         options.option?(:option3).must_equal false
       end
     end
+
+    it 'decrypts options' do
+      encrypted_option = mock.tap do |option|
+        option.expects(:decrypt).returns('VALUE')
+      end
+      subject.new(option1: encrypted_option).option(:option1).must_equal 'VALUE'
+    end
   end
 end

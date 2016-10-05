@@ -33,13 +33,6 @@ describe ElectricSheep::Command do
       command.send(:option, :some_option).must_equal 'VALUE'
     end
 
-    # TODO: Move to an agent spec
-    it 'decrypts options' do
-      metadata.expects(:some_option).returns(encrypted = mock)
-      encrypted.expects(:decrypt).returns('VALUE')
-      command.send(:option, :some_option).must_equal 'VALUE'
-    end
-
     it 'logs debug message on unknown stat method' do
       resource.stubs(:type).returns('unknown')
       resource.stubs(:stat).returns(mock(size: nil))

@@ -67,13 +67,13 @@ module ElectricSheep
       end
 
       def host_key_checking
-        return 'standard' if options.host_key_checking.nil?
-        HOST_KEY_VERIFIERS[options.host_key_checking.to_sym]
+        HOST_KEY_VERIFIERS.fetch(options.host_key_checking&.to_sym, 'standard')
       end
 
       def private_key
-        key = @host.private_key || @job.private_key || '~/.ssh/id_rsa'
-        File.expand_path(key)
+        @host.private_key_data || PrivateKey.from_file(@host.private_key) ||
+          @job.private_key_data || PrivateKey.from_file(@job.private_key) ||
+          PrivateKey.from_file('~/.ssh/id_rsa')
       end
 
       def copy_paths(source, target, context, directory, &_)
@@ -130,7 +130,7 @@ module ElectricSheep
           def on_data(channel, result, logger)
             channel.on_data do |_, data|
               result[:out] << data
-              logger.debug result[:out] if logger
+              logger&.debug result[:out]
             end
           end
 
@@ -150,28 +150,32 @@ module ElectricSheep
 
       class PrivateKey
         class << self
-          def get_key(keyfile, type)
-            ::OpenSSL::PKey::RSA.new(read_keyfile(keyfile)).tap do |key|
-              raise "Not a #{type} key: #{keyfile}" unless key.send("#{type}?")
+          def get_key(key_data, type)
+            ::OpenSSL::PKey::RSA.new(convert_to_pem(key_data)).tap do |key|
+              raise "Not a #{type} key" unless key.send("#{type}?")
             end
+          end
+
+          def from_file(keyfile)
+            return unless keyfile.present?
+            keyfile = File.expand_path(keyfile)
+            raise "Key file not found #{keyfile}" unless File.exist?(keyfile)
+            File.read(keyfile)
           end
 
           private
 
-          def read_keyfile(keyfile)
-            keyfile = File.expand_path(keyfile)
-            raise "Key file not found #{keyfile}" unless File.exist?(keyfile)
-            key = File.read(keyfile)
-            return openssh_to_pem(keyfile) if openssh?(key)
+          def convert_to_pem(key)
+            return openssh_to_pem(key) if openssh?(key)
             return key if pem?(key)
             raise 'Key file format not supported'
           end
 
-          def openssh_to_pem(keyfile)
-            result = Spawn.exec("ssh-keygen -f #{keyfile} -e -m pem")
+          def openssh_to_pem(key)
+            command = "ssh-keygen -f /dev/stdin -e -m pem <<<$(echo #{key})"
+            result = Spawn.exec(command)
             unless (result[:exit_status]).to_i.zero?
-              raise "Unable to convert key file #{keyfile} to PEM: " +
-                    result[:err]
+              raise "Unable to convert private key to PEM: #{result[:err]}"
             end
             result[:out]
           end

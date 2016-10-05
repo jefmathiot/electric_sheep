@@ -15,12 +15,8 @@ module ElectricSheep
       def after_exec(&_block)
         yield.tap do |result|
           unless (result[:exit_status]).to_i.zero?
-            if result[:err].empty?
-              raise 'Command terminated with exit status: ' +
-                    result[:exit_status].to_s
-            else
-              raise result[:err]
-            end
+            raise result[:err].presence ||
+                  "Command terminated with exit status: #{result[:exit_status]}"
           end
         end
       end
@@ -41,7 +37,7 @@ module ElectricSheep
       protected
 
       def _exec(*cmd)
-        @logger.debug cmd.map(&:to_s).join if @logger
+        @logger&.debug cmd.map(&:to_s).join
         after_exec do
           yield cmd.map { |chunk| _arg(chunk) }.join
         end

@@ -8,9 +8,7 @@ module ElectricSheep
     protected
 
     def option(name)
-      option = @metadata.send(name)
-      return option.decrypt if option.respond_to?(:decrypt)
-      option
+      @metadata.send(name)
     end
   end
 end

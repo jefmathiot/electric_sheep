@@ -9,7 +9,7 @@ module ElectricSheep
 
       def option(name)
         return unless option?(name)
-        fetch_option(name)
+        decrypt(fetch_option(name))
       end
 
       def option?(method)
@@ -20,6 +20,11 @@ module ElectricSheep
 
       def fetch_option(name)
         explicit_option(name) || default_option(name)
+      end
+
+      def decrypt(option)
+        return option.decrypt if option.respond_to?(:decrypt)
+        option
       end
 
       def explicit_option(name)
