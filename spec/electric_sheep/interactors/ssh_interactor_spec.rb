@@ -389,7 +389,7 @@ describe ElectricSheep::Interactors::SshInteractor::PrivateKey do
       "XXXXXX\n" \
       '-----END RSA PUBLIC KEY-----'
     end
-    let(:not_a_key_data) { '¯\_(ツ_/¯' }
+    let(:not_a_key_data) { '¯\_(ツ)_/¯' }
 
     let(:spawn) do
       ElectricSheep::Spawn

@@ -14,7 +14,7 @@ Please notice we'll use semantic versioning as of 1.0.0.
 [#22](https://github.com/servebox/electric_sheep/issues/22).
 * Add the `exclude_tables` option to the 'pg_dump' command - enhancement
 [#22](https://github.com/servebox/electric_sheep/issues/22).
-* Adds `private_key_data` option on hosts and jobs
+* Add `private_key_data` option on hosts and jobs
 
 ### Fixed
 
