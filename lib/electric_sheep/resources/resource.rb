@@ -29,7 +29,7 @@ module ElectricSheep
       end
 
       def local?
-        host.nil? || host.local?
+        host.blank? || host.local?
       end
 
       def transient!

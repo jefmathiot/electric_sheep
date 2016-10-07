@@ -17,7 +17,7 @@ module ElectricSheep
       def child_output(child, logger)
         return '' if child.out.nil?
         child.out.chomp.tap do |output|
-          logger.debug(output) if logger
+          logger&.debug(output)
         end
       end
 

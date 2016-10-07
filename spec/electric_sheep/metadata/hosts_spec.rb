@@ -4,7 +4,8 @@ describe ElectricSheep::Metadata::Host do
   include Support::Options
 
   it do
-    defines_options :hostname, :id, :description, :ssh_port, :private_key
+    defines_options :hostname, :id, :description, :ssh_port, :private_key,
+                    :private_key_data
     requires :hostname
   end
 

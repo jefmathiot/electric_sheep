@@ -82,27 +82,60 @@ describe ElectricSheep::Interactors::SshInteractor do
   end
 
   describe 'selecting the private key' do
+    def create_keyfile(name, contents)
+      Tempfile.new(name).tap do |f|
+        f.write contents
+        f.close
+      end
+    end
+
+    let(:ssh_keyfile) { create_keyfile('ssh-key', ssh_key_data) }
+    let(:ssh_key_data) { 'SECRET' }
     let(:host) { mock }
     let(:job) { mock }
 
-    it 'uses the host key if specified' do
-      host.expects(:private_key).returns('key_rsa')
+    it 'uses the host key data if specified' do
+      host.expects(:private_key_data).returns(ssh_key_data)
       interactor.send(:private_key)
-                .must_equal File.expand_path('key_rsa')
+                .must_equal ssh_key_data
+    end
+
+    it 'uses the host key if specified' do
+      host.expects(:private_key_data).returns(nil)
+      host.expects(:private_key).returns(ssh_keyfile.path)
+      interactor.send(:private_key)
+                .must_equal ssh_key_data
+    end
+
+    it 'falls back to the job key data' do
+      host.expects(:private_key_data).returns(nil)
+      host.expects(:private_key).returns(nil)
+      job.expects(:private_key_data).returns(ssh_key_data)
+      interactor.send(:private_key)
+                .must_equal ssh_key_data
     end
 
     it 'falls back to the job key' do
+      host.expects(:private_key_data).returns(nil)
       host.expects(:private_key).returns(nil)
-      job.expects(:private_key).returns('key_rsa')
+      job.expects(:private_key_data).returns(nil)
+      job.expects(:private_key).returns(ssh_keyfile.path)
       interactor.send(:private_key)
-                .must_equal File.expand_path('key_rsa')
+                .must_equal ssh_key_data
     end
 
     it 'falls back to the default key' do
+      host.expects(:private_key_data).returns(nil)
       host.expects(:private_key).returns(nil)
+      job.expects(:private_key_data).returns(nil)
       job.expects(:private_key).returns(nil)
+      ElectricSheep::Interactors::SshInteractor::PrivateKey
+        .expects(:from_file).with(nil).at_least_once.returns(nil)
+      ElectricSheep::Interactors::SshInteractor::PrivateKey
+        .expects(:from_file).with('~/.ssh/id_rsa')
+        .returns(ssh_key_data)
       interactor.send(:private_key)
-                .must_equal File.expand_path('~/.ssh/id_rsa')
+                .must_equal ssh_key_data
     end
   end
 
@@ -132,14 +165,14 @@ describe ElectricSheep::Interactors::SshInteractor do
       before do
         ElectricSheep::Interactors::SshInteractor::PrivateKey
           .expects(:get_key)
-          .with('/path/to/private/key', :private)
+          .with('SECRET', :private)
           .returns(pk = mock)
         pk.expects(:export).returns('SECRET')
         Net::SSH
           .expects(:start)
           .with('host.tld', 'johndoe', options)
           .returns(connection)
-        job.expects(:private_key).returns('/path/to/private/key')
+        job.expects(:private_key_data).returns('SECRET')
         ElectricSheep::Helpers::Directories
           .any_instance
           .expects(:mk_job_directory!)
@@ -350,79 +383,69 @@ end
 
 describe ElectricSheep::Interactors::SshInteractor::PrivateKey do
   describe 'getting a key from the file system' do
-    def create_keyfile(name, contents)
-      Tempfile.new(name).tap do |f|
-        f.write contents
-        f.close
-      end
-    end
-
-    let(:ssh_keyfile) { create_keyfile('ssh-key', 'ssh-rsa XXXXXXX') }
-    let(:pem_keyfile) { create_keyfile('ssh-key', pem_lines) }
-    let(:not_a_keyfile) { create_keyfile('not-a-key', '¯\_(ツ)_/¯') }
-
-    let(:pem_lines) do
+    let(:ssh_key_data) { 'ssh-rsa XXXXXXX' }
+    let(:pem_key_data) do
       "-----BEGIN RSA PUBLIC KEY-----\n" \
       "XXXXXX\n" \
       '-----END RSA PUBLIC KEY-----'
     end
+    let(:not_a_key_data) { '¯\_(ツ)_/¯' }
 
     let(:spawn) do
       ElectricSheep::Spawn
     end
 
     def expects_open_ssl(check)
-      OpenSSL::PKey::RSA.expects(:new).with(pem_lines).returns(key = mock)
+      OpenSSL::PKey::RSA.expects(:new).with(pem_key_data).returns(key = mock)
       key.expects(check).returns(true)
       key
     end
 
     it 'raises if the key is of the wrong type' do
-      subject
-        .expects(:read_keyfile).with(path = '/path/to/key')
-        .returns(keyfile = mock)
-      OpenSSL::PKey::RSA.expects(:new).with(keyfile).returns(key = mock)
+      OpenSSL::PKey::RSA.expects(:new).with(key_data = mock).returns(key = mock)
+      subject.expects(:convert_to_pem).with(key_data).returns(key_data)
       key.expects(:private?).returns(false)
-      ex = -> { subject.get_key(path, :private) }.must_raise RuntimeError
+      ex = -> { subject.get_key(key_data, :private) }.must_raise RuntimeError
       ex.message.must_match(/^Not a private key/)
     end
 
     it 'raises if keyfile is not found' do
-      ex = -> { subject.get_key('not/a/key', :private) }.must_raise RuntimeError
-      ex.message.must_match(/^Key file not found/)
+      ex = -> { subject.get_key(not_a_key_data, :private) }
+           .must_raise RuntimeError
+      ex.message.must_match(/^Key file format not supported/)
     end
 
     describe 'with an SSH key' do
       def expects_conversion(status)
         spawn
           .expects(:exec)
-          .with("ssh-keygen -f #{ssh_keyfile.path} -e -m pem")
-          .returns(out: pem_lines, err: 'An error', exit_status: status)
+          .with("ssh-keygen -f /dev/stdin -e -m pem <<<$(echo #{ssh_key_data})")
+          .returns(out: pem_key_data, err: 'An error', exit_status: status)
       end
 
       it 'converts the key to the PEM format' do
         expects_conversion(0)
         key = expects_open_ssl(:public?)
-        subject.get_key(ssh_keyfile.path, :public).must_equal key
+        subject.get_key(ssh_key_data, :public).must_equal key
       end
 
       it 'raises if it was unable to convert to PEM' do
         expects_conversion(1)
         ex = lambda do
-          subject.get_key(ssh_keyfile.path, :private)
+          subject.get_key(ssh_key_data, :private)
         end.must_raise RuntimeError
-        ex.message.must_match(/Unable to convert key file/)
+        ex.message.must_match(/Unable to convert private key/)
       end
     end
 
     it 'uses a key in the PEM format without converting it' do
       key = expects_open_ssl(:public?)
-      subject.get_key(pem_keyfile.path, :public).must_equal key
+      subject.get_key(pem_key_data, :public).must_equal key
     end
 
     it 'raises if the key format is unknown' do
       ex = lambda do
-        subject.get_key(not_a_keyfile, :whatever)
+        subject.get_key(not_a_key_data, :whatever)
       end.must_raise RuntimeError
       ex.message.must_match(/Key file format not supported/)
     end

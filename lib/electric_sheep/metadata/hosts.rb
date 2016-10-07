@@ -15,6 +15,7 @@ module ElectricSheep
       option :ssh_port
       option :description
       option :private_key
+      option :private_key_data
 
       def initialize(options = {})
         options[:ssh_port] ||= 22

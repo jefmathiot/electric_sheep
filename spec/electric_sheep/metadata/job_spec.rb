@@ -16,7 +16,7 @@ describe ElectricSheep::Metadata::Job do
   end
 
   it do
-    defines_options :id, :description, :private_key
+    defines_options :id, :description, :private_key, :private_key_data
     requires :id
   end
 

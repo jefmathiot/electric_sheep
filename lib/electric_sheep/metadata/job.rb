@@ -7,6 +7,7 @@ module ElectricSheep
       option :id, required: true
       option :description
       option :private_key
+      option :private_key_data
 
       attr_reader :starts_with
 
