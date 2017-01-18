@@ -17,7 +17,6 @@ module ElectricSheep
              default: false,
              desc: 'Output the standard ASCII-armored'
       logging_options
-
       def encrypt(secret)
         rescued(true) do
           cipher = Crypto.gpg.string(Spawn)

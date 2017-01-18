@@ -19,8 +19,10 @@ module ElectricSheep
       end
 
       def expand_path(path)
-        raise 'job directory has not been created, please' \
-              ' call mk_job_directory!' unless @job_directory
+        unless @job_directory
+          raise 'job directory has not been created, please' \
+                ' call mk_job_directory!'
+        end
         return path if Pathname.new(path).absolute?
         File.join(job_directory, path)
       end

@@ -56,8 +56,9 @@ module ElectricSheep
         key_data = PrivateKey.get_key(private_key, :private).export
         { port: @host.ssh_port, keys_only: true, auth_methods: %w(publickey),
           key_data: key_data }.tap do |opts|
-          opts[:user_known_hosts_file] =
-            File.expand_path(options.known_hosts) if options.known_hosts
+          if options.known_hosts
+            opts[:user_known_hosts_file] = File.expand_path(options.known_hosts)
+          end
           opts[:paranoid] = host_key_checking
         end
       end
@@ -78,9 +79,7 @@ module ElectricSheep
 
       def copy_paths(source, target, context, directory, &_)
         if directory
-          to_tmpdir(source, target, context) do |path|
-            yield source, path
-          end
+          to_tmpdir(source, target, context) { |path| yield source, path }
         else
           yield source, target
         end

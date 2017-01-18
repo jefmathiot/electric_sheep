@@ -43,7 +43,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'thor', '~> 0.19', '>= 0.19.1'
   spec.add_dependency 'colorize', '~> 0.7', '>= 0.7.7'
-  spec.add_dependency 'activesupport', '~> 4.2', '>= 4.2.5'
+  spec.add_dependency 'activesupport', '~> 5.0', '>= 5.0.1'
   spec.add_dependency 'session', '~> 3.2', '>= 3.2.0'
   spec.add_dependency 'net-ssh', '~> 3.0', '>= 3.0.1'
   spec.add_dependency 'net-scp', '~> 1.2', '>= 1.2.1'
